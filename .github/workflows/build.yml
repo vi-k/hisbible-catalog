@@ -13,11 +13,17 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: catalog-build
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: dart-lang/setup-dart@v1
         with:
           sdk: 3.13.0
@@ -27,6 +33,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           LIMIT: ${{ inputs.limit }}
         run: dart run catalog_builder:build --limit "$LIMIT"
+      - name: Keep the report and the deletion list
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: catalog-build
+          path: |
+            out/report.md
+            out/deletions.json
       - name: Report
         run: cat out/report.md >> "$GITHUB_STEP_SUMMARY"
       - name: Commit the index

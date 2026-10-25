@@ -206,7 +206,7 @@ void main() {
       0,
       1,
       '',
-      'asset not found',
+      'HTTP 403: Resource not accessible by integration',
     );
     final publisher = GhPublisher(run: gh);
 
@@ -218,6 +218,27 @@ void main() {
       publisher.deleteAsset('build-2026-11-01', 'x.hb'),
       throwsA(isA<PublishException>()),
     );
+  });
+
+  test('deleting a file that is already gone succeeds', () async {
+    answers['release delete-asset build-2026-11-01'] = ProcessResult(
+      0,
+      1,
+      '',
+      'asset x.hb not found in release build-2026-11-01\n',
+    );
+    answers['release delete-asset build-2026-10-01'] = ProcessResult(
+      0,
+      1,
+      '',
+      'release not found\n',
+    );
+    final publisher = GhPublisher(run: gh);
+
+    await publisher.deleteAsset('build-2026-11-01', 'x.hb');
+    await publisher.deleteAsset('build-2026-10-01', 'y.hb');
+
+    expect(commands, hasLength(2));
   });
 
   test('dry run publisher records and publishes nothing', () async {

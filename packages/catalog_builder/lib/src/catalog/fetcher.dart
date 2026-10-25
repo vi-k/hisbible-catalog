@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catalog_builder/src/build/module_build.dart';
 import 'package:http/http.dart' as http;
 
@@ -27,7 +29,16 @@ final class FetchException implements Exception {
 /// [Fetcher] по HTTP.
 final class HttpFetcher implements Fetcher {
   /// Создаёт загрузчик; [client] — свой клиент HTTP, по умолчанию новый.
-  HttpFetcher({http.Client? client}) : _client = client ?? http.Client();
+  /// Запрос вместе с телом ответа дольше [timeout] —
+  /// [TimeoutException].
+  HttpFetcher({http.Client? client, this.timeout = defaultTimeout})
+    : _client = client ?? http.Client();
+
+  /// Сколько по умолчанию ждать один файл.
+  static const defaultTimeout = Duration(minutes: 2);
+
+  /// Сколько ждать один файл вместе с телом ответа.
+  final Duration timeout;
 
   final http.Client _client;
 
@@ -38,10 +49,10 @@ final class HttpFetcher implements Fetcher {
 
   @override
   Future<List<int>> get(Uri uri) async {
-    final response = await _client.get(
-      uri,
-      headers: const {'User-Agent': userAgent},
-    );
+    // `get` читает и тело ответа, так что предел покрывает весь файл.
+    final response = await _client
+        .get(uri, headers: const {'User-Agent': userAgent})
+        .timeout(timeout);
     if (response.statusCode != 200) {
       throw FetchException(uri, response.statusCode);
     }

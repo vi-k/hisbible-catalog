@@ -41,6 +41,9 @@ abstract interface class Publisher {
   Future<Uri> upload(String release, File file, {bool prerelease = false});
 
   /// Удаляет файл [asset] из выпуска [release].
+  ///
+  /// Файла или выпуска уже нет — удалять нечего, это не ошибка: список
+  /// удалений можно применить ещё раз.
   Future<void> deleteAsset(String release, String asset);
 
   /// Сколько файлов в выпуске [release]; выпуска нет — 0.
@@ -120,8 +123,22 @@ final class GhPublisher implements Publisher {
   }
 
   @override
-  Future<void> deleteAsset(String release, String asset) =>
-      _gh(['release', 'delete-asset', release, asset, '--repo', repo, '--yes']);
+  Future<void> deleteAsset(String release, String asset) async {
+    final arguments = [
+      'release',
+      'delete-asset',
+      release,
+      asset,
+      '--repo',
+      repo,
+      '--yes',
+    ];
+    final result = await _run('gh', arguments);
+    // `gh` пишет «asset … not found in release …» или «release not found».
+    if (result.exitCode != 0 && !'${result.stderr}'.contains('not found')) {
+      throw PublishException(_failure(arguments, result));
+    }
+  }
 
   @override
   Future<int> assetCount(String release) async =>

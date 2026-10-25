@@ -10,6 +10,7 @@ final class BuildReport {
     this.warnings = const {},
     this.waiting = const [],
     this.deletions = const [],
+    this.stopped,
   });
 
   /// Дата прогона, `YYYY-MM-DD`.
@@ -36,6 +37,9 @@ final class BuildReport {
   /// Файлы выпусков к удалению: `<выпуск>/<файл>`.
   final List<String> deletions;
 
+  /// Почему прогон остановился раньше, или `null`, если дошёл до конца.
+  final String? stopped;
+
   /// Отчёт в Markdown.
   ///
   /// Переводы без изменений и отложенные даны только числом: их бывает
@@ -50,6 +54,11 @@ final class BuildReport {
       ..writeln('- Failed: ${failed.length}')
       ..writeln('- Waiting for the next run: ${waiting.length}')
       ..writeln('- Release files to delete: ${deletions.length}');
+    if (stopped case final stopped?) {
+      out
+        ..writeln()
+        ..writeln('**$stopped; the rest waits for the next run.**');
+    }
     void list(String title, Iterable<String> items) {
       if (items.isEmpty) {
         return;

@@ -3,6 +3,7 @@ library;
 
 export 'src/build/module_build.dart';
 export 'src/build/module_validation.dart';
+export 'src/catalog/build_cli.dart';
 export 'src/catalog/catalog_index.dart';
 export 'src/catalog/catalog_run.dart';
 export 'src/catalog/deletions.dart';

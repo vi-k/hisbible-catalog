@@ -18,6 +18,13 @@ import 'package:path/path.dart' as p;
 /// Больше файлов в выпуске сборка не кладёт: у GitHub предел 1000.
 const int releaseFileLimit = 900;
 
+/// Сколько раз выкладка файла повторяется после неудачи.
+const int uploadRetries = 3;
+
+/// Больше стольких неудачных выкладок — прогон не берёт новых сборок
+/// и завершается с тем, что успел.
+const int uploadFailureLimit = 20;
+
 /// Адрес архива USFM перевода [translationId] на eBible.org.
 Uri ebibleSourceUrl(String translationId) =>
     Uri.parse('https://ebible.org/Scriptures/${translationId}_usfm.zip');
@@ -76,6 +83,12 @@ final class CatalogRun {
 /// [BuildReport.waiting]. В выпуске не больше [releaseFileLimit] файлов:
 /// дальше `build-<дата>-2`, `-3`…
 ///
+/// Неудачная выкладка повторяется до [uploadRetries] раз с паузой [pause]
+/// 2, 4, 8 секунд. Не вышло — перевод не собран, причина в отчёте,
+/// прежняя запись остаётся; невыложенный исходник не попадает в [lock].
+/// Больше [uploadFailureLimit] таких неудач — остальные ждут следующего
+/// прогона, а прогон завершается как обычно.
+///
 /// Сам прогон ничего не удаляет: файлы к удалению — в
 /// [CatalogRun.deletions]. Файлы прогона лежат в [work]: `sources/`,
 /// `modules/`, `fonts/`; без [keepFiles] архив исходника удаляется из
@@ -92,6 +105,7 @@ Future<CatalogRun> runCatalogBuild({
   FontsLock fonts = FontsLock.empty,
   int? limit,
   bool keepFiles = false,
+  Future<void> Function(Duration) pause = _sleep,
 }) async {
   final date = isoDate(now);
   final fontSection = await publishFonts(
@@ -117,6 +131,7 @@ Future<CatalogRun> runCatalogBuild({
     now: now,
     entries: Map.of(lock.entries),
     keepFiles: keepFiles,
+    pause: pause,
   );
   final before = {for (final module in previous.modules) module.id: module};
   final modules = <String, IndexModule>{};
@@ -145,7 +160,8 @@ Future<CatalogRun> runCatalogBuild({
   for (final t in [...fresh, ...retries]) {
     final id = t.translationId;
     final old = before[id];
-    if (limit != null && attempts >= limit) {
+    if ((limit != null && attempts >= limit) ||
+        run.uploadFailures > uploadFailureLimit) {
       if (old != null) {
         modules[id] = old;
       }
@@ -219,6 +235,9 @@ Future<CatalogRun> runCatalogBuild({
       deletions: [
         for (final (:release, :asset) in run.deletions) '$release/$asset',
       ],
+      stopped: run.uploadFailures > uploadFailureLimit
+          ? 'Stopped early: ${run.uploadFailures} uploads failed'
+          : null,
     ),
     deletions: List.unmodifiable(run.deletions),
   );
@@ -234,6 +253,7 @@ final class _Run {
     required this.now,
     required this.entries,
     required this.keepFiles,
+    required this.pause,
   }) : _sources = _Releases(publisher, 'sources-${isoDate(now)}'),
        _builds = _Releases(publisher, 'build-${isoDate(now)}');
 
@@ -245,6 +265,12 @@ final class _Run {
 
   // Оставлять ли в [work] архивы и модули после выкладки.
   final bool keepFiles;
+
+  // Пауза перед повтором выкладки.
+  final Future<void> Function(Duration) pause;
+
+  // Сколько файлов не выложилось и после повторов.
+  int uploadFailures = 0;
 
   // Исходники по id; меняются по ходу прогона.
   final Map<String, LockedSource> entries;
@@ -286,7 +312,16 @@ final class _Run {
     source.writeAsBytesSync(bytes);
     if (!own) {
       final release = await _sources.next();
-      await publisher.upload(release, source, prerelease: true);
+      final (uploaded, problem) = await _upload(
+        release,
+        source,
+        prerelease: true,
+      );
+      if (uploaded == null) {
+        _remove(source);
+
+        return (null, [problem]);
+      }
       if (locked != null &&
           (locked.release != release || locked.asset != asset)) {
         deletions.add((release: locked.release, asset: locked.asset));
@@ -315,10 +350,39 @@ final class _Run {
       case Built():
         final release = await _builds.next();
         final file = File(outcome.path);
-        final url = await publisher.upload(release, file);
+        final (url, problem) = await _upload(release, file);
         _remove(file);
 
-        return (_entry(t, outcome, url), outcome.warnings);
+        return url == null
+            ? (null, [problem])
+            : (_entry(t, outcome, url), outcome.warnings);
+    }
+  }
+
+  // Выкладывает [file] в [release], при неудаче повторяет до
+  // [uploadRetries] раз; не вышло — `null` и причина.
+  Future<(Uri?, String)> _upload(
+    String release,
+    File file, {
+    bool prerelease = false,
+  }) async {
+    for (var attempt = 0; ; attempt++) {
+      try {
+        return (
+          await publisher.upload(release, file, prerelease: prerelease),
+          '',
+        );
+      } on Exception catch (e) {
+        if (attempt >= uploadRetries) {
+          uploadFailures++;
+
+          return (
+            null,
+            'cannot upload ${p.basename(file.path)} to $release: $e',
+          );
+        }
+        await pause(Duration(seconds: 2 << attempt));
+      }
     }
   }
 
@@ -385,3 +449,5 @@ final class _Releases {
     }
   }
 }
+
+Future<void> _sleep(Duration duration) => Future<void>.delayed(duration);

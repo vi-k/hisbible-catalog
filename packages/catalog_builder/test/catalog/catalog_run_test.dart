@@ -13,12 +13,14 @@ void main() {
   late Directory work;
   late FakePublisher publisher;
   late FakeFetcher fetcher;
+  late List<Duration> pauses;
 
   setUp(() {
     work = Directory.systemTemp.createTempSync('catalog_run_test');
     addTearDown(() => work.deleteSync(recursive: true));
     publisher = FakePublisher();
     fetcher = FakeFetcher(publisher);
+    pauses = [];
   });
 
   Future<CatalogRun> run(
@@ -30,6 +32,7 @@ void main() {
     int? limit,
     bool keepFiles = false,
   }) => runCatalogBuild(
+    pause: (duration) async => pauses.add(duration),
     translations: translations,
     previous: after?.index ?? CatalogIndex.empty(),
     lock: after?.lock ?? const SourcesLock({}),
@@ -375,8 +378,11 @@ void main() {
     const deletions = [
       (release: 'build-2026-11-01', asset: 'aaa.hb'),
       (release: 'build-2026-11-01', asset: 'gone.hb'),
+      (release: 'build-2026-11-01', asset: 'locked.hb'),
       (release: 'sources-2026-11-01', asset: 'aaa_usfm.zip'),
     ];
+    publisher.releases['build-2026-11-01']!['locked.hb'] = const [3];
+    publisher.brokenDeletes.add('build-2026-11-01/locked.hb');
     final json = deletionsToJson(deletions);
 
     expect(parseDeletions(json), deletions);
@@ -389,11 +395,84 @@ void main() {
     expect(publisher.deletes, [
       'build-2026-11-01/aaa.hb',
       'build-2026-11-01/gone.hb',
+      'build-2026-11-01/locked.hb',
       'sources-2026-11-01/aaa_usfm.zip',
     ]);
-    expect(problems, [contains('gone.hb')]);
-    expect(publisher.files('build-2026-11-01'), isEmpty);
+    expect(problems, [
+      contains('locked.hb'),
+    ], reason: 'a file already gone is not a problem');
+    expect(publisher.files('build-2026-11-01'), ['locked.hb']);
     expect(publisher.files('sources-2026-11-01'), isEmpty);
+  });
+
+  test('transient upload failure is retried', () async {
+    publisher.transient['aaa-2026-09-01_usfm.zip'] = 1;
+    publisher.transient['aaa-2026-09-01.hb'] = 3;
+
+    final result = await run([offer('aaa')]);
+
+    expect(result.index.modules.map((m) => m.id), ['aaa']);
+    expect(result.report.failed, isEmpty);
+    expect(publisher.attempts, [
+      ...List.filled(2, 'aaa-2026-09-01_usfm.zip'),
+      ...List.filled(4, 'aaa-2026-09-01.hb'),
+    ]);
+    expect(pauses, hasLength(4));
+    expect(pauses.every((d) => d > Duration.zero), isTrue);
+  });
+
+  test('permanent upload failure fails only its module', () async {
+    final first = await run([offer('aaa'), offer('ccc')]);
+    publisher.broken = (asset) =>
+        asset == 'aaa-2026-10-15.hb' || asset == 'ccc-2026-10-15_usfm.zip';
+
+    final second = await run(
+      [
+        offer('aaa', date: '2026-10-15'),
+        offer('bbb'),
+        offer('ccc', date: '2026-10-15'),
+      ],
+      after: first,
+      now: DateTime.utc(2026, 12),
+    );
+
+    expect(publisher.attempts.where((a) => a == 'aaa-2026-10-15.hb'), [
+      for (var i = 0; i < 4; i++) 'aaa-2026-10-15.hb',
+    ]);
+    expect(second.report.built, ['bbb']);
+    expect(second.report.failed.keys, unorderedEquals(['aaa', 'ccc']));
+    expect(second.report.failed['aaa'], [contains('aaa-2026-10-15.hb')]);
+    expect(second.report.failed['ccc'], [contains('ccc-2026-10-15_usfm.zip')]);
+    // Прежние записи остаются.
+    final old = {for (final m in first.index.modules) m.id: m};
+    final now = {for (final m in second.index.modules) m.id: m};
+    expect(now['aaa'], old['aaa']);
+    expect(now['ccc'], old['ccc']);
+    expect(now.keys, unorderedEquals(['aaa', 'bbb', 'ccc']));
+    // Исходник aaa выложен и записан; исходник ccc — нет.
+    expect(second.lock.entries['aaa']!.updateDate, '2026-10-15');
+    expect(second.lock.entries['ccc'], first.lock.entries['ccc']);
+    expect(second.deletions, [
+      (release: 'sources-2026-11-01', asset: 'aaa-2026-09-01_usfm.zip'),
+    ]);
+  });
+
+  test('too many upload failures stop the run early', () async {
+    publisher.broken = (asset) => asset.endsWith('.hb');
+    final translations = [
+      for (var i = 0; i < 23; i++) offer('t${'$i'.padLeft(2, '0')}'),
+    ];
+
+    final result = await run(translations);
+
+    expect(result.report.failed, hasLength(uploadFailureLimit + 1));
+    expect(result.report.waiting, ['t21', 't22']);
+    expect(result.index.modules, isEmpty);
+    expect(result.lock.entries, hasLength(uploadFailureLimit + 1));
+    expect(
+      result.report.toMarkdown(),
+      contains('Stopped early: ${uploadFailureLimit + 1} uploads failed'),
+    );
   });
 
   test('failed download keeps previous version', () async {
@@ -625,6 +704,18 @@ final class FakePublisher implements Publisher {
   /// Удаления: `<выпуск>/<файл>`.
   final deletes = <String>[];
 
+  /// Попытки выкладки по порядку, удачные и нет: имена файлов.
+  final attempts = <String>[];
+
+  /// Сколько раз ещё не выложится файл: имя → число неудач.
+  final transient = <String, int>{};
+
+  /// Файлы, которые не выкладываются никогда.
+  bool Function(String asset) broken = (_) => false;
+
+  /// Удаления, которые не удаются: `<выпуск>/<файл>`.
+  final brokenDeletes = <String>{};
+
   /// Файлы выпуска [release] по алфавиту.
   List<String> files(String release) =>
       (releases[release]?.keys.toList() ?? <String>[])..sort();
@@ -636,6 +727,12 @@ final class FakePublisher implements Publisher {
     bool prerelease = false,
   }) async {
     final asset = p.basename(file.path);
+    attempts.add(asset);
+    final left = transient[asset] ?? 0;
+    if (left > 0 || broken(asset)) {
+      transient[asset] = left - 1;
+      throw PublishException('upload of $asset failed');
+    }
     final files = releases.putIfAbsent(release, () {
       if (prerelease) {
         this.prerelease.add(release);
@@ -652,9 +749,11 @@ final class FakePublisher implements Publisher {
   @override
   Future<void> deleteAsset(String release, String asset) async {
     deletes.add('$release/$asset');
-    if (releases[release]?.remove(asset) == null) {
-      throw PublishException('no $asset in $release');
+    if (brokenDeletes.contains('$release/$asset')) {
+      throw PublishException('cannot delete $asset');
     }
+    // Как GhPublisher: файла уже нет — удалён.
+    releases[release]?.remove(asset);
   }
 
   @override
