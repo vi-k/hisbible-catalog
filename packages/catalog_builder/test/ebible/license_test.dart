@@ -15,6 +15,17 @@ void main() {
     expect(licenseOf(null), 'redistributable');
   });
 
+  test('any cc version keeps its number', () {
+    expect(
+      licenseOf('http://creativecommons.org/licenses/by-sa/3.0/'),
+      'CC-BY-SA-3.0',
+    );
+    expect(
+      licenseOf('https://creativecommons.org/licenses/by-nc/2.5/in/'),
+      'CC-BY-NC-2.5',
+    );
+  });
+
   test('cc0 and the public domain mark are PD', () {
     expect(
       licenseOf(

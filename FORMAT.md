@@ -120,7 +120,7 @@ The first five keys are required.
 | `language` | the shortest BCP 47 tag: `ru`, `en`, `grc`; `und` if unknown |
 | `direction` | `ltr` or `rtl` |
 | `script` | ISO 15924 code: `Cyrl`, `Hebr`; may be absent |
-| `license` | `PD`, `CC-BY-4.0`, `CC-BY-SA-4.0`, `CC-BY-ND-4.0`, `CC-BY-NC-4.0`, `CC-BY-NC-SA-4.0`, `CC-BY-NC-ND-4.0`, `redistributable` (the source allows redistribution without naming a license), `unknown` (a user's own file); `unknown` if absent |
+| `license` | `PD`; any Creative Commons license as its SPDX-style id `CC-<terms>-<version>`, such as `CC-BY-4.0`, `CC-BY-SA-4.0`, `CC-BY-ND-4.0`, `CC-BY-NC-4.0`, `CC-BY-NC-SA-4.0` or `CC-BY-NC-ND-4.0`; `redistributable` (the source allows redistribution without naming a license), `unknown` (a user's own file); `unknown` if absent |
 | `copyright` | rights holder and copyright notice as given by the source |
 | `description` | description of the module as given by its source |
 | `source` | where the module comes from: `ebible:<translationId>` for a translation from eBible.org; other sources may use their own value |

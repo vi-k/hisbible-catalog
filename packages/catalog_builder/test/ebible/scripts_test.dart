@@ -30,6 +30,24 @@ void main() {
     expect(scriptCodeOf('Khmer', ''), 'Zyyy');
   });
 
+  test('the text wins over the column', () {
+    expect(
+      scriptCodeOf('Latin', 'В начале сотворил Бог небо и землю.'),
+      'Cyrl',
+    );
+    expect(scriptCodeOf('Latin', 'Ἐν ἀρχῇ ἦν ὁ λόγος'), 'Grek');
+    expect(scriptCodeOf('Latin', 'Սկզբում Աստված ստեղծեց'), 'Armn');
+    expect(scriptCodeOf('Latin', 'დასაბამად შექმნა ღმერთმა'), 'Geor');
+    expect(scriptCodeOf('Latin', '태초에 하나님이 천지를'), 'Hang');
+    expect(scriptCodeOf('Cyrillic', 'In the beginning'), 'Latn');
+  });
+
+  test('the column tells simplified han apart', () {
+    expect(scriptCodeOf('Han (Simplified variant)', '起初神创造天地。'), 'Hans');
+    expect(scriptCodeOf('CJK', '起初神創造天地。'), 'Hani');
+    expect(scriptCodeOf('Han (Simplified variant)', 'Genesis'), 'Latn');
+  });
+
   test('only the first 10000 letters count', () {
     final sample = '${'ж' * 10000}${'w' * 20000}';
     expect(scriptCodeOf('Unknown', sample), 'Cyrl');

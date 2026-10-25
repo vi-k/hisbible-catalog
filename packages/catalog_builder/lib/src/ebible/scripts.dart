@@ -1,12 +1,28 @@
-/// Код письменности ISO 15924 по столбцу `script` eBible.org.
+/// Код письменности ISO 15924 по тексту [sample] и столбцу `script`
+/// eBible.org.
 ///
-/// Известное имя столбца переводится по таблице (`Latin…` → `Latn`,
-/// `Devanagari…` → `Deva`, `Ethiopic…` и `Amheric` → `Ethi`…). Другое имя
-/// — самая частая письменность первых 10 000 букв [sample] по диапазонам
-/// Юникода тех же письменностей; буквы других письменностей, цифры
-/// и знаки не считаются. Не нашлось ни одной — `Zyyy`.
+/// Решает текст: самая частая письменность первых 10 000 букв [sample] по
+/// диапазонам Юникода письменностей таблицы и греческой (`Grek`),
+/// армянской (`Armn`), грузинской (`Geor`) и хангыля (`Hang`); буквы других
+/// письменностей, цифры и знаки не считаются. Столбец [csvScript] в eBible
+/// часто ошибается (у русского Синодального — `Latin`), поэтому он нужен,
+/// только когда таких букв в [sample] нет, и чтобы отличить упрощённые
+/// иероглифы: `Han (Simplified variant)` при `Hani` по тексту даёт `Hans`.
+/// Столбец переводится по таблице (`Latin…` → `Latn`, `Devanagari…` →
+/// `Deva`, `Ethiopic…` и `Amheric` → `Ethi`…). Не помогло ни то, ни другое
+/// — `Zyyy`.
 String scriptCodeOf(String csvScript, String sample) {
-  final name = csvScript.trim();
+  final column = _columnScript(csvScript.trim());
+  final letters = _scriptOfLetters(sample);
+  if (letters == 'Hani' && column == 'Hans') {
+    return 'Hans';
+  }
+
+  return letters ?? column ?? 'Zyyy';
+}
+
+// Письменность по имени столбца `script` или `null`, если имя незнакомо.
+String? _columnScript(String name) {
   if (_exactNames[name] case final code?) {
     return code;
   }
@@ -16,7 +32,7 @@ String scriptCodeOf(String csvScript, String sample) {
     }
   }
 
-  return _scriptOfLetters(sample) ?? 'Zyyy';
+  return null;
 }
 
 // Имена столбца `script`, которые переводятся как есть.
@@ -92,8 +108,9 @@ String? _scriptOfRune(int rune) {
   return null;
 }
 
-// Диапазоны букв письменностей таблицы: письменность, первый и последний
-// код. `Hans` по буквам не отличить от `Hani`, его здесь нет.
+// Диапазоны букв: письменность, первый и последний код. `Hans` по буквам
+// не отличить от `Hani`, его здесь нет. Коптские буквы греческого блока
+// стоят раньше греческого диапазона и считаются коптскими.
 const _ranges = [
   ('Latn', 0x41, 0x5A),
   ('Latn', 0x61, 0x7A),
@@ -141,4 +158,14 @@ const _ranges = [
   ('Mymr', 0xAA60, 0xAA7F),
   ('Guru', 0xA00, 0xA7F),
   ('Tfng', 0x2D30, 0x2D7F),
+  ('Grek', 0x370, 0x3FF),
+  ('Grek', 0x1F00, 0x1FFF),
+  ('Armn', 0x531, 0x58F),
+  ('Armn', 0xFB13, 0xFB17),
+  ('Geor', 0x10A0, 0x10FF),
+  ('Geor', 0x1C90, 0x1CBF),
+  ('Geor', 0x2D00, 0x2D2F),
+  ('Hang', 0x1100, 0x11FF),
+  ('Hang', 0x3130, 0x318F),
+  ('Hang', 0xAC00, 0xD7AF),
 ];
