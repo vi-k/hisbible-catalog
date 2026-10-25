@@ -1,0 +1,9 @@
+# ignore: package_names
+name: _
+publish_to: none
+
+environment:
+  sdk: ^3.13.0
+
+workspace:
+  - packages/hisbible_format

@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+#
+# Проверки перед коммитом: форматирование, анализ и тесты.
+#
+# Подключается один раз командой:
+#   git config core.hooksPath .githooks
+
+set -eo pipefail
+
+# Git передаёт hook свои repo-local переменные, в том числе GIT_DIR; вложенному
+# запуску Dart они мешают, поэтому очищаем их в дочернем процессе.
+git_local_env=()
+while IFS= read -r variable; do
+  [ -n "$variable" ] && git_local_env+=("$variable")
+done < <(git rev-parse --local-env-vars)
+
+without_git_local_env() (
+  for variable in "${git_local_env[@]}"; do
+    unset "$variable"
+  done
+  "$@"
+)
+
+echo "pre-commit: dart format…"
+without_git_local_env dart format --set-exit-if-changed .
+
+echo "pre-commit: dart analyze…"
+without_git_local_env dart analyze --fatal-infos --fatal-warnings
+
+for package in packages/*/; do
+  dir="${package%/}"
+  [ -d "$dir/test" ] || continue
+  if [ -z "$(find "$dir/test" -name '*_test.dart' -print -quit)" ]; then
+    continue
+  fi
+  echo "pre-commit: dart test в $dir…"
+  (cd "$dir" && without_git_local_env dart test)
+done
+
+echo "pre-commit: ок"
