@@ -17,6 +17,7 @@ void main() {
   test('a code without a short tag stays, an empty one is und', () {
     expect(bcp47Of('pes'), 'fa');
     expect(bcp47Of('qaa'), 'qaa');
+    expect(bcp47Of('cnr'), 'cnr');
     expect(bcp47Of(' '), 'und');
   });
 

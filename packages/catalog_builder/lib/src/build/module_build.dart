@@ -7,6 +7,7 @@ import 'package:catalog_builder/src/catalog/overrides.dart';
 import 'package:catalog_builder/src/ebible/license.dart';
 import 'package:catalog_builder/src/ebible/scripts.dart';
 import 'package:catalog_builder/src/ebible/translations_csv.dart';
+import 'package:catalog_builder/src/text_helpers.dart';
 import 'package:catalog_builder/src/usfm/usfm_book.dart';
 import 'package:catalog_builder/src/usfm/usfm_parser.dart';
 import 'package:crypto/crypto.dart' as crypto;
@@ -93,7 +94,15 @@ BuildOutcome buildModule(
     return BuildFailed(['${usfmZip.path} is not a zip: ${e.message}']);
   }
   final warnings = <String>[];
-  final books = _readBooks(archive, warnings);
+  // Архив распаковывается лениво: битая запись видна только при чтении.
+  final List<_Book> books;
+  final String? copyrightPage;
+  try {
+    books = _readBooks(archive, warnings);
+    copyrightPage = _copyrightPage(archive);
+  } on Exception catch (e) {
+    return BuildFailed(['cannot read ${usfmZip.path}: $e']);
+  }
   if (books.isEmpty) {
     return BuildFailed(['no books in ${usfmZip.path}', ...warnings]);
   }
@@ -107,13 +116,13 @@ BuildOutcome buildModule(
     language: language,
     direction: t.textDirection,
     script: scriptCodeOf(t.script, _sample(books)),
-    license: licenseOf(_copyrightPage(archive)),
+    license: licenseOf(copyrightPage),
     copyright: t.copyright,
     description: t.description,
     source: 'ebible:${t.translationId}',
     sourceUrl: t.publicationUrl,
     version: t.updateDate,
-    created: _isoDate(now),
+    created: isoDate(now),
     catalog: 'hisbible',
     catalogId: t.translationId,
     chapterWord: _filled(books.first.usfm.chapterLabel),
@@ -138,7 +147,8 @@ BuildOutcome buildModule(
   }
   final List<int> bytes;
   try {
-    bytes = part.renameSync(outPath).readAsBytesSync();
+    bytes = part.readAsBytesSync();
+    part.renameSync(outPath);
   } on FileSystemException catch (e) {
     _delete(part);
 
@@ -175,10 +185,10 @@ List<_Book> _readBooks(Archive archive, List<String> warnings) {
       warnings.add('${file.name}: no \\id, skipped');
     } else if (number == null || info == null) {
       warnings.add('$code: not in the book catalog, skipped');
+    } else if (usfm.verses.isEmpty) {
+      warnings.add('$code: no verses in ${file.name}, skipped');
     } else if (!numbers.add(number)) {
       warnings.add('$code: second copy in ${file.name}, skipped');
-    } else if (usfm.verses.isEmpty) {
-      warnings.add('$code: no verses, skipped');
     } else {
       books.add((number: number, info: info, usfm: usfm));
       if (usfm.droppedFragments > 0) {
@@ -200,12 +210,9 @@ bool _isUsfm(String name) {
   return lower.endsWith('.usfm') || lower.endsWith('.sfm');
 }
 
-// Текст файла архива в UTF-8 без BOM.
-String _text(ArchiveFile file) {
-  final text = utf8.decode(file.content, allowMalformed: true);
-
-  return text.startsWith('\uFEFF') ? text.substring(1) : text;
-}
+// Текст файла архива в UTF-8 без BOM; битая запись — [FormatException].
+String _text(ArchiveFile file) =>
+    withoutBom(utf8.decode(file.content, allowMalformed: true));
 
 // Страница `copr.htm` архива или `null`.
 String? _copyrightPage(Archive archive) {
@@ -298,7 +305,8 @@ void _write(
 }
 
 // Пишет стихи, заголовки и сноски книги; номера сносок сдвинуты на
-// [offset].
+// [offset]. Повторный стих пропускается вместе со своими заголовками
+// и сносками.
 void _writeText(
   ModuleWriter writer,
   _Book book,
@@ -306,13 +314,15 @@ void _writeText(
   List<String> warnings,
 ) {
   final _Book(:number, :usfm) = book;
-  final written = <(int, int)>{};
+  final repeated = _repeated(usfm);
+  for (final verse in repeated.verses) {
+    warnings.add(
+      '${usfm.code} ${verse.chapter}:${verse.verse}: repeated '
+      'verse, skipped',
+    );
+  }
   for (final verse in usfm.verses) {
-    if (!written.add((verse.chapter, verse.verse))) {
-      warnings.add(
-        '${usfm.code} ${verse.chapter}:${verse.verse}: repeated verse, '
-        'skipped',
-      );
+    if (repeated.verses.contains(verse)) {
       continue;
     }
     writer.addVerse(
@@ -324,6 +334,9 @@ void _writeText(
     );
   }
   for (final heading in usfm.headings) {
+    if (repeated.headings.contains(heading)) {
+      continue;
+    }
     writer.addHeading(
       number,
       heading.chapter,
@@ -334,6 +347,9 @@ void _writeText(
     );
   }
   for (final note in usfm.notes) {
+    if (repeated.notes.contains(note.id)) {
+      continue;
+    }
     writer.addFootnote(
       offset + note.id,
       number,
@@ -343,6 +359,56 @@ void _writeText(
       note.caller,
       writeMarkup(_shiftNotes(note.nodes, offset)),
     );
+  }
+}
+
+// Повторные стихи книги (тот же номер главы и стиха, что у стиха раньше),
+// их заголовки и номера сносок в тех и других.
+//
+// Разбор добавляет заголовки в начале своего стиха, поэтому список
+// заголовков — подряд идущие заголовки каждого стиха по порядку стихов.
+// Если между первым стихом и повтором ни у одного стиха заголовков нет,
+// заголовки повтора от заголовков первого не отличить: они остаются над
+// первым стихом.
+({Set<UsfmVerse> verses, Set<UsfmHeading> headings, Set<int> notes}) _repeated(
+  UsfmBook usfm,
+) {
+  final verses = Set<UsfmVerse>.identity();
+  final headings = Set<UsfmHeading>.identity();
+  final notes = <int>{};
+  final seen = <(int, int)>{};
+  var next = 0;
+  for (final verse in usfm.verses) {
+    final key = (verse.chapter, verse.verse);
+    final repeat = !seen.add(key);
+    while (next < usfm.headings.length &&
+        (usfm.headings[next].chapter, usfm.headings[next].verse) == key) {
+      if (repeat) {
+        headings.add(usfm.headings[next]);
+        _collectNotes(usfm.headings[next].nodes, notes);
+      }
+      next++;
+    }
+    if (repeat) {
+      verses.add(verse);
+      _collectNotes(verse.nodes, notes);
+    }
+  }
+
+  return (verses: verses, headings: headings, notes: notes);
+}
+
+// Добавляет в [ids] номера сносок [nodes].
+void _collectNotes(List<MarkupNode> nodes, Set<int> ids) {
+  for (final node in nodes) {
+    switch (node) {
+      case FootnoteRef(:final id):
+        ids.add(id);
+      case StyledSpan(:final children) || TaggedWord(:final children):
+        _collectNotes(children, ids);
+      case TextRun() || LineBreak() || ParagraphBreak():
+        break;
+    }
   }
 }
 
@@ -408,11 +474,6 @@ String? _filled(String? text) {
 
   return trimmed == null || trimmed.isEmpty ? null : trimmed;
 }
-
-String _isoDate(DateTime date) =>
-    '${date.year.toString().padLeft(4, '0')}-'
-    '${date.month.toString().padLeft(2, '0')}-'
-    '${date.day.toString().padLeft(2, '0')}';
 
 void _delete(File file) {
   if (file.existsSync()) {

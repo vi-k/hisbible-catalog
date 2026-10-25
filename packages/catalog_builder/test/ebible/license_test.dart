@@ -49,6 +49,18 @@ void main() {
     );
   });
 
+  test('a negated public domain is not PD', () {
+    expect(
+      licenseOf('This text is not in the public domain.'),
+      'redistributable',
+    );
+    expect(licenseOf('NOT public domain; © 2001 Someone'), 'redistributable');
+    expect(
+      licenseOf('Not in the public domain in the UK, public domain elsewhere.'),
+      'PD',
+    );
+  });
+
   test('a page without a license is redistributable', () {
     expect(
       licenseOf('<p>© 2001 Someone. All rights reserved.</p>'),

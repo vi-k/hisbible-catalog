@@ -1,4 +1,5 @@
 import 'package:catalog_builder/src/ebible/languages.g.dart';
+import 'package:catalog_builder/src/text_helpers.dart';
 import 'package:hisbible_format/hisbible_format.dart';
 
 /// Перевод из `translations.csv` eBible.org.
@@ -138,7 +139,7 @@ EbibleTranslation _translation(String Function(String) cell) {
 // Строки CSV по RFC 4180: поле в кавычках может держать запятые, переводы
 // строк и `""`.
 List<List<String>> _csvRows(String csv) {
-  final text = csv.startsWith('\uFEFF') ? csv.substring(1) : csv;
+  final text = withoutBom(csv);
   final rows = <List<String>>[];
   var row = <String>[];
   final field = StringBuffer();

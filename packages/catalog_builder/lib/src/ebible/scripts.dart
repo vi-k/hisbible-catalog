@@ -3,19 +3,22 @@
 ///
 /// Решает текст: самая частая письменность первых 10 000 букв [sample] по
 /// диапазонам Юникода письменностей таблицы и греческой (`Grek`),
-/// армянской (`Armn`), грузинской (`Geor`) и хангыля (`Hang`); буквы других
-/// письменностей, цифры и знаки не считаются. Столбец [csvScript] в eBible
-/// часто ошибается (у русского Синодального — `Latin`), поэтому он нужен,
-/// только когда таких букв в [sample] нет, и чтобы отличить упрощённые
-/// иероглифы: `Han (Simplified variant)` при `Hani` по тексту даёт `Hans`.
+/// армянской (`Armn`), грузинской (`Geor`) и хангыля (`Hang`). Буква — знак
+/// категории Юникода `L`: цифры, знаки препинания и огласовки внутри этих
+/// диапазонов, как и буквы других письменностей, не считаются. Столбец
+/// [csvScript] в eBible часто ошибается (у русского Синодального —
+/// `Latin`), поэтому он нужен, только когда таких букв в [sample] нет,
+/// и чтобы уточнить текст: `Han (Simplified variant)` при `Hani` по тексту
+/// даёт `Hans`, `Coptic` при `Grek` — `Copt` (коптский текст часто набран
+/// греческими буквами).
 /// Столбец переводится по таблице (`Latin…` → `Latn`, `Devanagari…` →
 /// `Deva`, `Ethiopic…` и `Amheric` → `Ethi`…). Не помогло ни то, ни другое
 /// — `Zyyy`.
 String scriptCodeOf(String csvScript, String sample) {
   final column = _columnScript(csvScript.trim());
   final letters = _scriptOfLetters(sample);
-  if (letters == 'Hani' && column == 'Hans') {
-    return 'Hans';
+  if ((letters, column) case ('Hani', 'Hans') || ('Grek', 'Copt')) {
+    return column!;
   }
 
   return letters ?? column ?? 'Zyyy';
@@ -98,15 +101,19 @@ String? _scriptOfLetters(String sample) {
   return best;
 }
 
+// Письменность буквы [rune] или `null`, если это не буква письменностей
+// [_ranges].
 String? _scriptOfRune(int rune) {
   for (final (script, from, to) in _ranges) {
     if (rune >= from && rune <= to) {
-      return script;
+      return _letter.hasMatch(String.fromCharCode(rune)) ? script : null;
     }
   }
 
   return null;
 }
+
+final _letter = RegExp(r'\p{L}', unicode: true);
 
 // Диапазоны букв: письменность, первый и последний код. `Hans` по буквам
 // не отличить от `Hani`, его здесь нет. Коптские буквы греческого блока

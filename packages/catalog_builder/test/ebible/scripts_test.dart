@@ -48,6 +48,18 @@ void main() {
     expect(scriptCodeOf('Han (Simplified variant)', 'Genesis'), 'Latn');
   });
 
+  test('digits and signs inside a range are not letters', () {
+    expect(scriptCodeOf('', '١٢٣٤٥٦٧٨٩٠ ١٢٣٤٥٦٧٨٩٠ ، ؟ Psalm'), 'Latn');
+    expect(scriptCodeOf('', '१२३४५६७८९० । Word'), 'Latn');
+  });
+
+  test('coptic in greek letters stays coptic', () {
+    expect(scriptCodeOf('Coptic', 'ⲁⲣⲭⲏ Ϩⲉⲛ'), 'Copt');
+    expect(scriptCodeOf('Coptic', 'Ϧⲉⲛ ⲟⲩⲁⲣⲭⲏ'), 'Copt');
+    expect(scriptCodeOf('Coptic', 'Ἐν ἀρχῇ ἦν ὁ λόγος'), 'Copt');
+    expect(scriptCodeOf('Latin', 'Ἐν ἀρχῇ ἦν ὁ λόγος'), 'Grek');
+  });
+
   test('only the first 10000 letters count', () {
     final sample = '${'ж' * 10000}${'w' * 20000}';
     expect(scriptCodeOf('Unknown', sample), 'Cyrl');

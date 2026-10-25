@@ -4,10 +4,12 @@
 // Запуск из `packages/catalog_builder`: `dart run tool/make_languages.dart`.
 // Код ISO 639-3 переходит в код ISO 639-1, если он есть, иначе в код 639-1
 // его макроязыка (`cmn` → `zh`); прочие коды в таблицу не попадают
-// и остаются как есть.
+// и остаются как есть. Устаревший в BCP 47 код макроязыка через макроязык
+// не выдаётся: `cnr` остаётся `cnr`, а не `sh`.
 
 import 'dart:io';
 
+import 'package:catalog_builder/src/text_helpers.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 
@@ -49,14 +51,13 @@ Future<_Table> _fetch(http.Client client, String url) async {
 
   return (
     body: response.body,
-    date: modified == null ? null : _isoDate(HttpDate.parse(modified)),
+    date: modified == null ? null : isoDate(HttpDate.parse(modified)),
   );
 }
 
-String _isoDate(DateTime date) =>
-    '${date.year.toString().padLeft(4, '0')}-'
-    '${date.month.toString().padLeft(2, '0')}-'
-    '${date.day.toString().padLeft(2, '0')}';
+// Коды ISO 639-1 макроязыков, устаревшие в BCP 47: `sh` (сербохорватский)
+// заменён кодами его языков.
+const _deprecatedMacroTags = {'sh'};
 
 // Код ISO 639-3 → код ISO 639-1 своего языка или макроязыка.
 Map<String, String> _tags(String codesTab, String macroTab) {
@@ -69,7 +70,7 @@ Map<String, String> _tags(String codesTab, String macroTab) {
   final tags = Map.of(part1);
   for (final row in _rows(macroTab, ['M_Id', 'I_Id'])) {
     final tag = part1[row[0]];
-    if (tag != null) {
+    if (tag != null && !_deprecatedMacroTags.contains(tag)) {
       tags.putIfAbsent(row[1], () => tag);
     }
   }
@@ -79,8 +80,8 @@ Map<String, String> _tags(String codesTab, String macroTab) {
 
 // Значения столбцов [columns] каждой строки таблицы с табуляцией.
 Iterable<List<String>> _rows(String tab, List<String> columns) sync* {
-  final lines = tab.replaceAll('\r\n', '\n').split('\n');
-  final header = lines.first.replaceFirst('\uFEFF', '').split('\t');
+  final lines = withoutBom(tab).replaceAll('\r\n', '\n').split('\n');
+  final header = lines.first.split('\t');
   final indexes = [for (final column in columns) header.indexOf(column)];
   if (indexes.contains(-1)) {
     throw FormatException('No columns $columns in $header');

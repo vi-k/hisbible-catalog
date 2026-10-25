@@ -89,7 +89,6 @@ const Map<String, String> shortLanguageTags = {
   'cls': 'sa',
   'cmn': 'zh',
   'cnp': 'zh',
-  'cnr': 'sh',
   'coa': 'ms',
   'cor': 'kw',
   'cos': 'co',

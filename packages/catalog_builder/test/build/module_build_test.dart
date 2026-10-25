@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:isolate';
+import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
 import 'package:catalog_builder/catalog_builder.dart';
@@ -132,8 +134,13 @@ void main() {
     expect(bible.chapter(500, 3)[15].text, contains('<f id="2"'));
   });
 
-  test('the generator version is the package version', () {
-    final pubspec = File('pubspec.yaml').readAsStringSync();
+  test('the generator version is the package version', () async {
+    final library = await Isolate.resolvePackageUri(
+      Uri.parse('package:catalog_builder/catalog_builder.dart'),
+    );
+    final pubspec = File(
+      p.join(p.dirname(p.dirname(library!.toFilePath())), 'pubspec.yaml'),
+    ).readAsStringSync();
     expect(pubspec, contains('\nversion: $builderVersion\n'));
   });
 
@@ -229,13 +236,42 @@ void main() {
   test('a repeated verse keeps the first copy', () {
     final outcome = build(
       _translation(ot: 2),
-      zip({'GEN.usfm': '\\id GEN\n\\c 1\n\\v 1 One\n\\v 2 Two\n\\v 1 Again'}),
+      zip({
+        'GEN.usfm':
+            '\\id GEN\n\\c 1\n\\s First\n\\v 1 One\n\\s Second\n'
+            r'\v 2 Two\f + \ft Kept.\f*'
+            '\n\\s Again\n'
+            r'\v 1 Again\f + \ft Lost.\f*',
+      }),
     );
 
     expect(built(outcome).warnings, ['GEN 1:1: repeated verse, skipped']);
     final bible = BibleModule.open(out());
     addTearDown(bible.close);
-    expect([for (final v in bible.chapter(10, 1)) v.text], ['One', 'Two']);
+    expect(
+      [for (final v in bible.chapter(10, 1)) v.text],
+      ['One', 'Two<f id="1" c="a"/>'],
+    );
+    expect(
+      [for (final h in bible.headings(10, 1)) (h.verse, h.text)],
+      [(1, 'First'), (2, 'Second')],
+    );
+    expect([for (final f in bible.footnotes(10, 1)) f.text], ['Kept.']);
+  });
+
+  test('an empty copy of a book does not hide the full one', () {
+    final outcome = build(
+      _translation(ot: 31),
+      zip({
+        'A-GEN.usfm': '\\id GEN\n',
+        'B-GEN.usfm': _usfm('GEN', [31]),
+      }),
+    );
+
+    expect(built(outcome).warnings, ['GEN: no verses in A-GEN.usfm, skipped']);
+    final bible = BibleModule.open(out());
+    addTearDown(bible.close);
+    expect(bible.book(10)!.chapters, [1]);
   });
 
   test('fails validation on missing verses', () {
@@ -259,6 +295,37 @@ void main() {
 
     expect(outcome, isA<BuildFailed>());
     expect(File(out()).existsSync(), isFalse);
+  });
+
+  test('fails on a broken zip entry', () {
+    final file = zip({
+      'GEN.usfm': _usfm('GEN', [31]),
+    });
+    final bytes = Uint8List.fromList(file.readAsBytesSync());
+    // Сжатые данные первой записи идут за её заголовком.
+    final nameLength = bytes[26] | bytes[27] << 8;
+    final extraLength = bytes[28] | bytes[29] << 8;
+    final start = 30 + nameLength + extraLength;
+    bytes.fillRange(start, start + 40, 0xFF);
+    file.writeAsBytesSync(bytes);
+
+    final outcome = build(_translation(ot: 31), file);
+
+    expect(outcome, isA<BuildFailed>());
+    expect((outcome as BuildFailed).reasons, [contains('cannot read')]);
+    expect(File(out()).existsSync(), isFalse);
+  });
+
+  test('fails a build that leaves markup in a verse', () {
+    final outcome = build(
+      _translation(ot: 1),
+      zip({'GEN.usfm': '\\id GEN\n\\c 1\n\\v 1 God|strong="H430" created'}),
+    );
+
+    expect(outcome, isA<BuildFailed>());
+    expect((outcome as BuildFailed).reasons, [contains('GEN 1:1')]);
+    expect(File(out()).existsSync(), isFalse);
+    expect(Directory(p.dirname(out())).listSync(), isEmpty);
   });
 
   test('fails on a broken zip', () {
