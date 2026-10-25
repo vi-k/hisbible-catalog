@@ -1,7 +1,7 @@
 name: hisbible_format
 description: >-
-  Формат модулей HisBible: справочник книг, схемы нумерации стихов и имена
-  файлов. Чистый Dart, без Flutter.
+  Формат модулей HisBible: справочник книг, схемы нумерации стихов, разметка
+  и файл модуля. Чистый Dart, без Flutter.
 version: 0.1.0
 publish_to: none
 
@@ -9,6 +9,9 @@ environment:
   sdk: ^3.13.0
 
 resolution: workspace
+
+dependencies:
+  sqlite3: ^3.7.1
 
 dev_dependencies:
   test: ^1.31.0
