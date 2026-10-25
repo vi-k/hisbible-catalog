@@ -342,9 +342,14 @@ final class _Content {
   }
 
   // Дописывает в конец разметку [tail]; текст на стыке отделяется пробелом.
-  void append(_Content tail) {
+  //
+  // Знаки сносок получают новые номера по [ids].
+  void append(_Content tail, {Map<int, int> ids = const {}}) {
     tail.closeAll();
-    final nodes = (tail._top..flush()).children;
+    final tailRoot = tail._top..flush();
+    final nodes = ids.isEmpty
+        ? tailRoot.children
+        : _renumber(tailRoot.children, ids);
     if (nodes.isEmpty) {
       return;
     }
@@ -426,6 +431,27 @@ final _strongZeros = RegExp(r'^([A-Za-z]+)0+(?=\d)');
   return (strong: strong, morph: morph);
 }
 
+// Меняет номера знаков сносок по [ids], заходя внутрь стилей и слов.
+List<MarkupNode> _renumber(List<MarkupNode> nodes, Map<int, int> ids) => [
+  for (final node in nodes)
+    switch (node) {
+      FootnoteRef(:final id, :final caller) => FootnoteRef(
+        ids[id] ?? id,
+        caller,
+      ),
+      StyledSpan(:final style, :final children) => StyledSpan(
+        style,
+        _renumber(children, ids),
+      ),
+      TaggedWord(:final children, :final strong, :final morph) => TaggedWord(
+        _renumber(children, ids),
+        strong: strong,
+        morph: morph,
+      ),
+      _ => node,
+    },
+];
+
 // Срезает пробелы в конце разметки, заходя внутрь стилей и слов.
 //
 // Знаки сносок остаются на месте, пробелы перед ними срезаются. `done` —
@@ -506,11 +532,20 @@ final class _VerseBuilder {
 }
 
 final class _HeadingBuilder {
-  _HeadingBuilder(this.chapter, this.kind, this.level, this.firstNote);
+  _HeadingBuilder(
+    this.chapter,
+    this.kind,
+    this.level,
+    this.firstNote, {
+    required this.speaker,
+  });
 
   final int chapter;
   final HeadingKind kind;
   final int level;
+
+  // Имя говорящего (`\sp`).
+  final bool speaker;
 
   // Сколько сносок было до заголовка: к стольким откатываются, если
   // заголовок выброшен.
@@ -520,6 +555,10 @@ final class _HeadingBuilder {
 
   // Стих под заголовком; `null` — стиха ещё не было.
   int? verse;
+
+  // Текст открытого стиха после заголовка до следующего заголовка;
+  // дописывается к стиху на следующем `\v`.
+  _Content? tail;
 }
 
 final class _NoteBuilder {
@@ -532,7 +571,7 @@ final class _NoteBuilder {
     required this.nodes,
   });
 
-  final int id;
+  int id;
   final int chapter;
   int? verse;
   final FootnoteKind kind;
@@ -613,9 +652,6 @@ final class _Parser {
   bool _chapterHasVerse = false;
   _VerseBuilder? _verse;
 
-  // Текст открытого стиха после заголовка; дописывается к стиху
-  // на следующем `\v`.
-  _Content? _tail;
   int _callers = 0;
 
   _Content get _current => _note?.content ?? _target;
@@ -831,6 +867,7 @@ final class _Parser {
           headingKind,
           level,
           _notes.length,
+          speaker: name == 'sp',
         );
         _pendingHeadings.add(heading);
         _setTarget(_Target.heading, heading.content);
@@ -847,10 +884,10 @@ final class _Parser {
       _setTarget(_Target.silent);
     } else if (verse != null && heading == null) {
       _setTarget(_Target.verse, verse.content);
-    } else if (verse != null) {
+    } else if (verse != null && heading != null) {
       // Текст после заголовка внутри стиха ждёт следующего `\v`: без него
       // он выбрасывается вместе с заголовком.
-      _setTarget(_Target.verse, _tail ??= _Content());
+      _setTarget(_Target.verse, heading.tail ??= _Content());
     } else if (heading != null) {
       // До первого стиха главы текст дописывается к заголовку.
       _setTarget(_Target.heading, heading.content);
@@ -933,9 +970,10 @@ final class _Parser {
       _setTarget(_Target.silent);
       return;
     }
-    if (_tail case final tail?) {
-      _verse?.content.append(tail);
-      _tail = null;
+    for (final heading in _pendingHeadings) {
+      if (heading.tail case final tail?) {
+        _verse?.content.append(tail);
+      }
     }
     final last = _verses.lastOrNull;
     final lastInChapter = last != null && last.chapter == _chapter
@@ -979,28 +1017,60 @@ final class _Parser {
     _carried = [];
     _setTarget(_Target.drop);
     if (_pendingHeadings.isNotEmpty) {
-      // Заголовок без стиха выбрасывается вместе с текстом после него
-      // и со всеми их сносками: это последние сноски книги.
-      _notes.removeRange(_pendingHeadings.first.firstNote, _notes.length);
-      for (final heading in _pendingHeadings) {
-        if (heading.content.finish().isNotEmpty) {
-          _dropped++;
-        }
-      }
-      _pendingHeadings.clear();
-    }
-    if (_tail case final tail?) {
-      tail.closeAll();
-      if (tail.hasText) {
-        _dropped++;
-      }
-      _tail = null;
+      _dropPendingHeadings();
     }
     _breaks.clear();
     _verse = null;
     _heading = null;
     _chapterHasVerse = false;
     _callers = 0;
+  }
+
+  // Заголовки без стиха в конце главы выбрасываются вместе с текстом
+  // после них и со всеми их сносками. Исключение — `\sp` в открытом стихе
+  // до первого другого заголовка: выбрасывается только имя говорящего,
+  // текст после него остаётся в стихе.
+  void _dropPendingHeadings() {
+    final pending = [..._pendingHeadings];
+    _pendingHeadings.clear();
+    final verse = _verse;
+    var labels = 0;
+    if (verse != null) {
+      while (labels < pending.length && pending[labels].speaker) {
+        labels++;
+      }
+    }
+    final removed = <_NoteBuilder>{};
+    for (final (index, heading) in pending.indexed) {
+      if (heading.content.finish().isNotEmpty) {
+        _dropped++;
+      }
+      removed.addAll(heading.notes);
+      if (index >= labels) {
+        final tail = heading.tail?..closeAll();
+        if (tail != null && tail.hasText) {
+          _dropped++;
+        }
+      }
+    }
+    if (labels < pending.length) {
+      // Сноски выброшенного текста — последние в книге.
+      removed.addAll(_notes.skip(pending[labels].firstNote));
+    }
+    _notes.removeWhere(removed.contains);
+    // Номера сносок идут подряд: оставшиеся после выброшенных сдвигаются.
+    final ids = <int, int>{};
+    for (final (index, note) in _notes.indexed) {
+      if (note.id != index + 1) {
+        ids[note.id] = index + 1;
+        note.id = index + 1;
+      }
+    }
+    for (final heading in pending.take(labels)) {
+      if (heading.tail case final tail?) {
+        verse?.content.append(tail, ids: ids);
+      }
+    }
   }
 
   void _openNote(String name) {

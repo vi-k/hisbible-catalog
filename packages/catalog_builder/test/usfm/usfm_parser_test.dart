@@ -295,4 +295,29 @@ void main() {
       const FootnoteRef(2, ''),
     ]);
   });
+
+  test('trailing speaker label drops only itself', () {
+    final book = parseUsfm(
+      '\\id SNG\n\\c 6\n\\v 13 Return!\n\\sp Lover\\f + \\ft label\\f*\n'
+      '\\q1 Why do you gaze\\f + \\ft n\\f*\n'
+      '\\c 7\n\\v 1 How\n\\sp Friends\n\\p kept\n\\s1 Subscription\n\\p gone',
+    );
+    expect(book.verses[0].nodes, [
+      const TextRun('Return!'),
+      const LineBreak(indent: 1),
+      const TextRun('Why do you gaze'),
+      const FootnoteRef(1, 'b'),
+    ]);
+    expect(book.verses[1].nodes, [
+      const TextRun('How'),
+      const ParagraphBreak(),
+      const TextRun('kept'),
+    ]);
+    expect(book.headings, isEmpty);
+    expect(
+      book.notes.map((n) => (n.id, n.chapter, n.verse, plainText(n.nodes))),
+      [(1, 6, 13, 'n')],
+    );
+    expect(book.droppedFragments, 4);
+  });
 }
