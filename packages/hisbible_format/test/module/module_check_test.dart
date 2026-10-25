@@ -142,4 +142,37 @@ void main() {
       ),
     );
   });
+
+  test('blank optional meta values are absent', () {
+    const meta = ModuleMeta(
+      type: ModuleType.bible,
+      abbreviation: 'A',
+      name: 'N',
+      language: 'en',
+      direction: WritingDirection.ltr,
+      script: '',
+      copyright: '  ',
+      description: 'Text',
+    );
+    expect(meta.toValues(), {
+      'type': 'bible',
+      'abbreviation': 'A',
+      'name': 'N',
+      'language': 'en',
+      'direction': 'ltr',
+      'license': 'unknown',
+      'description': 'Text',
+    });
+    final read = ModuleMeta.fromValues({
+      ...meta.toValues(),
+      'script': '',
+      'source': ' ',
+      'numbering': '',
+    });
+    expect(read.script, isNull);
+    expect(read.source, isNull);
+    expect(read.numbering, isNull);
+    expect(read.description, 'Text');
+    expect(read, meta);
+  });
 }

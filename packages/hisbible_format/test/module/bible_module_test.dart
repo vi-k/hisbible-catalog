@@ -51,7 +51,7 @@ void main() {
         number: 230,
         shortName: 'Ps',
         longName: 'Psalms',
-        scheme: VerseScheme.org,
+        scheme: VerseScheme.eng,
         color: 0x66ff99,
       )
       ..addVerse(10, 1, 1, 'In the beginning')
@@ -88,9 +88,9 @@ void main() {
     expect(psalms.title, isNull);
     expect(psalms.color, 0x66ff99);
     expect(psalms.chapters, [3]);
-    expect(psalms.scheme, VerseScheme.org);
+    expect(psalms.scheme, VerseScheme.eng);
     expect(module.book(470), isNull);
-    expect(module.schemes.schemes, {10: VerseScheme.eng, 230: VerseScheme.org});
+    expect(module.schemes.schemes, {10: VerseScheme.eng, 230: VerseScheme.eng});
     expect(module.schemes.uncertain, isEmpty);
 
     expect(module.chapter(230, 3), const [

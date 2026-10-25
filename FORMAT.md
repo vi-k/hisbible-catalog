@@ -15,8 +15,9 @@ the other types.
 
 ### Signature and version
 
-- `PRAGMA application_id = 1214857833` (`0x48694269`, the bytes `HiBi`). An
-  SQLite database with another application id is not a HisBible module.
+- `PRAGMA application_id = 1214857833` (`0x48694269`, the bytes `HiBi`). A file
+  is a HisBible module when its `application_id` is 1214857833 and its
+  `user_version` is at least 1; any other SQLite database is not a module.
 - `PRAGMA user_version` is the format version, currently `1`. A reader that
   knows version `N` opens files of versions `1..N` and rejects newer ones.
 - Adding an optional `meta` key, a table, or a column does not change the
@@ -97,6 +98,13 @@ Notes:
 - Heading kinds: `major` is a heading above several sections, `section` a
   section heading, `title` a title that is part of the text, such as a psalm
   title. Headings above one verse go in `position` order.
+- A comment covers the place from `chapter`:`verse` to `chapter_end`:
+  `verse_end`; without `chapter_end` it ends in the same chapter, without
+  `verse_end` it is one verse. A reader finds comments by the chapter where
+  they start. A cross reference goes from `verse` (to `verse_end`) of `book` to
+  the place `to_*`, with the same rule for the end; a larger `votes` means a
+  more fitting reference. A commentary or cross reference module has at least
+  one record with a book code the reader knows.
 - A footnote kind is `note` or `crossref`. `caller` is the footnote mark as the
   source gives it; an empty string means no mark.
 
@@ -125,8 +133,9 @@ The first five keys are required.
 | `paragraphs` | `1` if verses contain `<p/>` |
 | `generator` | what wrote the file: `catalog_builder 0.1.0`, `hisbible 1.1.0` |
 
-Values are text. Optional keys with no value are not written. A reader keeps
-unknown keys as they are.
+Values are text. Optional keys with no value (absent or blank) are not written,
+and a reader treats a blank value as absent. A reader keeps unknown keys as
+they are.
 
 ### Example
 
@@ -146,7 +155,7 @@ INSERT INTO meta VALUES
   ('generator', 'catalog_builder 0.1.0');
 INSERT INTO books VALUES
   (1, 'GEN', 'Gen', 'Genesis', 'The First Book of Moses', 'eng', NULL),
-  (2, 'PSA', 'Ps', 'Psalms', NULL, 'org', NULL);
+  (2, 'PSA', 'Ps', 'Psalms', NULL, 'eng', NULL);
 INSERT INTO verses VALUES
   ('GEN', 1, 1, NULL, 'In the beginning God created the heavens and the earth.'),
   ('GEN', 1, 2, NULL, '<p/>The earth was formless and empty.'),

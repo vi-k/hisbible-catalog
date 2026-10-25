@@ -70,26 +70,30 @@ final class ModuleMeta {
       name: name,
       language: language,
       direction: direction,
-      script: values['script'],
+      script: _filled(values['script']),
       license: license == null || license.isEmpty ? 'unknown' : license,
-      copyright: values['copyright'],
-      description: values['description'],
-      source: values['source'],
-      sourceUrl: values['source_url'],
-      version: values['version'],
-      created: values['created'],
-      catalog: values['catalog'],
-      catalogId: values['catalog_id'],
-      chapterWord: values['chapter_word'],
-      chapterWordPsalms: values['chapter_word_psalms'],
-      numbering: values['numbering'],
-      generator: values['generator'],
+      copyright: _filled(values['copyright']),
+      description: _filled(values['description']),
+      source: _filled(values['source']),
+      sourceUrl: _filled(values['source_url']),
+      version: _filled(values['version']),
+      created: _filled(values['created']),
+      catalog: _filled(values['catalog']),
+      catalogId: _filled(values['catalog_id']),
+      chapterWord: _filled(values['chapter_word']),
+      chapterWordPsalms: _filled(values['chapter_word_psalms']),
+      numbering: _filled(values['numbering']),
+      generator: _filled(values['generator']),
       extra: Map.unmodifiable({
         for (final MapEntry(:key, :value) in values.entries)
           if (!_knownKeys.contains(key)) key: value,
       }),
     );
   }
+
+  // Значение необязательного ключа или `null`, если оно пусто.
+  static String? _filled(String? value) =>
+      value == null || value.trim().isEmpty ? null : value;
 
   // Ключи, которые читаются в поля, и `paragraphs` самого файла.
   static const Set<String> _knownKeys = {
@@ -177,7 +181,8 @@ final class ModuleMeta {
 
   /// Пары `meta`: известные ключи в порядке описания формата, затем [extra].
   ///
-  /// Пустые необязательные поля не пишутся.
+  /// Необязательные поля без значения (`null`, пустые, из пробелов) не
+  /// пишутся.
   Map<String, String> toValues() {
     final values = <String, String>{
       'type': typeValue(type),
@@ -185,20 +190,20 @@ final class ModuleMeta {
       'name': name,
       'language': language,
       'direction': direction.name,
-      'script': ?script,
+      'script': ?_filled(script),
       'license': license,
-      'copyright': ?copyright,
-      'description': ?description,
-      'source': ?source,
-      'source_url': ?sourceUrl,
-      'version': ?version,
-      'created': ?created,
-      'catalog': ?catalog,
-      'catalog_id': ?catalogId,
-      'chapter_word': ?chapterWord,
-      'chapter_word_psalms': ?chapterWordPsalms,
-      'numbering': ?numbering,
-      'generator': ?generator,
+      'copyright': ?_filled(copyright),
+      'description': ?_filled(description),
+      'source': ?_filled(source),
+      'source_url': ?_filled(sourceUrl),
+      'version': ?_filled(version),
+      'created': ?_filled(created),
+      'catalog': ?_filled(catalog),
+      'catalog_id': ?_filled(catalogId),
+      'chapter_word': ?_filled(chapterWord),
+      'chapter_word_psalms': ?_filled(chapterWordPsalms),
+      'numbering': ?_filled(numbering),
+      'generator': ?_filled(generator),
     };
     for (final MapEntry(:key, :value) in extra.entries) {
       if (!_knownKeys.contains(key)) {

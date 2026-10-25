@@ -89,10 +89,11 @@ final class EmptyModule extends ModuleProblem {
 
 /// Тип модуля приложение не читает.
 final class UnsupportedType extends ModuleProblem {
-  /// Создаёт причину для суффикса [suffix] (`.dictionary`).
+  /// Создаёт причину для [suffix]: имени типа или значения `type`.
   const UnsupportedType(this.suffix);
 
-  /// Суффикс неподдержанного типа.
+  /// Имя типа, которого читающий класс не открывает (`commentaries`, если
+  /// Библию открывают как толкования), или незнакомое значение `type`.
   final String suffix;
 
   @override

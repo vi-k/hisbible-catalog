@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:hisbible_format/src/books/book_catalog.dart';
 import 'package:hisbible_format/src/module/bible_module.dart';
+import 'package:hisbible_format/src/module/crossref_module.dart';
 import 'package:hisbible_format/src/module/module_meta.dart';
 import 'package:hisbible_format/src/module/schema.dart';
 import 'package:hisbible_format/src/module_type.dart';
@@ -10,10 +11,11 @@ import 'package:sqlite3/sqlite3.dart';
 
 /// Пишет файл модуля HisBible.
 ///
-/// Книги, стихи, заголовки и сноски добавляются в одной транзакции; файл
-/// готов после [finish]. Номера книг — номера справочника, в файл идут их
-/// коды ([BookCatalog.codeOf]). Ошибка записи — [SqliteException]; после
-/// неё зовут [abort].
+/// Книги, стихи, заголовки и сноски (Библия), толкования или ссылки
+/// добавляются в одной транзакции; файл готов после [finish]. Запись другого
+/// типа, чем у модуля, — [StateError]. Номера книг — номера справочника,
+/// в файл идут их коды ([BookCatalog.codeOf]). Ошибка записи —
+/// [SqliteException]; после неё зовут [abort].
 final class ModuleWriter {
   ModuleWriter._(this._path, this._db, this._type);
 
@@ -72,6 +74,7 @@ final class ModuleWriter {
     required VerseScheme scheme,
     int? color,
   }) {
+    _checkType(ModuleType.bible);
     _bookPosition++;
     _statement('INSERT INTO books VALUES (?, ?, ?, ?, ?, ?, ?)').execute([
       _bookPosition,
@@ -92,6 +95,7 @@ final class ModuleWriter {
     String text, {
     int? verseEnd,
   }) {
+    _checkType(ModuleType.bible);
     if (!_paragraphs && text.contains('<p/>')) {
       _paragraphs = true;
     }
@@ -109,6 +113,7 @@ final class ModuleWriter {
     int level,
     String text,
   ) {
+    _checkType(ModuleType.bible);
     final code = BookCatalog.codeOf(book);
     final key = (code, chapter, verse);
     final position = _headingPositions[key] ?? 0;
@@ -127,9 +132,55 @@ final class ModuleWriter {
     String caller,
     String text,
   ) {
+    _checkType(ModuleType.bible);
     _statement('INSERT INTO footnotes VALUES (?, ?, ?, ?, ?, ?, ?)').execute(
       _footnoteRow(Footnote(id, book, chapter, verse, kind, caller, text)),
     );
+  }
+
+  /// Добавляет толкование [html] к месту книги [book] (только толкования).
+  ///
+  /// Место — от [chapter]:[verse] до [chapterEnd]:[verseEnd]; без конца это
+  /// один стих, а [verseEnd] без [chapterEnd] — стихи одной главы. Номера
+  /// толкований идут по порядку вызовов.
+  void addComment(
+    int book,
+    int chapter,
+    int verse,
+    String html, {
+    int? chapterEnd,
+    int? verseEnd,
+  }) {
+    _checkType(ModuleType.commentaries);
+    _statement(
+      'INSERT INTO comments (book, chapter, verse, chapter_end, verse_end, '
+      'text) VALUES (?, ?, ?, ?, ?, ?)',
+    ).execute([
+      BookCatalog.codeOf(book),
+      chapter,
+      verse,
+      chapterEnd,
+      verseEnd,
+      html,
+    ]);
+  }
+
+  /// Добавляет перекрёстную ссылку [ref] (только ссылки).
+  void addCrossref(CrossRef ref) {
+    _checkType(ModuleType.crossReferences);
+    _statement('INSERT INTO crossrefs VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+        .execute([
+          BookCatalog.codeOf(ref.book),
+          ref.chapter,
+          ref.verse,
+          ref.verseEnd,
+          BookCatalog.codeOf(ref.toBook),
+          ref.toChapter,
+          ref.toVerse,
+          ref.toChapterEnd,
+          ref.toVerseEnd,
+          ref.votes,
+        ]);
   }
 
   /// Дописывает `paragraphs` в `meta`, строит индексы, сжимает и закрывает
@@ -185,6 +236,14 @@ final class ModuleWriter {
     }
   }
 
+  void _checkType(ModuleType expected) {
+    if (_type != expected) {
+      throw StateError(
+        'Module of type ${_type.name} takes no ${expected.name}',
+      );
+    }
+  }
+
   static void _delete(String path) {
     final file = File(path);
     if (file.existsSync()) {
@@ -197,6 +256,8 @@ final class ModuleWriter {
 ///
 /// Нужна для копии модуля, ещё не поставленной на место: поставленный модуль
 /// не меняется. Ошибка записи — [SqliteException], файл тогда прежний.
+/// Сжатие файла после записи сносок — только уборка: если оно не удалось,
+/// сноски уже записаны, а файл остаётся несжатым.
 void replaceFootnotes(String path, List<Footnote> footnotes) {
   final db = sqlite3.open(path, mode: OpenMode.readWrite);
   try {
@@ -215,10 +276,18 @@ void replaceFootnotes(String path, List<Footnote> footnotes) {
       }
       db.execute('COMMIT');
     } on Object {
-      db.execute('ROLLBACK');
+      try {
+        db.execute('ROLLBACK');
+      } on SqliteException {
+        // Сбой отката не должен скрыть исходную ошибку.
+      }
       rethrow;
     }
-    db.execute('VACUUM');
+    try {
+      db.execute('VACUUM');
+    } on SqliteException {
+      // Сноски уже записаны; несжатый файл читается так же.
+    }
   } finally {
     db.close();
   }

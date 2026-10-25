@@ -8,6 +8,8 @@ export 'src/markup/markup_parser.dart';
 export 'src/markup/markup_writer.dart';
 export 'src/markup/plain_text.dart';
 export 'src/module/bible_module.dart';
+export 'src/module/commentary_module.dart';
+export 'src/module/crossref_module.dart';
 export 'src/module/module_check.dart' show checkModuleFile, readModuleMeta;
 export 'src/module/module_meta.dart';
 export 'src/module/module_writer.dart';

@@ -14,8 +14,8 @@ const int _notADatabase = 26;
 ///
 /// Проверяются подпись и версия формата, обязательные ключи `meta`, таблицы
 /// типа модуля и их столбцы, а у Библии — хотя бы один стих книги из
-/// `books`. Исключений наружу не бросает: любой отказ — это
-/// [ModuleProblem].
+/// `books`; у толкований и ссылок — хотя бы одна запись с известной книгой.
+/// Исключений наружу не бросает: любой отказ — это [ModuleProblem].
 ModuleProblem? checkModuleFile(String path) {
   final Database db;
   try {
@@ -36,7 +36,7 @@ ModuleProblem? checkModuleFile(String path) {
         }
       }
     }
-    if (meta.type == ModuleType.bible && !_hasReadableVerse(db)) {
+    if (!_hasReadableContent(db, meta.type)) {
       return const EmptyModule();
     }
 
@@ -47,6 +47,32 @@ ModuleProblem? checkModuleFile(String path) {
     return problemOfSqlite(e);
   } finally {
     db.close();
+  }
+}
+
+/// Открывает модуль типа [type] для чтения: файл проверен [checkModuleFile].
+///
+/// Негодный файл — [ModuleOpenException] с причиной, модуль другого типа —
+/// с [UnsupportedType] (имя его типа). Базу закрывает вызвавший.
+(Database, ModuleMeta) openTypedModule(String path, ModuleType type) {
+  final problem = checkModuleFile(path);
+  if (problem != null) {
+    throw ModuleOpenException(problem);
+  }
+  final db = openModuleReadOnly(path);
+  try {
+    final meta = readCheckedMeta(db);
+    if (meta.type != type) {
+      throw ModuleOpenException(UnsupportedType(typeValue(meta.type)));
+    }
+
+    return (db, meta);
+  } on SqliteException catch (e) {
+    db.close();
+    throw ModuleOpenException(problemOfSqlite(e));
+  } on Object {
+    db.close();
+    rethrow;
   }
 }
 
@@ -142,6 +168,28 @@ Set<String> _columnsOf(Database db, String table) => {
   for (final row in db.select('PRAGMA table_info("$table")'))
     if (row['name'] case final String name) name.toLowerCase(),
 };
+
+// Есть ли в модуле что читать: стих, толкование или ссылка.
+bool _hasReadableContent(Database db, ModuleType type) => switch (type) {
+  ModuleType.bible => _hasReadableVerse(db),
+  ModuleType.commentaries => _hasKnownBook(db, 'comments'),
+  ModuleType.crossReferences => _hasKnownBook(db, 'crossrefs'),
+};
+
+// Есть ли в [table] запись с книгой, которую знает справочник, главой и
+// стихом не меньше 1.
+bool _hasKnownBook(Database db, String table) {
+  for (final row in db.select(
+    'SELECT DISTINCT book FROM $table WHERE chapter >= 1 AND verse >= 1',
+  )) {
+    final code = row.columnAt(0);
+    if (code is String && BookCatalog.numberOfCode(code) != null) {
+      return true;
+    }
+  }
+
+  return false;
+}
 
 // Есть ли стих книги из `books` с главой и стихом не меньше 1.
 bool _hasReadableVerse(Database db) {
