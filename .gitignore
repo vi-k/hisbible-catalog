@@ -1,6 +1,9 @@
 .DS_Store
 .dart_tool/
 build/
+# Код и тесты сборки модуля называются build, но это не вывод сборки.
+!packages/catalog_builder/lib/src/build/
+!packages/catalog_builder/test/build/
 .packages
 pubspec.lock
 !/pubspec.lock
