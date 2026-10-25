@@ -7,3 +7,5 @@ build/
 .packages
 pubspec.lock
 !/pubspec.lock
+# Вывод сборки каталога: отчёт, рабочие файлы, пробный прогон.
+/out/
