@@ -6,4 +6,5 @@ environment:
   sdk: ^3.13.0
 
 workspace:
+  - packages/catalog_builder
   - packages/hisbible_format

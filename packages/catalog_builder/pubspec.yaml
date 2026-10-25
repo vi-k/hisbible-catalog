@@ -1,0 +1,18 @@
+name: catalog_builder
+description: >-
+  Сборка каталога HisBible: переводы eBible.org в модули формата HisBible.
+  Чистый Dart.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.13.0
+
+resolution: workspace
+
+dependencies:
+  hisbible_format:
+    path: ../hisbible_format
+
+dev_dependencies:
+  test: ^1.31.0
