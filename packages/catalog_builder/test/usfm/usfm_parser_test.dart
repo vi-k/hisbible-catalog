@@ -229,4 +229,70 @@ void main() {
     ]);
     expect(book.unknownMarkers, {'yy'});
   });
+
+  test('mid-verse heading keeps the text after it in the verse', () {
+    final book = parseUsfm(
+      '\\id SNG\n\\c 1\n\\v 4 Take me away.\n\\sp Friends\n'
+      '\\q1 We will be glad\\f + \\ft n\\f*\n\\v 5 I am dark',
+    );
+    expect(book.verses.first.nodes, [
+      const TextRun('Take me away.'),
+      const LineBreak(indent: 1),
+      const TextRun('We will be glad'),
+      const FootnoteRef(1, 'a'),
+    ]);
+    final heading = book.headings.single;
+    expect(
+      (heading.chapter, heading.verse, heading.kind, heading.level),
+      (1, 5, HeadingKind.section, 3),
+    );
+    expect(plainText(heading.nodes), 'Friends');
+    expect(book.notes.single.verse, 4);
+    expect(book.droppedFragments, 0);
+  });
+
+  test('text before the first verse continues the heading', () {
+    final book = parseUsfm(
+      '\\id PSA\n\\c 10\n\\d Начальнику хора.\n\\m Псалом Давида.\n\\q1\n'
+      '\\v 1 На Господа уповаю\n\\c 11\n\\d A\\m B\n\\v 1 C',
+    );
+    expect(book.headings.map((h) => (h.kind, plainText(h.nodes))), [
+      (HeadingKind.title, 'Начальнику хора. Псалом Давида.'),
+      (HeadingKind.title, 'A B'),
+    ]);
+    expect(book.verses.first.nodes, [
+      const LineBreak(indent: 1),
+      const TextRun('На Господа уповаю'),
+    ]);
+    expect(book.droppedFragments, 0);
+  });
+
+  test('heading at the chapter end drops itself and the text after it', () {
+    final book = parseUsfm(
+      '\\id ROM\n\\s Prologue\n\\p Text before\n\\c 16\n'
+      '\\v 26 x\\f + \\ft keep\\f*\n\\v 27 Amen.\n'
+      '\\s1 Written \\f + \\ft gone\\f*\n\\p to the Romans\\f + \\ft gone\\f*',
+    );
+    expect(book.verses.last.nodes, [const TextRun('Amen.')]);
+    expect(book.headings, isEmpty);
+    expect(book.notes.map((n) => plainText(n.nodes)), ['keep']);
+    expect(book.droppedFragments, 2);
+  });
+
+  test('extended notes are notes and cross references', () {
+    final book = parseUsfm(
+      // ignore: missing_whitespace_between_adjacent_strings
+      '\\id MAT\n\\c 1\n\\v 1 a\\ef + \\fr 1.1 \\ft study\\ef*'
+      r'\ex - \xo 1.1 \xt Mt 1:1\ex*',
+    );
+    expect(book.notes.map((n) => (n.kind, n.caller, plainText(n.nodes))), [
+      (FootnoteKind.note, 'a', 'study'),
+      (FootnoteKind.crossref, '', 'Mt 1:1'),
+    ]);
+    expect(book.verses.single.nodes, [
+      const TextRun('a'),
+      const FootnoteRef(1, 'a'),
+      const FootnoteRef(2, ''),
+    ]);
+  });
 }

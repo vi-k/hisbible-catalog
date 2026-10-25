@@ -6,9 +6,15 @@ import 'package:hisbible_format/hisbible_format.dart';
 /// Разбор терпим: любой текст разбирается без ошибок. Незнакомый знаковый
 /// маркер (у которого в книге есть закрывающий `\xyz*`) оставляет свой
 /// текст, незнакомый абзацный работает как `\p`; оба попадают
-/// в [UsfmBook.unknownMarkers]. Текст вне стиха и заголовок без стиха
-/// в своей главе выбрасываются и считаются в [UsfmBook.droppedFragments].
-/// Заголовок закрывает стих: текст после него до `\v` — вне стиха.
+/// в [UsfmBook.unknownMarkers].
+///
+/// Заголовок стоит над следующим стихом своей главы и открытого стиха
+/// не закрывает: текст после заголовка остаётся в открытом стихе. До первого
+/// стиха главы такой текст дописывается к заголовку через пробел. Заголовок
+/// без следующего стиха в главе выбрасывается вместе со всем текстом после
+/// него до конца главы; текст вне стиха тоже выбрасывается; и то и другое
+/// считается в [UsfmBook.droppedFragments]. Всё до первой главы, кроме полей
+/// книги, выбрасывается и не считается.
 UsfmBook parseUsfm(String text) => _Parser(text).parse();
 
 // ---------------------------------------------------------------------------
@@ -116,7 +122,7 @@ const _plainMarkers = {
 
 const _droppedCharacterMarkers = {'rq', 'va', 'vp', 'ca', 'fig'};
 
-const _noteMarkers = {'f', 'fe', 'x'};
+const _noteMarkers = {'f', 'fe', 'ef', 'x', 'ex'};
 
 // Что делает абзацный маркер.
 enum _Paragraph {
@@ -335,6 +341,31 @@ final class _Content {
     }
   }
 
+  // Дописывает в конец разметку [tail]; текст на стыке отделяется пробелом.
+  void append(_Content tail) {
+    tail.closeAll();
+    final nodes = (tail._top..flush()).children;
+    if (nodes.isEmpty) {
+      return;
+    }
+    closeAll();
+    final root = _top..flush();
+    if (!_lastSpace &&
+        nodes.first is! LineBreak &&
+        nodes.first is! ParagraphBreak) {
+      root.write(' ');
+    }
+    for (final node in nodes) {
+      if (node is LineBreak || node is ParagraphBreak) {
+        addBreak(node);
+      } else {
+        root.add(node);
+      }
+    }
+    _lastSpace = tail._lastSpace;
+    hasText = hasText || tail.hasText;
+  }
+
   // Закрывает всё и отдаёт разметку без пробелов в конце.
   List<MarkupNode> finish() {
     closeAll();
@@ -509,7 +540,7 @@ final class _NoteBuilder {
   final List<MarkupNode> nodes;
 }
 
-// Открытая сноска: `\f`, `\fe` или `\x`.
+// Открытая сноска: `\f`, `\fe`, `\ef`, `\x` или `\ex`.
 final class _OpenNote {
   _OpenNote(this.name, {required this.keep});
 
@@ -522,13 +553,15 @@ final class _OpenNote {
   // Знак сноски как в тексте; `null` — ещё не прочитан.
   String? caller;
 
+  bool get _crossref => name.endsWith('x');
+
   FootnoteKind get kind =>
-      name == 'x' ? FootnoteKind.crossref : FootnoteKind.note;
+      _crossref ? FootnoteKind.crossref : FootnoteKind.note;
 
   // Маркер — часть сноски: `\ft`, `\fq`, `\xo`, `\xt` и прочие.
   bool hasPart(String marker) =>
       marker.length > 1 &&
-      marker[0] == name[0] &&
+      marker[0] == (_crossref ? 'x' : 'f') &&
       !_noteMarkers.contains(marker) &&
       marker != 'fig' &&
       _lowercase.hasMatch(marker);
@@ -579,6 +612,10 @@ final class _Parser {
   int _chapter = 0;
   bool _chapterHasVerse = false;
   _VerseBuilder? _verse;
+
+  // Текст открытого стиха после заголовка; дописывается к стиху
+  // на следующем `\v`.
+  _Content? _tail;
   int _callers = 0;
 
   _Content get _current => _note?.content ?? _target;
@@ -780,6 +817,8 @@ final class _Parser {
         _breakParagraph(LineBreak(indent: digit ?? 1));
       case _Paragraph.continuation:
         _continueParagraph();
+      case _Paragraph.heading when !_inChapters:
+        _setTarget(_Target.silent);
       case _Paragraph.heading:
         final (headingKind, level) = switch (name) {
           'd' => (HeadingKind.title, 1),
@@ -796,15 +835,26 @@ final class _Parser {
         _pendingHeadings.add(heading);
         _setTarget(_Target.heading, heading.content);
         _heading = heading;
-        _verse = null;
     }
   }
 
-  // Текст абзаца идёт в открытый стих, а без него выбрасывается.
+  // Куда идёт текст нового абзаца.
   void _continueParagraph() {
     final verse = _verse;
-    if (verse != null) {
+    final heading = _pendingHeadings.lastOrNull;
+    if (!_inChapters) {
+      // Вступление до первой главы.
+      _setTarget(_Target.silent);
+    } else if (verse != null && heading == null) {
       _setTarget(_Target.verse, verse.content);
+    } else if (verse != null) {
+      // Текст после заголовка внутри стиха ждёт следующего `\v`: без него
+      // он выбрасывается вместе с заголовком.
+      _setTarget(_Target.verse, _tail ??= _Content());
+    } else if (heading != null) {
+      // До первого стиха главы текст дописывается к заголовку.
+      _setTarget(_Target.heading, heading.content);
+      heading.content.write(' ');
     } else {
       _setTarget(_Target.drop);
     }
@@ -880,8 +930,12 @@ final class _Parser {
     final carried = _carried;
     _carried = [];
     if (!_inChapters) {
-      _setTarget(_Target.drop);
+      _setTarget(_Target.silent);
       return;
+    }
+    if (_tail case final tail?) {
+      _verse?.content.append(tail);
+      _tail = null;
     }
     final last = _verses.lastOrNull;
     final lastInChapter = last != null && last.chapter == _chapter
@@ -925,8 +979,8 @@ final class _Parser {
     _carried = [];
     _setTarget(_Target.drop);
     if (_pendingHeadings.isNotEmpty) {
-      // Заголовок без стиха выбрасывается вместе со своими сносками: после
-      // него в главе сносок не было, стих он закрыл.
+      // Заголовок без стиха выбрасывается вместе с текстом после него
+      // и со всеми их сносками: это последние сноски книги.
       _notes.removeRange(_pendingHeadings.first.firstNote, _notes.length);
       for (final heading in _pendingHeadings) {
         if (heading.content.finish().isNotEmpty) {
@@ -934,6 +988,13 @@ final class _Parser {
         }
       }
       _pendingHeadings.clear();
+    }
+    if (_tail case final tail?) {
+      tail.closeAll();
+      if (tail.hasText) {
+        _dropped++;
+      }
+      _tail = null;
     }
     _breaks.clear();
     _verse = null;
