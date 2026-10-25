@@ -9,7 +9,7 @@ final class BuildReport {
     this.failed = const {},
     this.warnings = const {},
     this.waiting = const [],
-    this.problems = const [],
+    this.deletions = const [],
   });
 
   /// Дата прогона, `YYYY-MM-DD`.
@@ -33,9 +33,8 @@ final class BuildReport {
   /// Id новых и обновлённых переводов, отложенных пределом `limit`.
   final List<String> waiting;
 
-  /// Что не удалось при выкладке, но прогон не остановило: например,
-  /// не удалился файл прежней версии.
-  final List<String> problems;
+  /// Файлы выпусков к удалению: `<выпуск>/<файл>`.
+  final List<String> deletions;
 
   /// Отчёт в Markdown.
   ///
@@ -50,7 +49,7 @@ final class BuildReport {
       ..writeln('- Withdrawn: ${withdrawn.length}')
       ..writeln('- Failed: ${failed.length}')
       ..writeln('- Waiting for the next run: ${waiting.length}')
-      ..writeln('- Publishing problems: ${problems.length}');
+      ..writeln('- Release files to delete: ${deletions.length}');
     void list(String title, Iterable<String> items) {
       if (items.isEmpty) {
         return;
@@ -86,7 +85,7 @@ final class BuildReport {
     sections('Failed', failed);
     list('Withdrawn', [for (final id in withdrawn) '`$id`']);
     sections('Warnings', warnings);
-    list('Publishing problems', problems.map(_escaped));
+    list('Release files to delete', [for (final file in deletions) '`$file`']);
 
     return out.toString();
   }

@@ -13,12 +13,12 @@ Uri releaseAssetUrl(
   String repo = catalogRepo,
 }) => Uri.parse('https://github.com/$repo/releases/download/$release/$asset');
 
+/// Файл `asset` выпуска `release`.
+typedef ReleaseAsset = ({String release, String asset});
+
 /// Выпуск и файл по адресу [url] файла выпуска репозитория [repo]; адрес
 /// другого вида — `null`.
-({String release, String asset})? releaseAssetOf(
-  String url, {
-  String repo = catalogRepo,
-}) {
+ReleaseAsset? releaseAssetOf(String url, {String repo = catalogRepo}) {
   final prefix = 'https://github.com/$repo/releases/download/';
   if (!url.startsWith(prefix)) {
     return null;

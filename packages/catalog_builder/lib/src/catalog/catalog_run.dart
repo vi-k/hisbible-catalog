@@ -1,9 +1,10 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:catalog_builder/src/build/module_build.dart';
 import 'package:catalog_builder/src/catalog/catalog_index.dart';
+import 'package:catalog_builder/src/catalog/deletions.dart';
 import 'package:catalog_builder/src/catalog/fetcher.dart';
+import 'package:catalog_builder/src/catalog/fonts.dart';
 import 'package:catalog_builder/src/catalog/overrides.dart';
 import 'package:catalog_builder/src/catalog/publisher.dart';
 import 'package:catalog_builder/src/catalog/report.dart';
@@ -17,179 +18,19 @@ import 'package:path/path.dart' as p;
 /// Больше файлов в выпуске сборка не кладёт: у GitHub предел 1000.
 const int releaseFileLimit = 900;
 
-/// Выпуск со шрифтами письменностей.
-const String fontsRelease = 'fonts';
-
 /// Адрес архива USFM перевода [translationId] на eBible.org.
 Uri ebibleSourceUrl(String translationId) =>
     Uri.parse('https://ebible.org/Scriptures/${translationId}_usfm.zip');
 
-/// Прогон сборки не может продолжаться: например, у шрифта чужая sha256.
-final class CatalogBuildException implements Exception {
-  /// Создаёт ошибку с текстом [message].
-  const CatalogBuildException(this.message);
-
-  /// Что случилось.
-  final String message;
-
-  @override
-  String toString() => 'CatalogBuildException: $message';
-}
-
-/// Шрифты письменностей, `fonts/fonts.lock.json`.
-///
-/// Вид файла: `{"fonts": {"<код ISO 15924>": {"family": …, "sourceUrl": …,
-/// "sha256": …, "license": …, "asset": …}}}`; незнакомые поля при чтении
-/// пропускаются.
-final class FontsLock {
-  /// Создаёт список шрифтов.
-  const FontsLock(this.fonts);
-
-  /// Читает список шрифтов из JSON [json].
-  ///
-  /// Не JSON или другая форма — [FormatException].
-  factory FontsLock.parse(String json) {
-    final Object? root;
-    try {
-      root = jsonDecode(json);
-    } on FormatException catch (e) {
-      throw FormatException('fonts.lock.json is not JSON: ${e.message}');
-    }
-    final fonts = root is Map<String, Object?>
-        ? root['fonts'] ?? const <String, Object?>{}
-        : null;
-    if (fonts is! Map<String, Object?>) {
-      throw const FormatException('fonts.lock.json: fonts is not an object');
-    }
-
-    return FontsLock({
-      for (final MapEntry(:key, :value) in fonts.entries)
-        key: LockedFont._parse(key, value),
-    });
-  }
-
-  /// Шрифтов нет.
-  static const empty = FontsLock({});
-
-  /// Шрифты по коду письменности.
-  final Map<String, LockedFont> fonts;
-}
-
-/// Шрифт письменности: откуда он берётся и как называется в выпуске.
-final class LockedFont {
-  /// Создаёт запись шрифта.
-  const LockedFont({
-    required this.script,
-    required this.family,
-    required this.sourceUrl,
-    required this.sha256,
-    required this.license,
-    required this.asset,
-  });
-
-  factory LockedFont._parse(String script, Object? json) {
-    if (json is! Map<String, Object?>) {
-      throw FormatException('fonts.lock.json: $script is not an object');
-    }
-    String field(String key) {
-      final value = json[key];
-      if (value is! String) {
-        throw FormatException('fonts.lock.json: $script.$key is not a string');
-      }
-
-      return value;
-    }
-
-    return LockedFont(
-      script: script,
-      family: field('family'),
-      sourceUrl: field('sourceUrl'),
-      sha256: field('sha256'),
-      license: field('license'),
-      asset: field('asset'),
-    );
-  }
-
-  /// Код письменности ISO 15924.
-  final String script;
-
-  /// Семейство шрифта.
-  final String family;
-
-  /// Откуда скачать файл шрифта.
-  final String sourceUrl;
-
-  /// SHA-256 файла шрифта, 64 шестнадцатеричные цифры.
-  final String sha256;
-
-  /// Лицензия шрифта, например `OFL-1.1`.
-  final String license;
-
-  /// Имя файла в выпуске [fontsRelease].
-  final String asset;
-}
-
-/// Выкладывает в выпуск `fonts` шрифты, которых там нет, проверив sha256
-/// источника; возвращает раздел `fonts` указателя.
-///
-/// Шрифт, уже лежащий в выпуске, не скачивается: размер берётся из
-/// выпуска, sha256 — из [lock]. Новый файл кладётся в `<work>/fonts/`.
-/// Файл источника с другой sha256 — [CatalogBuildException].
-Future<Map<String, IndexFont>> publishFonts(
-  FontsLock lock, {
-  required Fetcher fetcher,
-  required Publisher publisher,
-  required Directory work,
-}) async {
-  if (lock.fonts.isEmpty) {
-    return const {};
-  }
-  final present = await publisher.assets(fontsRelease);
-  final fonts = <String, IndexFont>{};
-  for (final script in lock.fonts.keys.toList()..sort()) {
-    final font = lock.fonts[script]!;
-    final size = present[font.asset];
-    if (size != null) {
-      fonts[script] = IndexFont(
-        family: font.family,
-        license: font.license,
-        size: size,
-        sha256: font.sha256,
-        url: releaseAssetUrl(fontsRelease, font.asset).toString(),
-      );
-      continue;
-    }
-    final bytes = await fetcher.get(Uri.parse(font.sourceUrl));
-    final sha256 = crypto.sha256.convert(bytes).toString();
-    if (sha256 != font.sha256) {
-      throw CatalogBuildException(
-        'font $script ${font.sourceUrl}: sha256 $sha256, '
-        'expected ${font.sha256}',
-      );
-    }
-    final file = File(p.join(work.path, 'fonts', font.asset));
-    file.parent.createSync(recursive: true);
-    file.writeAsBytesSync(bytes);
-    final url = await publisher.upload(fontsRelease, file);
-    fonts[script] = IndexFont(
-      family: font.family,
-      license: font.license,
-      size: bytes.length,
-      sha256: sha256,
-      url: url.toString(),
-    );
-  }
-
-  return fonts;
-}
-
-/// Итог прогона сборки: новый указатель, список исходников и отчёт.
+/// Итог прогона сборки: новый указатель, список исходников, отчёт и файлы
+/// выпусков к удалению.
 final class CatalogRun {
   /// Создаёт итог прогона.
   const CatalogRun({
     required this.index,
     required this.lock,
     required this.report,
+    this.deletions = const [],
   });
 
   /// Новый указатель.
@@ -200,6 +41,11 @@ final class CatalogRun {
 
   /// Отчёт прогона.
   final BuildReport report;
+
+  /// Файлы выпусков, на которые новый указатель и список исходников больше
+  /// не ссылаются: удаляются [applyDeletions] после того, как новый
+  /// указатель отправлен.
+  final List<ReleaseAsset> deletions;
 }
 
 /// Собирает каталог из переводов [translations] поверх прежнего указателя
@@ -215,20 +61,25 @@ final class CatalogRun {
 /// 4. Новый или обновлённый: исходник — своя копия из [lock] того же
 ///    `UpdateDate` (sha256 сверяется) или архив eBible, который
 ///    выкладывается в `sources-<дата>` (pre-release) и попадает в [lock];
-///    копия прежней даты тогда удаляется. Затем [buildModule]: [Built] —
-///    файл в `build-<дата>`, запись в указателе, файл прежней версии
-///    удаляется; [BuildFailed] или исходник не получен — прежняя запись
-///    остаётся, причина в отчёте.
+///    копия прежней даты тогда идёт к удалению. Затем [buildModule]:
+///    [Built] — файл в `build-<дата>`, запись в указателе, файл прежней
+///    версии идёт к удалению; [BuildFailed] или исходник не получен —
+///    прежняя запись остаётся, причина в отчёте.
 /// 5. Был в [previous], а сейчас не взят — уходит в `withdrawn` с датой
-///    [now]; его файлы модуля и исходника удаляются, запись — из [lock].
-///    Собранный снова уходит из `withdrawn`.
+///    [now]; его файлы модуля и исходника идут к удалению, запись —
+///    из [lock]. Собранный снова уходит из `withdrawn`.
 ///
-/// [limit] — не больше стольких новых и обновлённых за прогон; остальные
-/// ждут следующего и названы в [BuildReport.waiting]. В выпуске не больше
-/// [releaseFileLimit] файлов: дальше `build-<дата>-2`, `-3`… Файлы прогона
-/// лежат в [work]: `sources/`, `modules/`, `fonts/`. Удаления идут в конце
-/// прогона; неудачное удаление прогон не останавливает и попадает
-/// в [BuildReport.problems].
+/// Сначала идут новые и обновлённые, потом те, чья копия в [lock] уже
+/// того же `UpdateDate`, а сборка в прошлый раз не прошла: вечно
+/// несобираемые не съедают [limit]. [limit] — не больше стольких сборок
+/// за прогон; остальные ждут следующего и названы в
+/// [BuildReport.waiting]. В выпуске не больше [releaseFileLimit] файлов:
+/// дальше `build-<дата>-2`, `-3`…
+///
+/// Сам прогон ничего не удаляет: файлы к удалению — в
+/// [CatalogRun.deletions]. Файлы прогона лежат в [work]: `sources/`,
+/// `modules/`, `fonts/`; без [keepFiles] архив исходника удаляется из
+/// [work] после сборки, а файл модуля — сразу после выкладки.
 Future<CatalogRun> runCatalogBuild({
   required List<EbibleTranslation> translations,
   required CatalogIndex previous,
@@ -240,6 +91,7 @@ Future<CatalogRun> runCatalogBuild({
   required DateTime now,
   FontsLock fonts = FontsLock.empty,
   int? limit,
+  bool keepFiles = false,
 }) async {
   final date = isoDate(now);
   final fontSection = await publishFonts(
@@ -264,6 +116,7 @@ Future<CatalogRun> runCatalogBuild({
     overrides: overrides,
     now: now,
     entries: Map.of(lock.entries),
+    keepFiles: keepFiles,
   );
   final before = {for (final module in previous.modules) module.id: module};
   final modules = <String, IndexModule>{};
@@ -275,17 +128,23 @@ Future<CatalogRun> runCatalogBuild({
   final waiting = <String>[];
   final failed = <String, List<String>>{};
   final warnings = <String, List<String>>{};
-  var attempts = 0;
+  final fresh = <EbibleTranslation>[];
+  final retries = <EbibleTranslation>[];
   for (final id in taken.keys.toList()..sort()) {
     final t = taken[id]!;
     final old = before[id];
-    if (old != null &&
-        old.version == t.updateDate &&
-        run.entries[id]?.updateDate == t.updateDate) {
+    final copied = run.entries[id]?.updateDate == t.updateDate;
+    if (old != null && old.version == t.updateDate && copied) {
       modules[id] = old;
       unchanged.add(id);
-      continue;
+    } else {
+      (copied ? retries : fresh).add(t);
     }
+  }
+  var attempts = 0;
+  for (final t in [...fresh, ...retries]) {
+    final id = t.translationId;
+    final old = before[id];
     if (limit != null && attempts >= limit) {
       if (old != null) {
         modules[id] = old;
@@ -328,21 +187,13 @@ Future<CatalogRun> runCatalogBuild({
       }
     }
   }
-  for (final id in run.entries.keys.toList()) {
+  for (final id in run.entries.keys.toList()..sort()) {
     if (!taken.containsKey(id)) {
       final source = run.entries.remove(id)!;
       run.deletions.add((release: source.release, asset: source.asset));
     }
   }
   withdrawn.removeWhere((id, _) => modules.containsKey(id));
-  final problems = <String>[];
-  for (final (:release, :asset) in run.deletions) {
-    try {
-      await publisher.deleteAsset(release, asset);
-    } on Exception catch (e) {
-      problems.add('cannot delete $asset from $release: $e');
-    }
-  }
 
   return CatalogRun(
     index: CatalogIndex(
@@ -359,18 +210,21 @@ Future<CatalogRun> runCatalogBuild({
     lock: SourcesLock(Map.unmodifiable(run.entries)),
     report: BuildReport(
       date: date,
-      built: built,
+      built: built..sort(),
       unchanged: unchanged,
       withdrawn: gone..sort(),
       failed: failed,
       warnings: warnings,
-      waiting: waiting,
-      problems: problems,
+      waiting: waiting..sort(),
+      deletions: [
+        for (final (:release, :asset) in run.deletions) '$release/$asset',
+      ],
     ),
+    deletions: List.unmodifiable(run.deletions),
   );
 }
 
-// Состояние одного прогона: выпуски, исходники и что удалить в конце.
+// Состояние одного прогона: выпуски, исходники и файлы к удалению.
 final class _Run {
   _Run({
     required this.fetcher,
@@ -379,6 +233,7 @@ final class _Run {
     required this.overrides,
     required this.now,
     required this.entries,
+    required this.keepFiles,
   }) : _sources = _Releases(publisher, 'sources-${isoDate(now)}'),
        _builds = _Releases(publisher, 'build-${isoDate(now)}');
 
@@ -388,11 +243,14 @@ final class _Run {
   final Overrides overrides;
   final DateTime now;
 
+  // Оставлять ли в [work] архивы и модули после выкладки.
+  final bool keepFiles;
+
   // Исходники по id; меняются по ходу прогона.
   final Map<String, LockedSource> entries;
 
-  // Файлы выпусков, которые удаляются в конце прогона.
-  final deletions = <({String release, String asset})>[];
+  // Файлы выпусков, на которые больше ничто не ссылается.
+  final deletions = <ReleaseAsset>[];
 
   final _Releases _sources;
   final _Releases _builds;
@@ -449,14 +307,24 @@ final class _Run {
       overrides: overrides,
       now: now,
     );
+    // Архив выложен или уже лежит в выпуске; после сборки он не нужен.
+    _remove(source);
     switch (outcome) {
       case BuildFailed(:final reasons):
         return (null, reasons);
       case Built():
         final release = await _builds.next();
-        final url = await publisher.upload(release, File(outcome.path));
+        final file = File(outcome.path);
+        final url = await publisher.upload(release, file);
+        _remove(file);
 
         return (_entry(t, outcome, url), outcome.warnings);
+    }
+  }
+
+  void _remove(File file) {
+    if (!keepFiles && file.existsSync()) {
+      file.deleteSync();
     }
   }
 }

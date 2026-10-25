@@ -28,6 +28,7 @@ void main() {
     Overrides overrides = const Overrides(),
     FontsLock fonts = FontsLock.empty,
     int? limit,
+    bool keepFiles = false,
   }) => runCatalogBuild(
     translations: translations,
     previous: after?.index ?? CatalogIndex.empty(),
@@ -39,7 +40,17 @@ void main() {
     now: now ?? DateTime.utc(2026, 11),
     fonts: fonts,
     limit: limit,
+    keepFiles: keepFiles,
   );
+
+  // Файлы, оставшиеся в подкаталоге [dir] рабочего каталога.
+  List<String> left(String dir) {
+    final directory = Directory(p.join(work.path, dir));
+
+    return directory.existsSync()
+        ? [for (final f in directory.listSync()) p.basename(f.path)]
+        : const [];
+  }
 
   // Перевод [id] на eBible: архив с [verses] стихами Бытия 1.
   EbibleTranslation offer(
@@ -130,10 +141,16 @@ void main() {
     expect(result.report.built, ['aaa', 'bbb']);
     expect(result.report.unchanged, isEmpty);
     expect(result.report.failed, isEmpty);
-    expect(
-      File(p.join(work.path, 'modules', 'aaa-2026-09-01.hb')).existsSync(),
-      isTrue,
-    );
+    expect(result.deletions, isEmpty);
+    expect(left('modules'), isEmpty, reason: 'removed after upload');
+    expect(left('sources'), isEmpty, reason: 'removed after the build');
+  });
+
+  test('keepFiles leaves sources and modules in work', () async {
+    await run([offer('aaa')], keepFiles: true);
+
+    expect(left('modules'), ['aaa-2026-09-01.hb']);
+    expect(left('sources'), ['aaa-2026-09-01_usfm.zip']);
   });
 
   test('unchanged translation is not rebuilt', () async {
@@ -151,6 +168,7 @@ void main() {
     expect(fetcher.calls, hasLength(fetched));
     expect(publisher.uploads, hasLength(uploaded));
     expect(publisher.deletes, isEmpty);
+    expect(second.deletions, isEmpty);
     expect(second.index.modules, first.index.modules);
     expect(second.index.updated, '2026-12-01');
     expect(second.lock, first.lock);
@@ -173,6 +191,12 @@ void main() {
     expect(module.url, '$_release/build-2026-12-01/aaa-2026-10-15.hb');
     expect(module.sha256, isNot(first.index.modules.first.sha256));
     expect(second.index.modules.last, first.index.modules.last);
+    expect(second.deletions, [
+      (release: 'sources-2026-11-01', asset: 'aaa-2026-09-01_usfm.zip'),
+      (release: 'build-2026-11-01', asset: 'aaa-2026-09-01.hb'),
+    ]);
+    expect(publisher.deletes, isEmpty, reason: 'the run deletes nothing');
+    expect(await applyDeletions(second.deletions, publisher), isEmpty);
     expect(publisher.files('build-2026-11-01'), ['bbb-2026-09-01.hb']);
     expect(publisher.files('build-2026-12-01'), ['aaa-2026-10-15.hb']);
     expect(publisher.files('sources-2026-11-01'), ['bbb-2026-09-01_usfm.zip']);
@@ -202,6 +226,7 @@ void main() {
     ]);
     expect(second.index.modules.map((m) => m.id), ['aaa']);
     expect(second.lock, first.lock);
+    expect(second.deletions, isEmpty);
     expect(publisher.files('sources-2026-12-01'), isEmpty);
     expect(publisher.files('build-2026-12-01'), ['aaa-2026-09-01.hb']);
   });
@@ -249,6 +274,14 @@ void main() {
         since: '2026-12-01',
       ),
     ]);
+    expect(second.deletions, [
+      (release: 'build-2026-11-01', asset: 'bbb-2026-09-01.hb'),
+      (release: 'build-2026-11-01', asset: 'ccc-2026-09-01.hb'),
+      (release: 'sources-2026-11-01', asset: 'bbb-2026-09-01_usfm.zip'),
+      (release: 'sources-2026-11-01', asset: 'ccc-2026-09-01_usfm.zip'),
+    ]);
+    expect(publisher.deletes, isEmpty, reason: 'the run deletes nothing');
+    expect(await applyDeletions(second.deletions, publisher), isEmpty);
     expect(publisher.files('build-2026-11-01'), ['aaa-2026-09-01.hb']);
     expect(publisher.files('sources-2026-11-01'), ['aaa-2026-09-01_usfm.zip']);
     expect(second.lock.entries.keys, ['aaa']);
@@ -277,6 +310,9 @@ void main() {
     expect(second.index.modules, first.index.modules);
     expect(publisher.files('build-2026-11-01'), ['aaa-2026-09-01.hb']);
     expect(publisher.files('build-2026-12-01'), isEmpty);
+    expect(second.deletions, [
+      (release: 'sources-2026-11-01', asset: 'aaa-2026-09-01_usfm.zip'),
+    ]);
     expect(second.report.failed['aaa'], isNotEmpty);
     expect(second.report.toMarkdown(), contains('aaa'));
     expect(
@@ -295,7 +331,69 @@ void main() {
       Uri.parse('$_release/sources-2026-12-01/aaa-2026-10-15_usfm.zip'),
     ]);
     expect(third.index.modules.single.version, '2026-10-15');
+    expect(third.deletions, [
+      (release: 'build-2026-11-01', asset: 'aaa-2026-09-01.hb'),
+    ]);
+  });
+
+  test('retries of failed builds go after new ones', () async {
+    final first = await run([offer('aaa', expected: 100)]);
+    expect(first.report.failed.keys, ['aaa']);
+    fetcher.calls.clear();
+
+    final second = await run(
+      [offer('aaa', expected: 100), offer('bbb'), offer('ccc')],
+      after: first,
+      now: DateTime.utc(2026, 12),
+      limit: 2,
+    );
+
+    expect(second.index.modules.map((m) => m.id), ['bbb', 'ccc']);
+    expect(fetcher.calls, [_ebible('bbb'), _ebible('ccc')]);
+    expect(second.report.waiting, ['aaa']);
+    expect(second.report.failed, isEmpty);
+
+    // Места хватает — несобранный пробуется снова, последним.
+    final third = await run(
+      [offer('aaa', expected: 100), offer('bbb'), offer('ccc'), offer('ddd')],
+      after: second,
+      now: DateTime.utc(2027),
+      limit: 2,
+    );
+    expect(third.report.built, ['ddd']);
+    expect(third.report.failed.keys, ['aaa']);
+    expect(third.report.waiting, isEmpty);
+  });
+
+  test('deletions round trip and apply through the publisher', () async {
+    publisher.releases['build-2026-11-01'] = {
+      'aaa.hb': const [1],
+    };
+    publisher.releases['sources-2026-11-01'] = {
+      'aaa_usfm.zip': const [2],
+    };
+    const deletions = [
+      (release: 'build-2026-11-01', asset: 'aaa.hb'),
+      (release: 'build-2026-11-01', asset: 'gone.hb'),
+      (release: 'sources-2026-11-01', asset: 'aaa_usfm.zip'),
+    ];
+    final json = deletionsToJson(deletions);
+
+    expect(parseDeletions(json), deletions);
+    expect(json, startsWith('{\n  "deletions": [\n    {\n'));
+    expect(parseDeletions(deletionsToJson(const [])), isEmpty);
+    expect(() => parseDeletions('{"deletions": [1]}'), throwsFormatException);
+
+    final problems = await applyDeletions(parseDeletions(json), publisher);
+
+    expect(publisher.deletes, [
+      'build-2026-11-01/aaa.hb',
+      'build-2026-11-01/gone.hb',
+      'sources-2026-11-01/aaa_usfm.zip',
+    ]);
+    expect(problems, [contains('gone.hb')]);
     expect(publisher.files('build-2026-11-01'), isEmpty);
+    expect(publisher.files('sources-2026-11-01'), isEmpty);
   });
 
   test('failed download keeps previous version', () async {
@@ -467,6 +565,8 @@ void main() {
     expect(text, contains('`ddd`'));
     expect(text, contains('`bbb`'));
     expect(text, contains('### `ccc`'));
+    expect(text, contains('- Release files to delete: 2\n'));
+    expect(text, contains('`build-2026-11-01/bbb-2026-09-01.hb`'));
   });
 }
 

@@ -8,10 +8,16 @@
 // `sources/sources.lock.json`, `overrides.json` и `fonts/fonts.lock.json`
 // (нет файла — пусто), собирает модули через `runCatalogBuild`, выкладывает
 // их через `gh release` и пишет `index/index.json`,
-// `sources/sources.lock.json` и `out/report.md`. `--limit` — не больше N
-// новых и обновлённых модулей; пустое значение — без предела. `--dry-run`
-// ничего не выкладывает и пишет те же три файла в `out/dry-run/`. Скачанные
-// архивы и собранные модули лежат в `--work`, по умолчанию `out/work`.
+// `sources/sources.lock.json`, `out/report.md` и `out/deletions.json` —
+// файлы выпусков, на которые новый указатель больше не ссылается.
+// `--limit` — не больше N сборок; пустое значение — без предела.
+// `--dry-run` ничего не выкладывает и пишет те же четыре файла
+// в `out/dry-run/`. Скачанные архивы и собранные модули лежат в `--work`,
+// по умолчанию `out/work`; в настоящем прогоне архив удаляется после
+// сборки, модуль — после выкладки, `--dry-run` их оставляет.
+//
+// Удаление старых файлов, после того как новый указатель отправлен:
+//   dart run catalog_builder:build --apply-deletions <deletions.json>
 //
 // Один модуль:
 //   dart run catalog_builder:build --one <zip> --csv <translations.csv>
@@ -21,7 +27,8 @@
 // Без `--out` модуль `<translationId>-<UpdateDate>.hb` пишется рядом
 // с архивом.
 //
-// Код выхода: 0 — готово, 1 — не собрано, 64 — неверные аргументы.
+// Код выхода: 0 — готово, 1 — не собрано или не всё удалено,
+// 64 — неверные аргументы.
 
 import 'dart:convert';
 import 'dart:io';
@@ -38,7 +45,8 @@ const _usage =
     '  dart run catalog_builder:build [--csv <path or url>] [--limit <N>] '
     '[--dry-run] [--work <dir>]\n'
     '  dart run catalog_builder:build --one <zip> --csv <csv> '
-    '[--out <file>]';
+    '[--out <file>]\n'
+    '  dart run catalog_builder:build --apply-deletions <deletions.json>';
 
 const _defaultCsv = 'https://ebible.org/Scriptures/translations.csv';
 
@@ -57,6 +65,10 @@ Future<int> _run(List<String> args) async {
     }
 
     return _one(options['--one']!, options['--csv']!, options['--out']);
+  }
+  final deletions = options['--apply-deletions'];
+  if (deletions != null) {
+    return options.length == 1 ? _applyDeletions(deletions) : _badArguments();
   }
   if (options.containsKey('--out')) {
     return _badArguments();
@@ -109,6 +121,7 @@ Future<int> _catalog({
       work: Directory(work)..createSync(recursive: true),
       now: DateTime.now().toUtc(),
       limit: limit,
+      keepFiles: dryRun,
     );
     final out = dryRun ? p.join('out', 'dry-run') : 'out';
     final written = {
@@ -120,6 +133,7 @@ Future<int> _catalog({
           : p.join('sources', 'sources.lock.json'): result.lock
           .toJson(),
       p.join(out, 'report.md'): result.report.toMarkdown(),
+      p.join(out, 'deletions.json'): deletionsToJson(result.deletions),
     };
     for (final MapEntry(:key, :value) in written.entries) {
       File(key)
@@ -131,14 +145,12 @@ Future<int> _catalog({
     stdout.writeln(
       'built ${report.built.length}, unchanged ${report.unchanged.length}, '
       'withdrawn ${report.withdrawn.length}, failed ${report.failed.length}, '
-      'waiting ${report.waiting.length}',
+      'waiting ${report.waiting.length}, '
+      'to delete ${result.deletions.length}',
     );
     if (publisher is DryRunPublisher) {
       for (final upload in publisher.uploads) {
         stdout.writeln('would upload $upload');
-      }
-      for (final delete in publisher.deletes) {
-        stdout.writeln('would delete $delete');
       }
     }
 
@@ -150,6 +162,27 @@ Future<int> _catalog({
   } finally {
     fetcher.close();
   }
+}
+
+// Удаляет файлы выпусков из списка [path] через `gh release`.
+Future<int> _applyDeletions(String path) async {
+  final List<ReleaseAsset> deletions;
+  try {
+    deletions = parseDeletions(File(path).readAsStringSync());
+  } on Exception catch (e) {
+    stderr.writeln('cannot read $path: $e');
+
+    return 1;
+  }
+  final problems = await applyDeletions(deletions, GhPublisher());
+  for (final problem in problems) {
+    stderr.writeln(problem);
+  }
+  stdout.writeln(
+    'deleted ${deletions.length - problems.length} of ${deletions.length}',
+  );
+
+  return problems.isEmpty ? 0 : 1;
 }
 
 // Таблица переводов из файла или по адресу http(s).
@@ -232,7 +265,14 @@ int _one(String zip, String csv, String? outPath) {
 // Ключи со значениями и флаг `--dry-run` (значение — пустая строка);
 // незнакомый ключ, ключ без значения или повтор — `null`.
 Map<String, String>? _options(List<String> args) {
-  const valued = {'--one', '--csv', '--out', '--limit', '--work'};
+  const valued = {
+    '--one',
+    '--csv',
+    '--out',
+    '--limit',
+    '--work',
+    '--apply-deletions',
+  };
   const flags = {'--dry-run'};
   final options = <String, String>{};
   for (var i = 0; i < args.length; i++) {

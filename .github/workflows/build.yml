@@ -39,3 +39,7 @@ jobs:
           fi
           git commit -m "build: каталог $(date -u +%Y-%m-%d)"
           git push origin HEAD:main
+      - name: Delete files the index no longer uses
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: dart run catalog_builder:build --apply-deletions out/deletions.json
