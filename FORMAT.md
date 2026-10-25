@@ -239,7 +239,7 @@ URLs.
     "Ethi": {
       "family": "Noto Sans Ethiopic", "license": "OFL-1.1",
       "size": 512345, "sha256": "…",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/fonts/NotoSansEthiopic-Regular.ttf"
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/fonts/NotoSansEthiopic-Regular-86b9c07c.ttf"
     }
   },
   "withdrawn": [

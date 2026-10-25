@@ -1,1 +1,124 @@
-{"fonts": {}}
+{
+  "fonts": {
+    "Armn": {
+      "family": "Noto Sans Armenian",
+      "sourceUrl": "https://github.com/notofonts/armenian/releases/download/NotoSansArmenian-v2.008/NotoSansArmenian-v2.008.zip",
+      "file": "NotoSansArmenian/unhinted/ttf/NotoSansArmenian-Regular.ttf",
+      "sha256": "73bde9f3c63aa5ed39236e8a2837224605210a98b54d65724676c0119fcaa24c",
+      "license": "OFL-1.1",
+      "asset": "NotoSansArmenian-Regular-73bde9f3.ttf"
+    },
+    "Bali": {
+      "family": "Noto Sans Balinese",
+      "sourceUrl": "https://github.com/notofonts/balinese/releases/download/NotoSansBalinese-v2.006/NotoSansBalinese-v2.006.zip",
+      "file": "NotoSansBalinese/unhinted/ttf/NotoSansBalinese-Regular.ttf",
+      "sha256": "cee58a184e7e00c4332087ac01870a69ac52fd5fa17ea3783ac728c945af1827",
+      "license": "OFL-1.1",
+      "asset": "NotoSansBalinese-Regular-cee58a18.ttf"
+    },
+    "Cher": {
+      "family": "Noto Sans Cherokee",
+      "sourceUrl": "https://github.com/notofonts/cherokee/releases/download/NotoSansCherokee-v2.001/NotoSansCherokee-v2.001.zip",
+      "file": "NotoSansCherokee/unhinted/ttf/NotoSansCherokee-Regular.ttf",
+      "sha256": "4460410f1a089f79af329d5d26e09381ba553a05baa7c1f3c352fc43bb96878d",
+      "license": "OFL-1.1",
+      "asset": "NotoSansCherokee-Regular-4460410f.ttf"
+    },
+    "Copt": {
+      "family": "Noto Sans Coptic",
+      "sourceUrl": "https://github.com/notofonts/coptic/releases/download/NotoSansCoptic-v2.004/NotoSansCoptic-v2.004.zip",
+      "file": "NotoSansCoptic/unhinted/ttf/NotoSansCoptic-Regular.ttf",
+      "sha256": "37712bf2c7e2d0b9597769663a7b7db97a7845a34ae1bff85d8285a45a4771c0",
+      "license": "OFL-1.1",
+      "asset": "NotoSansCoptic-Regular-37712bf2.ttf"
+    },
+    "Ethi": {
+      "family": "Noto Sans Ethiopic",
+      "sourceUrl": "https://github.com/notofonts/ethiopic/releases/download/NotoSansEthiopic-v2.102/NotoSansEthiopic-v2.102.zip",
+      "file": "NotoSansEthiopic/unhinted/ttf/NotoSansEthiopic-Regular.ttf",
+      "sha256": "86b9c07c049e68438388d00a34033fa28cabeef91b26e1bbed67512d360166d4",
+      "license": "OFL-1.1",
+      "asset": "NotoSansEthiopic-Regular-86b9c07c.ttf"
+    },
+    "Geor": {
+      "family": "Noto Sans Georgian",
+      "sourceUrl": "https://github.com/notofonts/georgian/releases/download/NotoSansGeorgian-v2.005/NotoSansGeorgian-v2.005.zip",
+      "file": "NotoSansGeorgian/unhinted/ttf/NotoSansGeorgian-Regular.ttf",
+      "sha256": "f4b229b126859725b75031dd8c051335d20c85e4eb6d525af28f3e83e471baa4",
+      "license": "OFL-1.1",
+      "asset": "NotoSansGeorgian-Regular-f4b229b1.ttf"
+    },
+    "Java": {
+      "family": "Noto Sans Javanese",
+      "sourceUrl": "https://github.com/notofonts/javanese/releases/download/NotoSansJavanese-v2.005/NotoSansJavanese-v2.005.zip",
+      "file": "NotoSansJavanese/unhinted/ttf/NotoSansJavanese-Regular.ttf",
+      "sha256": "016f43b042c0b01e29688f71607e5d6fdb0effef6fc7aa3aa8eae6b4427fdca8",
+      "license": "OFL-1.1",
+      "asset": "NotoSansJavanese-Regular-016f43b0.ttf"
+    },
+    "Kali": {
+      "family": "Noto Sans Kayah Li",
+      "sourceUrl": "https://github.com/notofonts/kayah-li/releases/download/NotoSansKayahLi-v2.002/NotoSansKayahLi-v2.002.zip",
+      "file": "NotoSansKayahLi/unhinted/ttf/NotoSansKayahLi-Regular.ttf",
+      "sha256": "b4ed32acfe50f0019f55b5440a6ea67cc3806b9f9522d542391ecc9beb5d4772",
+      "license": "OFL-1.1",
+      "asset": "NotoSansKayahLi-Regular-b4ed32ac.ttf"
+    },
+    "Mong": {
+      "family": "Noto Sans Mongolian",
+      "sourceUrl": "https://github.com/notofonts/mongolian/releases/download/NotoSansMongolian-v3.103/NotoSansMongolian-v3.103.zip",
+      "file": "NotoSansMongolian/unhinted/ttf/NotoSansMongolian-Regular.ttf",
+      "sha256": "2986e50b7c66b7cbc42a0d82cc8143697a25ef56e134fe19adfd685c5f4ea57f",
+      "license": "OFL-1.1",
+      "asset": "NotoSansMongolian-Regular-2986e50b.ttf"
+    },
+    "Sylo": {
+      "family": "Noto Sans Syloti Nagri",
+      "sourceUrl": "https://github.com/notofonts/syloti-nagri/releases/download/NotoSansSylotiNagri-v2.004/NotoSansSylotiNagri-v2.004.zip",
+      "file": "NotoSansSylotiNagri/unhinted/ttf/NotoSansSylotiNagri-Regular.ttf",
+      "sha256": "4b594b82bb7481e9154cbc8eb7fcdbd02748c73cbc7c40790961044033ceb946",
+      "license": "OFL-1.1",
+      "asset": "NotoSansSylotiNagri-Regular-4b594b82.ttf"
+    },
+    "Syrc": {
+      "family": "Noto Sans Syriac",
+      "sourceUrl": "https://github.com/notofonts/syriac/releases/download/NotoSansSyriac-v3.000/NotoSansSyriac-v3.000.zip",
+      "file": "NotoSansSyriac/unhinted/ttf/NotoSansSyriac-Regular.ttf",
+      "sha256": "1ec0391c549b5e63e4f8d810b4485a64c5551445bfb2bdbf309ce8368bef9d4c",
+      "license": "OFL-1.1",
+      "asset": "NotoSansSyriac-Regular-1ec0391c.ttf"
+    },
+    "Tfng": {
+      "family": "Noto Sans Tifinagh",
+      "sourceUrl": "https://github.com/notofonts/tifinagh/releases/download/NotoSansTifinagh-v2.006/NotoSansTifinagh-v2.006.zip",
+      "file": "NotoSansTifinagh/unhinted/ttf/NotoSansTifinagh-Regular.ttf",
+      "sha256": "bfc82bcdf511b49a1579023610a7aeb98256b7d8dab5cb0c75d7a09eac2d5431",
+      "license": "OFL-1.1",
+      "asset": "NotoSansTifinagh-Regular-bfc82bcd.ttf"
+    },
+    "Thaa": {
+      "family": "Noto Sans Thaana",
+      "sourceUrl": "https://github.com/notofonts/thaana/releases/download/NotoSansThaana-v3.001/NotoSansThaana-v3.001.zip",
+      "file": "NotoSansThaana/unhinted/ttf/NotoSansThaana-Regular.ttf",
+      "sha256": "7543935bdcef770c9d3dd54222651b29040e5ec82f3bc58542392b2c7a9cbd3c",
+      "license": "OFL-1.1",
+      "asset": "NotoSansThaana-Regular-7543935b.ttf"
+    },
+    "Vaii": {
+      "family": "Noto Sans Vai",
+      "sourceUrl": "https://github.com/notofonts/vai/releases/download/NotoSansVai-v2.001/NotoSansVai-v2.001.zip",
+      "file": "NotoSansVai/unhinted/ttf/NotoSansVai-Regular.ttf",
+      "sha256": "ea03a953e2c578c56e17c5baa2e717e9ef0218ccb4ab221c11ec0604814377b3",
+      "license": "OFL-1.1",
+      "asset": "NotoSansVai-Regular-ea03a953.ttf"
+    },
+    "Yiii": {
+      "family": "Noto Sans Yi",
+      "sourceUrl": "https://github.com/notofonts/yi/releases/download/NotoSansYi-v2.002/NotoSansYi-v2.002.zip",
+      "file": "NotoSansYi/unhinted/ttf/NotoSansYi-Regular.ttf",
+      "sha256": "ab2c82578a368ad99e08ec4b299303c7f16830768df7278605d382fa1d0ee14b",
+      "license": "OFL-1.1",
+      "asset": "NotoSansYi-Regular-ab2c8257.ttf"
+    }
+  }
+}

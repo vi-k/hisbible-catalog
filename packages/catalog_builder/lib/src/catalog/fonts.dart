@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:archive/archive.dart';
 import 'package:catalog_builder/src/catalog/catalog_index.dart';
 import 'package:catalog_builder/src/catalog/fetcher.dart';
 import 'package:catalog_builder/src/catalog/publisher.dart';
@@ -25,15 +26,18 @@ final class CatalogBuildException implements Exception {
 /// Шрифты письменностей, `fonts/fonts.lock.json`.
 ///
 /// Вид файла: `{"fonts": {"<код ISO 15924>": {"family": …, "sourceUrl": …,
-/// "sha256": …, "license": …, "asset": …}}}`; незнакомые поля при чтении
-/// пропускаются.
+/// "file": …, "sha256": …, "license": …, "asset": …}}}`; `file` можно
+/// не писать, незнакомые поля при чтении пропускаются.
 final class FontsLock {
   /// Создаёт список шрифтов.
   const FontsLock(this.fonts);
 
   /// Читает список шрифтов из JSON [json].
   ///
-  /// Не JSON или другая форма — [FormatException].
+  /// Не JSON или другая форма — [FormatException]. Её же даёт запись,
+  /// у которой `sha256` — не 64 строчные шестнадцатеричные цифры или имя
+  /// `asset` не кончается на `-<первые 8 цифр sha256>.ttf`: файл шрифта
+  /// с другой sha256 не должен занять имя прежнего в выпуске.
   factory FontsLock.parse(String json) {
     final Object? root;
     try {
@@ -68,6 +72,7 @@ final class LockedFont {
     required this.script,
     required this.family,
     required this.sourceUrl,
+    this.file,
     required this.sha256,
     required this.license,
     required this.asset,
@@ -86,15 +91,34 @@ final class LockedFont {
       return value;
     }
 
+    final file = json['file'];
+    if (file != null && file is! String) {
+      throw FormatException('fonts.lock.json: $script.file is not a string');
+    }
+    final sha256 = field('sha256');
+    if (!_sha256.hasMatch(sha256)) {
+      throw FormatException('fonts.lock.json: $script.sha256 is not SHA-256');
+    }
+    final asset = field('asset');
+    if (!asset.endsWith('-${sha256.substring(0, 8)}.ttf')) {
+      throw FormatException(
+        'fonts.lock.json: $script.asset must end with '
+        '-${sha256.substring(0, 8)}.ttf',
+      );
+    }
+
     return LockedFont(
       script: script,
       family: field('family'),
       sourceUrl: field('sourceUrl'),
-      sha256: field('sha256'),
+      file: file as String?,
+      sha256: sha256,
       license: field('license'),
-      asset: field('asset'),
+      asset: asset,
     );
   }
+
+  static final _sha256 = RegExp(r'^[0-9a-f]{64}$');
 
   /// Код письменности ISO 15924.
   final String script;
@@ -102,8 +126,13 @@ final class LockedFont {
   /// Семейство шрифта.
   final String family;
 
-  /// Откуда скачать файл шрифта.
+  /// Откуда скачать файл шрифта или архив ZIP с ним (выпуски `notofonts`
+  /// на GitHub раздают только архивы).
   final String sourceUrl;
+
+  /// Путь файла шрифта внутри архива [sourceUrl]; `null` — по [sourceUrl]
+  /// лежит сам шрифт.
+  final String? file;
 
   /// SHA-256 файла шрифта, 64 шестнадцатеричные цифры.
   final String sha256;
@@ -119,8 +148,10 @@ final class LockedFont {
 /// источника; возвращает раздел `fonts` указателя.
 ///
 /// Шрифт, уже лежащий в выпуске, не скачивается: размер берётся из
-/// выпуска, sha256 — из [lock]. Новый файл кладётся в `<work>/fonts/`.
-/// Файл источника с другой sha256 — [CatalogBuildException].
+/// выпуска, sha256 — из [lock]. Новый файл кладётся в `<work>/fonts/`;
+/// у записи с [LockedFont.file] он сперва достаётся из архива источника.
+/// Файл с другой sha256 или архив без этого файла —
+/// [CatalogBuildException].
 Future<Map<String, IndexFont>> publishFonts(
   FontsLock lock, {
   required Fetcher fetcher,
@@ -145,7 +176,8 @@ Future<Map<String, IndexFont>> publishFonts(
       );
       continue;
     }
-    final bytes = await fetcher.get(Uri.parse(font.sourceUrl));
+    final source = await fetcher.get(Uri.parse(font.sourceUrl));
+    final bytes = font.file == null ? source : _unzip(source, font);
     final sha256 = crypto.sha256.convert(bytes).toString();
     if (sha256 != font.sha256) {
       throw CatalogBuildException(
@@ -167,4 +199,25 @@ Future<Map<String, IndexFont>> publishFonts(
   }
 
   return fonts;
+}
+
+// Файл [LockedFont.file] шрифта [font] из архива ZIP [zip].
+List<int> _unzip(List<int> zip, LockedFont font) {
+  final Archive archive;
+  try {
+    archive = ZipDecoder().decodeBytes(zip);
+  } on Object catch (e) {
+    throw CatalogBuildException(
+      'font ${font.script} ${font.sourceUrl}: not a ZIP archive: $e',
+    );
+  }
+  final file = archive.findFile(font.file!);
+  final bytes = file?.isFile ?? false ? file!.readBytes() : null;
+  if (bytes == null) {
+    throw CatalogBuildException(
+      'font ${font.script} ${font.sourceUrl}: no ${font.file} in archive',
+    );
+  }
+
+  return bytes;
 }

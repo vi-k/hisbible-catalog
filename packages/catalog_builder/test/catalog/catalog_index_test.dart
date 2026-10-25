@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:catalog_builder/catalog_builder.dart';
 import 'package:hisbible_format/hisbible_format.dart';
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 void main() {
@@ -203,23 +205,90 @@ void main() {
   });
 
   test('fonts lock reads the scripts', () {
+    const sha =
+        'cc0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcd';
     final lock = FontsLock.parse('''
 {"fonts": {"Ethi": {
   "family": "Noto Sans Ethiopic",
-  "sourceUrl": "https://example.org/NotoSansEthiopic-Regular.ttf",
-  "sha256": "cc", "license": "OFL-1.1",
-  "asset": "NotoSansEthiopic-Regular.ttf", "note": "skipped"}}}
+  "sourceUrl": "https://example.org/NotoSansEthiopic.zip",
+  "file": "NotoSansEthiopic/unhinted/ttf/NotoSansEthiopic-Regular.ttf",
+  "sha256": "$sha", "license": "OFL-1.1",
+  "asset": "NotoSansEthiopic-Regular-cc012345.ttf", "note": "skipped"},
+ "Copt": {
+  "family": "Noto Sans Coptic",
+  "sourceUrl": "https://example.org/NotoSansCoptic-Regular.ttf",
+  "sha256": "$sha", "license": "OFL-1.1",
+  "asset": "NotoSansCoptic-Regular-cc012345.ttf"}}}
 ''');
 
-    expect(lock.fonts.keys, ['Ethi']);
+    expect(lock.fonts.keys, ['Ethi', 'Copt']);
     final font = lock.fonts['Ethi']!;
     expect(font.script, 'Ethi');
     expect(font.family, 'Noto Sans Ethiopic');
-    expect(font.sourceUrl, 'https://example.org/NotoSansEthiopic-Regular.ttf');
-    expect(font.sha256, 'cc');
+    expect(font.sourceUrl, 'https://example.org/NotoSansEthiopic.zip');
+    expect(
+      font.file,
+      'NotoSansEthiopic/unhinted/ttf/NotoSansEthiopic-Regular.ttf',
+    );
+    expect(font.sha256, sha);
     expect(font.license, 'OFL-1.1');
-    expect(font.asset, 'NotoSansEthiopic-Regular.ttf');
+    expect(font.asset, 'NotoSansEthiopic-Regular-cc012345.ttf');
+    expect(lock.fonts['Copt']!.file, isNull);
     expect(FontsLock.parse('{"fonts": {}}').fonts, isEmpty);
     expect(() => FontsLock.parse('{"fonts": 1}'), throwsFormatException);
+  });
+
+  test('fonts lock asset carries the short sha256', () {
+    const sha =
+        'cc0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcd';
+    String lock(String asset, {String sha256 = sha}) =>
+        '''
+{"fonts": {"Ethi": {
+  "family": "Noto Sans Ethiopic",
+  "sourceUrl": "https://example.org/NotoSansEthiopic-Regular.ttf",
+  "sha256": "$sha256", "license": "OFL-1.1", "asset": "$asset"}}}
+''';
+
+    expect(
+      FontsLock.parse(lock('NotoSansEthiopic-Regular-cc012345.ttf')).fonts,
+      hasLength(1),
+    );
+    for (final asset in [
+      'NotoSansEthiopic-Regular.ttf',
+      'NotoSansEthiopic-Regular-dd012345.ttf',
+      'NotoSansEthiopic-Regular-cc01234.ttf',
+      'cc012345.ttf',
+    ]) {
+      expect(() => FontsLock.parse(lock(asset)), throwsFormatException);
+    }
+    // sha256 — 64 строчные шестнадцатеричные цифры.
+    expect(
+      () => FontsLock.parse(lock('A-Regular-cc.ttf', sha256: 'cc')),
+      throwsFormatException,
+    );
+    expect(
+      () => FontsLock.parse(
+        lock('A-Regular-CC012345.ttf', sha256: sha.toUpperCase()),
+      ),
+      throwsFormatException,
+    );
+  });
+
+  test('fonts lock of the repository is valid', () {
+    final file = File(p.join('..', '..', 'fonts', 'fonts.lock.json'));
+    final lock = FontsLock.parse(file.readAsStringSync());
+
+    expect(lock.fonts, isNotEmpty);
+    for (final font in lock.fonts.values) {
+      expect(font.license, 'OFL-1.1', reason: font.script);
+      expect(font.family, startsWith('Noto '), reason: font.script);
+      expect(
+        font.sourceUrl,
+        startsWith('https://github.com/notofonts/'),
+        reason: font.script,
+      );
+      expect(font.sourceUrl, contains('/releases/download/'));
+      expect(font.file, endsWith('-Regular.ttf'), reason: font.script);
+    }
   });
 }

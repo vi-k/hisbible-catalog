@@ -625,6 +625,52 @@ void main() {
     expect(publisher.files('build-2026-11-01'), isEmpty);
   });
 
+  test('takes the font out of a release archive', () async {
+    final font = [1, 2, 3, 4, 5];
+    final zip = ZipEncoder().encodeBytes(
+      Archive()
+        ..addFile(ArchiveFile.bytes('Noto/unhinted/otf/Noto-Regular.otf', [9]))
+        ..addFile(
+          ArchiveFile.bytes('Noto/unhinted/ttf/Noto-Regular.ttf', font),
+        ),
+    );
+    final source = Uri.parse('https://example.org/Noto-v1.zip');
+    fetcher.other[source] = zip;
+    LockedFont locked(String file) => LockedFont(
+      script: 'Ethi',
+      family: 'Noto Sans Ethiopic',
+      sourceUrl: source.toString(),
+      file: file,
+      sha256: sha256.convert(font).toString(),
+      license: 'OFL-1.1',
+      asset: 'NotoSansEthiopic-Regular.ttf',
+    );
+
+    final fonts = await publishFonts(
+      FontsLock({'Ethi': locked('Noto/unhinted/ttf/Noto-Regular.ttf')}),
+      fetcher: fetcher,
+      publisher: publisher,
+      work: work,
+    );
+
+    expect(publisher.uploads, ['fonts/NotoSansEthiopic-Regular.ttf']);
+    expect(publisher.releases['fonts']!['NotoSansEthiopic-Regular.ttf'], font);
+    expect(fonts['Ethi']!.size, 5);
+    expect(fonts['Ethi']!.sha256, sha256.convert(font).toString());
+
+    // Файла нет в архиве — ошибка прогона.
+    publisher.releases.remove('fonts');
+    await expectLater(
+      publishFonts(
+        FontsLock({'Ethi': locked('Noto/hinted/ttf/Noto-Regular.ttf')}),
+        fetcher: fetcher,
+        publisher: publisher,
+        work: work,
+      ),
+      throwsA(isA<CatalogBuildException>()),
+    );
+  });
+
   test('report lists what happened', () async {
     final first = await run([offer('aaa'), offer('bbb')]);
     final second = await run(
