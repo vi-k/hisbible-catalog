@@ -306,7 +306,7 @@ void main() {
       const TextRun('Return!'),
       const LineBreak(indent: 1),
       const TextRun('Why do you gaze'),
-      const FootnoteRef(1, 'b'),
+      const FootnoteRef(1, 'a'),
     ]);
     expect(book.verses[1].nodes, [
       const TextRun('How'),
@@ -319,5 +319,60 @@ void main() {
       [(1, 6, 13, 'n')],
     );
     expect(book.droppedFragments, 4);
+  });
+
+  test('a part of the other kind or an unknown marker stays in the note', () {
+    final book = parseUsfm(
+      // ignore: missing_whitespace_between_adjacent_strings
+      '\\id GEN\n\\c 1\n\\v 1 a\\f + \\fr 1:1 \\ft see \\xt Gen 1:2\\f* b'
+      r'\x + \xo 1:1 \ft also \zq odd\x* c',
+    );
+    expect(book.notes.map((n) => plainText(n.nodes)), [
+      'see Gen 1:2',
+      'also odd',
+    ]);
+    expect(book.verses.single.nodes, [
+      const TextRun('a'),
+      const FootnoteRef(1, 'a'),
+      const TextRun(' b'),
+      const FootnoteRef(2, 'b'),
+      const TextRun(' c'),
+    ]);
+    expect(book.unknownMarkers, {'zq'});
+  });
+
+  test('text after a mid-verse heading joins the verse', () {
+    final book = parseUsfm(
+      '\\id MAT\n\\c 1\n\\v 1 word\\s Head\n\\nb\\f + \\ft n\\f* more\n'
+      '\\v 2 a\\s Head\n\\nb b\n\\v 3 c',
+    );
+    expect(book.verses[0].nodes, [
+      const TextRun('word'),
+      const FootnoteRef(1, 'a'),
+      const TextRun(' more'),
+    ]);
+    expect(book.verses[1].nodes, [const TextRun('a b')]);
+  });
+
+  test('text outside headings and verses is dropped and counted', () {
+    final title = parseUsfm(
+      '\\id SIR\n\\c 51\n\\p A Prayer of Jesus.\n\\p\n\\v 1 I will thank',
+    );
+    expect(title.headings, isEmpty);
+    expect(title.verses.single.nodes, [const TextRun('I will thank')]);
+    expect(title.droppedFragments, 1);
+    final label = parseUsfm(
+      '\\id SNG\n\\c 1\n\\sp Lover\n\\p text\n\\c 2\n\\v 1 x',
+    );
+    expect(label.headings, isEmpty);
+    expect(label.verses.single.nodes, [const TextRun('x')]);
+    expect(label.droppedFragments, 1);
+  });
+
+  test('a milestone without its end eats only its own line', () {
+    final book = parseUsfm(
+      '\\id MAT\n\\c 1\n\\v 1 a \\qt-s |who="x"\n\\v 2 b \\ts\\*\n\\v 3 c',
+    );
+    expect([for (final v in book.verses) plainText(v.nodes)], ['a', 'b', 'c']);
   });
 }

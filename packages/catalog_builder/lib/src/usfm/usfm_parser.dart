@@ -13,8 +13,10 @@ import 'package:hisbible_format/hisbible_format.dart';
 /// стиха главы такой текст дописывается к заголовку через пробел. Заголовок
 /// без следующего стиха в главе выбрасывается вместе со всем текстом после
 /// него до конца главы; текст вне стиха тоже выбрасывается; и то и другое
-/// считается в [UsfmBook.droppedFragments]. Всё до первой главы, кроме полей
-/// книги, выбрасывается и не считается.
+/// считается в [UsfmBook.droppedFragments]. Исключение — `\sp` (имя
+/// говорящего) в конце главы при открытом стихе: выбрасывается и считается
+/// только оно само, а текст после него остаётся в стихе. Всё до первой главы,
+/// кроме полей книги, выбрасывается и не считается.
 UsfmBook parseUsfm(String text) => _Parser(text).parse();
 
 // ---------------------------------------------------------------------------
@@ -70,9 +72,16 @@ List<_Token> _lex(String source) {
     final closing = match[2]!.isNotEmpty;
     var end = match.end;
     if (name.contains('-')) {
-      // Веха выбрасывается вместе с атрибутами до `\*`.
-      final stop = source.indexOf(r'\*', end);
-      i = textStart = stop < 0 ? end : stop + 2;
+      // Веха выбрасывается вместе с атрибутами до `\*`, но не дальше
+      // следующего маркера и конца строки: незакрытая веха не съедает текст.
+      var stop = source.indexOf(r'\', end);
+      final lineEnd = source.indexOf('\n', end);
+      if (stop < 0 || (lineEnd >= 0 && lineEnd < stop)) {
+        stop = lineEnd < 0 ? source.length : lineEnd;
+      } else if (source.startsWith(r'\*', stop)) {
+        stop += 2;
+      }
+      i = textStart = stop;
       continue;
     }
     if (!closing && source.startsWith(r'\*', end)) {
@@ -238,10 +247,15 @@ final class _Frame {
 // Пробелы в начале срезаются сразу, в конце — в finish и перед разрывом
 // строки или абзаца.
 final class _Content {
+  // [trimStart] — срезать пробелы в начале; текст после заголовка внутри
+  // стиха их не срезает: пробел нужен на стыке со стихом.
+  _Content({bool trimStart = true}) : _lastSpace = trimStart;
+
   final List<_Frame> _stack = [_Frame(_FrameKind.root, '')];
 
-  // Последний записанный знак — пробел; в начале считается, что да.
-  bool _lastSpace = true;
+  // Последний записанный знак — пробел; в начале считается, что да, если
+  // пробелы в начале срезаются.
+  bool _lastSpace;
 
   // Записан текст не из одних пробелов.
   bool hasText = false;
@@ -341,25 +355,37 @@ final class _Content {
     }
   }
 
-  // Дописывает в конец разметку [tail]; текст на стыке отделяется пробелом.
+  // Дописывает в конец разметку [tail]: текст на стыке отделяется одним
+  // пробелом, знак сноски на стыке прилегает к слову перед ним.
   //
-  // Знаки сносок получают новые номера по [ids].
-  void append(_Content tail, {Map<int, int> ids = const {}}) {
+  // Знаки сносок получают новые номера и знаки по [refs].
+  void append(_Content tail, {Map<int, FootnoteRef> refs = const {}}) {
     tail.closeAll();
     final tailRoot = tail._top..flush();
-    final nodes = ids.isEmpty
-        ? tailRoot.children
-        : _renumber(tailRoot.children, ids);
+    final nodes = refs.isEmpty
+        ? [...tailRoot.children]
+        : _renumber(tailRoot.children, refs);
+    if (nodes case [TextRun(:final text), ...] when text.startsWith(' ')) {
+      if (_lastSpace) {
+        final rest = text.substring(1);
+        if (rest.isEmpty) {
+          nodes.removeAt(0);
+        } else {
+          nodes[0] = TextRun(rest);
+        }
+      }
+    } else if (nodes.isNotEmpty &&
+        !_lastSpace &&
+        nodes.first is! LineBreak &&
+        nodes.first is! ParagraphBreak &&
+        nodes.first is! FootnoteRef) {
+      nodes.insert(0, const TextRun(' '));
+    }
     if (nodes.isEmpty) {
       return;
     }
     closeAll();
     final root = _top..flush();
-    if (!_lastSpace &&
-        nodes.first is! LineBreak &&
-        nodes.first is! ParagraphBreak) {
-      root.write(' ');
-    }
     for (final node in nodes) {
       if (node is LineBreak || node is ParagraphBreak) {
         addBreak(node);
@@ -431,20 +457,21 @@ final _strongZeros = RegExp(r'^([A-Za-z]+)0+(?=\d)');
   return (strong: strong, morph: morph);
 }
 
-// Меняет номера знаков сносок по [ids], заходя внутрь стилей и слов.
-List<MarkupNode> _renumber(List<MarkupNode> nodes, Map<int, int> ids) => [
+// Меняет знаки сносок по [refs] (по старому номеру), заходя внутрь стилей
+// и слов.
+List<MarkupNode> _renumber(
+  List<MarkupNode> nodes,
+  Map<int, FootnoteRef> refs,
+) => [
   for (final node in nodes)
     switch (node) {
-      FootnoteRef(:final id, :final caller) => FootnoteRef(
-        ids[id] ?? id,
-        caller,
-      ),
+      FootnoteRef(:final id) => refs[id] ?? node,
       StyledSpan(:final style, :final children) => StyledSpan(
         style,
-        _renumber(children, ids),
+        _renumber(children, refs),
       ),
       TaggedWord(:final children, :final strong, :final morph) => TaggedWord(
-        _renumber(children, ids),
+        _renumber(children, refs),
         strong: strong,
         morph: morph,
       ),
@@ -568,6 +595,7 @@ final class _NoteBuilder {
     required this.verse,
     required this.kind,
     required this.caller,
+    required this.auto,
     required this.nodes,
   });
 
@@ -575,7 +603,10 @@ final class _NoteBuilder {
   final int chapter;
   int? verse;
   final FootnoteKind kind;
-  final String caller;
+  String caller;
+
+  // Знак дан по порядку в главе (`+`).
+  final bool auto;
   final List<MarkupNode> nodes;
 }
 
@@ -597,10 +628,11 @@ final class _OpenNote {
   FootnoteKind get kind =>
       _crossref ? FootnoteKind.crossref : FootnoteKind.note;
 
-  // Маркер — часть сноски: `\ft`, `\fq`, `\xo`, `\xt` и прочие.
+  // Маркер — часть сноски: `\ft`, `\fq`, `\xo`, `\xt` и прочие; части
+  // ссылки бывают и в примечании, и наоборот.
   bool hasPart(String marker) =>
       marker.length > 1 &&
-      marker[0] == (_crossref ? 'x' : 'f') &&
+      (marker[0] == 'f' || marker[0] == 'x') &&
       !_noteMarkers.contains(marker) &&
       marker != 'fig' &&
       _lowercase.hasMatch(marker);
@@ -799,6 +831,15 @@ final class _Parser {
       _openCharacter(_FrameKind.plain, name);
       return;
     }
+    if (note != null && paragraph == null) {
+      // Незнакомый маркер внутри сноски — её часть с простым текстом,
+      // а не абзац: текст сноски не уходит в стих.
+      _unknown.add(name);
+      note.content
+        ..closeAll()
+        ..open(_FrameKind.plain, name);
+      return;
+    }
     if (_note != null) {
       _closeNote();
     }
@@ -887,7 +928,7 @@ final class _Parser {
     } else if (verse != null && heading != null) {
       // Текст после заголовка внутри стиха ждёт следующего `\v`: без него
       // он выбрасывается вместе с заголовком.
-      _setTarget(_Target.verse, heading.tail ??= _Content());
+      _setTarget(_Target.verse, heading.tail ??= _Content(trimStart: false));
     } else if (heading != null) {
       // До первого стиха главы текст дописывается к заголовку.
       _setTarget(_Target.heading, heading.content);
@@ -1057,18 +1098,29 @@ final class _Parser {
       // Сноски выброшенного текста — последние в книге.
       removed.addAll(_notes.skip(pending[labels].firstNote));
     }
-    _notes.removeWhere(removed.contains);
-    // Номера сносок идут подряд: оставшиеся после выброшенных сдвигаются.
-    final ids = <int, int>{};
-    for (final (index, note) in _notes.indexed) {
-      if (note.id != index + 1) {
-        ids[note.id] = index + 1;
-        note.id = index + 1;
+    final refs = <int, FootnoteRef>{};
+    if (removed.isNotEmpty) {
+      // Номера сносок идут подряд, знаки `+` — по порядку в главе:
+      // оставшиеся после выброшенных сдвигаются.
+      _notes.removeWhere(removed.contains);
+      _callers = 0;
+      for (final (index, note) in _notes.indexed) {
+        final id = index + 1;
+        var caller = note.caller;
+        if (note.chapter == _chapter && note.auto) {
+          caller = _autoCaller(_callers++);
+        }
+        if (note.id != id || note.caller != caller) {
+          refs[note.id] = FootnoteRef(id, caller);
+          note
+            ..id = id
+            ..caller = caller;
+        }
       }
     }
     for (final heading in pending.take(labels)) {
       if (heading.tail case final tail?) {
-        verse?.content.append(tail, ids: ids);
+        verse?.content.append(tail, refs: refs);
       }
     }
   }
@@ -1102,6 +1154,7 @@ final class _Parser {
       verse: _targetKind == _Target.verse ? _verse?.verse : null,
       kind: note.kind,
       caller: caller,
+      auto: raw == '+',
       nodes: note.content.finish(),
     );
     if (_targetKind == _Target.heading) {
