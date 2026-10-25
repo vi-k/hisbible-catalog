@@ -3,10 +3,19 @@
 ///
 /// Решает текст: самая частая письменность первых 10 000 букв [sample] по
 /// диапазонам Юникода письменностей таблицы и греческой (`Grek`),
-/// армянской (`Armn`), грузинской (`Geor`) и хангыля (`Hang`). Буква — знак
-/// категории Юникода `L`: цифры, знаки препинания и огласовки внутри этих
-/// диапазонов, как и буквы других письменностей, не считаются. Столбец
-/// [csvScript] в eBible часто ошибается (у русского Синодального —
+/// армянской (`Armn`), грузинской (`Geor`), хангыля (`Hang`) и других
+/// письменностей переводов eBible (`Khmr`, `Sinh`, `Laoo`, `Mong`, `Cher`,
+/// `Cans`, `Yiii`, `Vaii`, `Thaa`, `Java`, `Bali`, `Kali`, `Sylo`). Буква —
+/// знак категории Юникода `L`: цифры, знаки препинания и огласовки внутри
+/// этих диапазонов, как и буквы других письменностей, не считаются. Кана
+/// считается вместе с иероглифами.
+///
+/// Иероглифы уточняет тот же текст: каны не меньше 5 % от иероглифов
+/// с каной — `Jpan`; иначе считаются частые знаки пар «упрощённый —
+/// полный» (说/說, 们/們, 这/這…), и больше упрощённых — `Hans`, больше
+/// полных — `Hant`. Ни одного такого знака — `Hani`.
+///
+/// Столбец [csvScript] в eBible часто ошибается (у русского Синодального —
 /// `Latin`), поэтому он нужен, только когда таких букв в [sample] нет,
 /// и чтобы уточнить текст: `Han (Simplified variant)` при `Hani` по тексту
 /// даёт `Hans`, `Coptic` при `Grek` — `Copt` (коптский текст часто набран
@@ -60,6 +69,13 @@ const _exactNames = {
   'Burmese': 'Mymr',
   'Gurmukhi': 'Guru',
   'Tifenagh': 'Tfng',
+  'Tifinagh': 'Tfng',
+  'Khmer': 'Khmr',
+  'Lao': 'Laoo',
+  'Thaana': 'Thaa',
+  'Unified Canadian Aboriginal Syllabics': 'Cans',
+  'Kayah Li': 'Kali',
+  'Syloti Nagri': 'Sylo',
 };
 
 // Начала имён столбца `script`: `Latin (Roman) with …`, `Devanagari
@@ -74,19 +90,33 @@ const _prefixes = [
 const _sampleLetters = 10000;
 
 // Самая частая письменность первых букв [sample]; при равенстве — раньше
-// по [_ranges]. `null` — букв этих письменностей нет.
+// по [_ranges]. Кана (`Kana`) идёт в счёт иероглифов (`Hani`), а `Hani`
+// уточняется по [_hanVariant]. `null` — букв этих письменностей нет.
 String? _scriptOfLetters(String sample) {
   final counts = <String, int>{};
   var letters = 0;
+  var simplified = 0;
+  var traditional = 0;
   for (final rune in sample.runes) {
     final script = _scriptOfRune(rune);
     if (script == null) {
       continue;
     }
     counts[script] = (counts[script] ?? 0) + 1;
+    if (script == 'Hani') {
+      if (_simplified.contains(rune)) {
+        simplified++;
+      } else if (_traditional.contains(rune)) {
+        traditional++;
+      }
+    }
     if (++letters == _sampleLetters) {
       break;
     }
+  }
+  final kana = counts.remove('Kana') ?? 0;
+  if (kana > 0) {
+    counts['Hani'] = (counts['Hani'] ?? 0) + kana;
   }
   String? best;
   var bestCount = 0;
@@ -97,9 +127,82 @@ String? _scriptOfLetters(String sample) {
       bestCount = count;
     }
   }
+  if (best == 'Hani') {
+    return _hanVariant(
+      han: bestCount,
+      kana: kana,
+      simplified: simplified,
+      traditional: traditional,
+    );
+  }
 
   return best;
 }
+
+// Вариант иероглифов: [kana] знаков каны из [han] иероглифов с каной,
+// [simplified] и [traditional] знаков пар [_hanPairs].
+String _hanVariant({
+  required int han,
+  required int kana,
+  required int simplified,
+  required int traditional,
+}) {
+  if (kana * 100 >= han * _kanaPercent) {
+    return 'Jpan';
+  }
+  if (simplified != traditional) {
+    return simplified > traditional ? 'Hans' : 'Hant';
+  }
+
+  return 'Hani';
+}
+
+// Сколько процентов каны среди иероглифов с каной делает текст японским.
+const _kanaPercent = 5;
+
+// Частые знаки, у которых упрощённое и полное написания различаются:
+// упрощённый знак, затем полный.
+const _hanPairs = [
+  ('这', '這'),
+  ('说', '說'),
+  ('们', '們'),
+  ('来', '來'),
+  ('时', '時'),
+  ('为', '為'),
+  ('国', '國'),
+  ('会', '會'),
+  ('对', '對'),
+  ('个', '個'),
+  ('从', '從'),
+  ('发', '發'),
+  ('见', '見'),
+  ('门', '門'),
+  ('长', '長'),
+  ('头', '頭'),
+  ('书', '書'),
+  ('话', '話'),
+  ('进', '進'),
+  ('过', '過'),
+  ('还', '還'),
+  ('后', '後'),
+  ('万', '萬'),
+  ('与', '與'),
+  ('爱', '愛'),
+  ('圣', '聖'),
+  ('经', '經'),
+  ('华', '華'),
+  ('亲', '親'),
+  ('于', '於'),
+  ('稣', '穌'),
+  ('约', '約'),
+  ('灵', '靈'),
+  ('马', '馬'),
+  ('罗', '羅'),
+];
+
+final _simplified = {for (final (s, _) in _hanPairs) s.runes.single};
+
+final _traditional = {for (final (_, t) in _hanPairs) t.runes.single};
 
 // Письменность буквы [rune] или `null`, если это не буква письменностей
 // [_ranges].
@@ -115,9 +218,11 @@ String? _scriptOfRune(int rune) {
 
 final _letter = RegExp(r'\p{L}', unicode: true);
 
-// Диапазоны букв: письменность, первый и последний код. `Hans` по буквам
-// не отличить от `Hani`, его здесь нет. Коптские буквы греческого блока
-// стоят раньше греческого диапазона и считаются коптскими.
+// Диапазоны букв: письменность, первый и последний код. `Hans`, `Hant`
+// и `Jpan` по одной букве не отличить от `Hani`, их здесь нет; кана
+// (`Kana`, хирагана и катакана) считается отдельно и складывается
+// с иероглифами. Коптские буквы греческого блока стоят раньше греческого
+// диапазона и считаются коптскими.
 const _ranges = [
   ('Latn', 0x41, 0x5A),
   ('Latn', 0x61, 0x7A),
@@ -175,4 +280,25 @@ const _ranges = [
   ('Hang', 0x1100, 0x11FF),
   ('Hang', 0x3130, 0x318F),
   ('Hang', 0xAC00, 0xD7AF),
+  ('Kana', 0x3040, 0x30FF),
+  ('Kana', 0x31F0, 0x31FF),
+  ('Kana', 0xFF66, 0xFF9D),
+  ('Khmr', 0x1780, 0x17FF),
+  ('Khmr', 0x19E0, 0x19FF),
+  ('Sinh', 0xD80, 0xDFF),
+  ('Laoo', 0xE80, 0xEFF),
+  ('Mong', 0x1800, 0x18AF),
+  ('Mong', 0x11660, 0x1167F),
+  ('Cher', 0x13A0, 0x13FF),
+  ('Cher', 0xAB70, 0xABBF),
+  ('Cans', 0x1400, 0x167F),
+  ('Cans', 0x18B0, 0x18FF),
+  ('Cans', 0x11AB0, 0x11ABF),
+  ('Yiii', 0xA000, 0xA4CF),
+  ('Vaii', 0xA500, 0xA63F),
+  ('Thaa', 0x780, 0x7BF),
+  ('Java', 0xA980, 0xA9DF),
+  ('Bali', 0x1B00, 0x1B7F),
+  ('Kali', 0xA900, 0xA92F),
+  ('Sylo', 0xA800, 0xA82F),
 ];
