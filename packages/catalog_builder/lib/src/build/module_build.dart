@@ -72,7 +72,8 @@ const _russianOrderLanguages = {'ru', 'uk', 'be'};
 /// в [Built.warnings]. Книги идут по номерам, у языков `ru`, `uk` и `be` —
 /// по [BookCatalog.russianOrder]. Схема нумерации каждой книги
 /// распознаётся по последним стихам её глав. Сноски нумеруются по книгам
-/// подряд. Лицензия берётся из `copr.htm` архива, `created` — дата [now].
+/// подряд. Лицензия берётся из `copr.htm` архива, `created` — дата [now],
+/// `version` — [version], по умолчанию `UpdateDate` перевода.
 ///
 /// Файл пишется рядом, в `<outPath>.part`, проверяется [validateModule]
 /// и только потом встаёт на место [outPath]. Не прочёлся архив, не
@@ -84,6 +85,7 @@ BuildOutcome buildModule(
   String outPath, {
   required Overrides overrides,
   required DateTime now,
+  String? version,
 }) {
   final Archive archive;
   try {
@@ -121,7 +123,7 @@ BuildOutcome buildModule(
     description: t.description,
     source: 'ebible:${t.translationId}',
     sourceUrl: t.publicationUrl,
-    version: t.updateDate,
+    version: version ?? t.updateDate,
     created: isoDate(now),
     catalog: 'hisbible',
     catalogId: t.translationId,

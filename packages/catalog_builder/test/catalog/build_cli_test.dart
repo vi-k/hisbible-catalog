@@ -6,20 +6,40 @@ import 'package:test/test.dart';
 
 void main() {
   test('options: values, the flag, unknown and repeated keys', () {
-    expect(parseCliOptions(['--csv', 'a.csv', '--dry-run', '--limit', '5']), {
+    Map<String, String>? options(List<String> args) =>
+        parseCliOptions(args)?.options;
+
+    expect(options(['--csv', 'a.csv', '--dry-run', '--limit', '5']), {
       '--csv': 'a.csv',
       '--dry-run': '',
       '--limit': '5',
     });
-    expect(parseCliOptions(['--limit', '']), {'--limit': ''});
-    expect(parseCliOptions(['--deadline', '300', '--allow-mass-withdrawal']), {
+    expect(options(['--limit', '']), {'--limit': ''});
+    expect(options(['--deadline', '300', '--allow-mass-withdrawal']), {
       '--deadline': '300',
       '--allow-mass-withdrawal': '',
     });
-    expect(parseCliOptions(['--bogus', 'x']), isNull);
-    expect(parseCliOptions(['--csv', 'a', '--csv', 'b']), isNull);
-    expect(parseCliOptions(['--dry-run', '--dry-run']), isNull);
-    expect(parseCliOptions(['--csv']), isNull, reason: 'no value');
+    expect(options(['--bogus', 'x']), isNull);
+    expect(options(['--csv', 'a', '--csv', 'b']), isNull);
+    expect(options(['--dry-run', '--dry-run']), isNull);
+    expect(options(['--csv']), isNull, reason: 'no value');
+  });
+
+  test('--rebuild repeats and takes only translation ids', () {
+    final parsed = parseCliOptions([
+      '--rebuild',
+      'engkjv',
+      '--dry-run',
+      '--rebuild',
+      'ru_syn-2',
+    ]);
+    expect(parsed?.rebuild, ['engkjv', 'ru_syn-2']);
+    expect(parsed?.options, {'--dry-run': ''});
+    expect(parseCliOptions(['--csv', 'a'])?.rebuild, isEmpty);
+    expect(parseCliOptions(['--rebuild']), isNull, reason: 'no value');
+    expect(parseCliOptions(['--rebuild', '']), isNull);
+    expect(parseCliOptions(['--rebuild', 'a/../b']), isNull);
+    expect(parseCliOptions(['--rebuild', 'a b']), isNull);
   });
 
   test('bad arguments exit with 64 and the usage', () async {
@@ -35,6 +55,9 @@ void main() {
       ['--one', 'a.zip'],
       ['--out', 'a.hb'],
       ['--apply-deletions', 'd.json', '--dry-run'],
+      ['--rebuild', 'a/b'],
+      ['--one', 'a.zip', '--csv', 'a.csv', '--rebuild', 'aaa'],
+      ['--apply-deletions', 'd.json', '--rebuild', 'aaa'],
     ]) {
       final err = StringBuffer();
 

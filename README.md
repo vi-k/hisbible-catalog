@@ -19,7 +19,7 @@ files, and writes `index/index.json` and `sources/sources.lock.json`. The
 Run the commands from the repository root after `dart pub get`:
 
 ```
-dart run catalog_builder:build [--csv <path or url>] [--limit <N>] [--deadline <minutes>] [--allow-mass-withdrawal] [--dry-run] [--work <dir>]
+dart run catalog_builder:build [--csv <path or url>] [--limit <N>] [--deadline <minutes>] [--rebuild <id>]... [--allow-mass-withdrawal] [--dry-run] [--work <dir>]
 dart run catalog_builder:build --one <zip> --csv <csv> [--out <file>]
 dart run catalog_builder:build --apply-deletions <deletions.json>
 ```
@@ -68,41 +68,26 @@ dart run catalog_builder:build --apply-deletions <deletions.json>
 
 ### Rebuilding a module
 
-A module is rebuilt only when its translation gets a new `UpdateDate` on
-eBible.org. If the index entry and the `sources/sources.lock.json` entry of a
-translation both carry its current `UpdateDate`, the module stays as it is. So
-a change to `overrides.json` (for example, a new abbreviation) or to the
-builder does not reach modules that are already published, and there is no flag
-to force a rebuild. To rebuild one module:
+A module is rebuilt by itself only when its translation gets a new `UpdateDate`
+on eBible.org. To rebuild a module whose `UpdateDate` is the same, for example
+after a change to `overrides.json` or to the builder, pass its translation id
+to `--rebuild`; repeat the key for several modules. In the `build` workflow,
+put the ids in the `rebuild` input, separated by spaces or commas.
 
-1. Delete the translation's entry from `sources/sources.lock.json`. Keep its
-   entry in `index/index.json`.
-2. Run the build. Either push the change to `main` and start the `build`
-   workflow, which commits and pushes `index/` and `sources/` itself. Or run
-   `dart run catalog_builder:build` locally, then commit and push `index/` and
-   `sources/`. A dry run first shows the files the run would upload.
-3. The run downloads the archive from eBible.org again, uploads it to
-   `sources-<date>`, writes a new lock entry, and rebuilds the module into
-   `build-<date>`. If the old module file is in another release, it goes to
-   `sources/pending-deletions.json`, and the next run deletes it. If the module
-   was last built the same day, the release and file name are the same: the
-   upload overwrites the file (`--clobber`), the URL stays, and nothing goes to
-   the deletion list.
-4. The old source copy is not in the deletion list, because the run no longer
-   knows it. If its release and file name differ from the new lock entry,
-   delete it by hand, with the `release` and `asset` of the deleted entry:
+A rebuilt module is published as the next revision of its version: `2025-03-04`
+becomes `2025-03-04.1`, then `2025-03-04.2` (see "Versions" in `FORMAT.md`).
+The app offers it as an update to everyone who installed the module. The run
+builds it from the saved source copy in `sources/sources.lock.json`, and
+downloads the archive from eBible.org only if there is no copy of the current
+`UpdateDate`. The module goes to a new file, `<id>-<version>.hb` in
+`build-<date>`, and the old file goes to `sources/pending-deletions.json` as
+usual. When eBible publishes a new `UpdateDate`, the version starts again from
+the bare date.
 
-   ```
-   gh release delete-asset <release> <asset> --repo vi-k/hisbible-catalog --yes
-   ```
-
-The rebuilt module keeps its `version`, the `UpdateDate`, and the app offers an
-update only when `version` changes. So the new file reaches only new downloads;
-people who installed the module keep the old file.
-
-Do not delete the index entry instead: the module is then rebuilt from the
-saved source copy, but its old file is not listed for deletion and stays in its
-release.
+Rebuilds come first in the run, before new and updated translations, and count
+toward `--limit`. An id that the run does not take (not in `translations.csv`,
+not redistributable, excluded or skipped) is listed under "Failed" in the
+report.
 
 ## License
 

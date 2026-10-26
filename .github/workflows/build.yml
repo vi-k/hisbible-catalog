@@ -9,6 +9,12 @@ on:
         description: At most this many new and updated modules; empty is all
         required: false
         default: ''
+      rebuild:
+        description: >-
+          Translation ids to rebuild as a new revision, separated by spaces or
+          commas
+        required: false
+        default: ''
       allow_mass_withdrawal:
         description: Withdraw modules even beyond the mass withdrawal limit
         required: false
@@ -43,9 +49,14 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           LIMIT: ${{ inputs.limit }}
+          REBUILD: ${{ inputs.rebuild }}
           ALLOW_MASS_WITHDRAWAL: ${{ inputs.allow_mass_withdrawal }}
         run: |
           args=(--limit "$LIMIT" --deadline 300)
+          read -ra ids <<< "${REBUILD//,/ }"
+          for id in "${ids[@]}"; do
+            args+=(--rebuild "$id")
+          done
           if [ "$ALLOW_MASS_WITHDRAWAL" = true ]; then
             args+=(--allow-mass-withdrawal)
           fi

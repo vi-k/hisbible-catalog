@@ -88,15 +88,21 @@ final class CatalogRun {
 ///    [updateDatePattern], пропускается и попадает в
 ///    [BuildReport.skipped]; прежние запись и копия такого перевода
 ///    остаются как есть.
-/// 3. Перевод, чья версия в [previous] и копия в [lock] того же
-///    `UpdateDate`, остаётся без изменений.
+/// 3. Перевод, чья версия в [previous] (её дата, [moduleVersionDate])
+///    и копия в [lock] того же `UpdateDate`, остаётся без изменений, если
+///    его id нет в [rebuild].
 /// 4. Новый или обновлённый: исходник — своя копия из [lock] того же
 ///    `UpdateDate` (sha256 сверяется) или архив eBible, который
 ///    выкладывается в `sources-<дата>` (pre-release) и попадает в [lock];
 ///    копия прежней даты тогда идёт к удалению. Затем [buildModule]:
 ///    [Built] — файл в `build-<дата>`, запись в указателе, файл прежней
 ///    версии идёт к удалению; [BuildFailed] или исходник не получен —
-///    прежняя запись остаётся, причина в отчёте.
+///    прежняя запись остаётся, причина в отчёте. Версия модуля — сам
+///    `UpdateDate`; если в [previous] уже версия той же даты, она
+///    остаётся, а для id из [rebuild] становится следующей правкой:
+///    `<дата>` → `<дата>.1` → `<дата>.2`. Файл модуля —
+///    `<id>-<версия>.hb`. Id из [rebuild], который прогон не взял,
+///    попадает в [BuildReport.failed].
 /// 5. Был в [previous], а сейчас не взят — уходит в `withdrawn` с датой
 ///    [now]; его файлы модуля и исходника идут к удалению, запись —
 ///    из [lock]. Собранный снова уходит из `withdrawn`. Если так уходят
@@ -105,7 +111,8 @@ final class CatalogRun {
 ///    никто не отзывается и ничего не идёт к удалению, а
 ///    [BuildReport.withdrawalRefused] говорит почему.
 ///
-/// Сначала идут новые и обновлённые, потом те, чья копия в [lock] уже
+/// Сначала идут id из [rebuild], потом новые и обновлённые, потом те,
+/// чья копия в [lock] уже
 /// того же `UpdateDate`, а сборка в прошлый раз не прошла: вечно
 /// несобираемые не съедают [limit]. [limit] — не больше стольких сборок
 /// за прогон; остальные ждут следующего и названы в
@@ -140,6 +147,7 @@ Future<CatalogRun> runCatalogBuild({
   FontsLock fonts = FontsLock.empty,
   List<ReleaseAsset> pending = const [],
   int? limit,
+  Set<String> rebuild = const {},
   bool allowMassWithdrawal = false,
   DateTime? deadline,
   DateTime Function() clock = _utcNow,
@@ -194,17 +202,29 @@ Future<CatalogRun> runCatalogBuild({
   final waiting = <String>[];
   final failed = <String, List<String>>{};
   final warnings = <String, List<String>>{};
+  final requested = <EbibleTranslation>[];
   final fresh = <EbibleTranslation>[];
   final retries = <EbibleTranslation>[];
   for (final id in taken.keys.toList()..sort()) {
     final t = taken[id]!;
     final old = before[id];
     final copied = run.entries[id]?.updateDate == t.updateDate;
-    if (old != null && old.version == t.updateDate && copied) {
+    final current =
+        old != null && moduleVersionDate(old.version) == t.updateDate;
+    if (rebuild.contains(id)) {
+      requested.add(t);
+    } else if (current && copied) {
       modules[id] = old;
       unchanged.add(id);
     } else {
       (copied ? retries : fresh).add(t);
+    }
+  }
+  for (final id in rebuild.toList()..sort()) {
+    if (!taken.containsKey(id)) {
+      failed[id] = [
+        'cannot rebuild $id: the run did not take it from translations.csv',
+      ];
     }
   }
   for (final id in held) {
@@ -214,7 +234,7 @@ Future<CatalogRun> runCatalogBuild({
   }
   var attempts = 0;
   String? stopped;
-  for (final t in [...fresh, ...retries]) {
+  for (final t in [...requested, ...fresh, ...retries]) {
     final id = t.translationId;
     final old = before[id];
     stopped ??=
@@ -232,7 +252,10 @@ Future<CatalogRun> runCatalogBuild({
     attempts++;
     (IndexModule?, List<String>) outcome;
     try {
-      outcome = await run.build(t);
+      outcome = await run.build(
+        t,
+        _versionOf(t, old, rebuild: rebuild.contains(id)),
+      );
     } on Object catch (e) {
       // Ошибка, которой сборка не ждала, валит только этот перевод.
       outcome = (null, ['unexpected error: $e']);
@@ -332,14 +355,37 @@ Future<CatalogRun> runCatalogBuild({
   );
 }
 
+// Версия, с которой выйдет модуль перевода [t] при прежней записи [old]:
+// `UpdateDate`, а если у [old] та же дата — её версия или, для [rebuild],
+// следующая правка.
+String _versionOf(
+  EbibleTranslation t,
+  IndexModule? old, {
+  required bool rebuild,
+}) {
+  if (old == null || moduleVersionDate(old.version) != t.updateDate) {
+    return t.updateDate;
+  }
+  if (!rebuild) {
+    return old.version;
+  }
+  final dot = old.version.indexOf('.');
+  final revision = dot < 0
+      ? 0
+      : int.tryParse(old.version.substring(dot + 1)) ?? 0;
+
+  return '${t.updateDate}.${revision + 1}';
+}
+
 // Что не так со строкой перевода [t], которую сборка взяла бы, или `null`.
 String? _rowProblem(EbibleTranslation t) {
   if (!translationIdPattern.hasMatch(t.translationId)) {
     return 'translationId "${t.translationId}" is not letters, digits, '
         '_ and -';
   }
-  if (!updateDatePattern.hasMatch(t.updateDate)) {
-    return 'UpdateDate "${t.updateDate}" is not YYYY-MM-DD';
+  if (!updateDatePattern.hasMatch(t.updateDate) ||
+      moduleVersionDate(t.updateDate) == null) {
+    return 'UpdateDate "${t.updateDate}" is not a YYYY-MM-DD date';
   }
 
   return null;
@@ -468,9 +514,12 @@ final class _Run {
   final _Releases _sources;
   final _Releases _builds;
 
-  // Собирает и выкладывает модуль перевода [t]: запись указателя
-  // и предупреждения либо `null` и причины.
-  Future<(IndexModule?, List<String>)> build(EbibleTranslation t) async {
+  // Собирает и выкладывает модуль перевода [t] с версией [version]:
+  // запись указателя и предупреждения либо `null` и причины.
+  Future<(IndexModule?, List<String>)> build(
+    EbibleTranslation t,
+    String version,
+  ) async {
     final id = t.translationId;
     final asset = '$id-${t.updateDate}_usfm.zip';
     final source = File(p.join(work.path, 'sources', asset));
@@ -524,9 +573,10 @@ final class _Run {
     final outcome = buildModule(
       t,
       source,
-      p.join(work.path, 'modules', '$id-${t.updateDate}$moduleExtension'),
+      p.join(work.path, 'modules', '$id-$version$moduleExtension'),
       overrides: overrides,
       now: now,
+      version: version,
     );
     // Архив выложен или уже лежит в выпуске; после сборки он не нужен.
     _remove(source);
@@ -540,7 +590,7 @@ final class _Run {
 
         return url == null
             ? (null, [problem])
-            : (_entry(t, outcome, url), outcome.warnings);
+            : (_entry(t, outcome, url, version), outcome.warnings);
     }
   }
 
@@ -590,8 +640,8 @@ final class _Run {
 }
 
 // Запись указателя для собранного модуля [built] перевода [t] по адресу
-// [url].
-IndexModule _entry(EbibleTranslation t, Built built, Uri url) {
+// [url] с версией [version].
+IndexModule _entry(EbibleTranslation t, Built built, Uri url, String version) {
   final meta = built.meta;
 
   return IndexModule(
@@ -611,7 +661,7 @@ IndexModule _entry(EbibleTranslation t, Built built, Uri url) {
     size: built.size,
     sha256: built.sha256,
     url: url.toString(),
-    version: t.updateDate,
+    version: version,
     moduleFormat: formatVersion,
   );
 }

@@ -31,6 +31,7 @@ void main() {
     FontsLock fonts = FontsLock.empty,
     List<ReleaseAsset>? pending,
     int? limit,
+    Set<String> rebuild = const {},
     bool allowMassWithdrawal = false,
     DateTime? deadline,
     DateTime Function()? clock,
@@ -48,6 +49,7 @@ void main() {
     now: now ?? DateTime.utc(2026, 11),
     fonts: fonts,
     limit: limit,
+    rebuild: rebuild,
     allowMassWithdrawal: allowMassWithdrawal,
     deadline: deadline,
     clock: clock ?? () => DateTime.utc(2026, 11),
@@ -217,6 +219,139 @@ void main() {
     expect(second.lock.entries['aaa']!.release, 'sources-2026-12-01');
     expect(second.report.built, ['aaa']);
     expect(second.report.unchanged, ['bbb']);
+  });
+
+  // Версия в meta модуля [file] выпуска [release].
+  String? metaVersion(String release, String file) {
+    final path = p.join(work.path, 'meta-$file');
+    File(path).writeAsBytesSync(publisher.releases[release]![file]!);
+
+    return readModuleMeta(path).version;
+  }
+
+  test('a rebuild key publishes the next revision from the copy', () async {
+    final first = await run([offer('aaa'), offer('bbb')]);
+    fetcher.calls.clear();
+
+    final second = await run(
+      [offer('aaa'), offer('bbb')],
+      after: first,
+      rebuild: {'aaa'},
+      now: DateTime.utc(2026, 12),
+    );
+
+    final aaa = second.index.modules.first;
+    expect(aaa.version, '2026-09-01.1');
+    expect(aaa.url, '$_release/build-2026-12-01/aaa-2026-09-01.1.hb');
+    expect(metaVersion('build-2026-12-01', 'aaa-2026-09-01.1.hb'), aaa.version);
+    expect(second.index.modules.last, first.index.modules.last);
+    expect(fetcher.calls, [
+      Uri.parse('$_release/sources-2026-11-01/aaa-2026-09-01_usfm.zip'),
+    ], reason: 'the locked copy, not eBible');
+    expect(publisher.files('sources-2026-12-01'), isEmpty);
+    expect(second.lock, first.lock);
+    expect(second.deletions, [
+      (release: 'build-2026-11-01', asset: 'aaa-2026-09-01.hb'),
+    ]);
+    expect(second.report.built, ['aaa']);
+    expect(second.report.unchanged, ['bbb']);
+
+    // Ещё раз в тот же день — следующая правка, прежняя идёт к удалению.
+    final third = await run(
+      [offer('aaa'), offer('bbb')],
+      after: second,
+      rebuild: {'aaa'},
+      now: DateTime.utc(2026, 12),
+    );
+    expect(third.index.modules.first.version, '2026-09-01.2');
+    expect(third.deletions, [
+      (release: 'build-2026-12-01', asset: 'aaa-2026-09-01.1.hb'),
+    ]);
+
+    // Без ключа правка остаётся, модуль не пересобирается.
+    final uploaded = publisher.uploads.length;
+    final fourth = await run(
+      [offer('aaa'), offer('bbb')],
+      after: third,
+      now: DateTime.utc(2027),
+    );
+    expect(fourth.index, third.index);
+    expect(fourth.report.unchanged, ['aaa', 'bbb']);
+    expect(publisher.uploads, hasLength(uploaded));
+
+    // Новый UpdateDate сбрасывает правку, и с ключом тоже.
+    final fifth = await run(
+      [offer('aaa', date: '2026-12-10'), offer('bbb')],
+      after: fourth,
+      rebuild: {'aaa'},
+      now: DateTime.utc(2027, 2),
+    );
+    expect(fifth.index.modules.first.version, '2026-12-10');
+    expect(
+      fifth.index.modules.first.url,
+      '$_release/build-2027-02-01/aaa-2026-12-10.hb',
+    );
+  });
+
+  test('a rebuild goes ahead of the limit and new translations', () async {
+    final first = await run([offer('bbb')]);
+
+    final second = await run(
+      [offer('aaa'), offer('bbb')],
+      after: first,
+      rebuild: {'bbb'},
+      limit: 1,
+      now: DateTime.utc(2026, 12),
+    );
+
+    expect(second.report.built, ['bbb']);
+    expect(second.report.waiting, ['aaa']);
+    expect(second.index.modules.single.version, '2026-09-01.1');
+  });
+
+  test('a rebuild key for a translation not taken is a failure', () async {
+    final first = await run([offer('aaa')]);
+
+    final second = await run(
+      [offer('aaa'), offer('ccc', redistributable: false)],
+      after: first,
+      rebuild: {'ccc', 'zzz'},
+      now: DateTime.utc(2026, 12),
+    );
+
+    expect(second.index, first.index);
+    expect(second.report.failed, {
+      'ccc': [contains('cannot rebuild ccc')],
+      'zzz': [contains('cannot rebuild zzz')],
+    });
+  });
+
+  test('a lost source copy rebuilds with the same version', () async {
+    final first = await run([offer('aaa')]);
+    final second = await run(
+      [offer('aaa')],
+      after: first,
+      rebuild: {'aaa'},
+      now: DateTime.utc(2026, 12),
+    );
+    fetcher.calls.clear();
+
+    final third = await run(
+      [offer('aaa')],
+      after: CatalogRun(
+        index: second.index,
+        lock: const SourcesLock({}),
+        report: second.report,
+      ),
+      now: DateTime.utc(2027),
+    );
+
+    expect(fetcher.calls, [_ebible('aaa')]);
+    expect(third.index.modules.single.version, '2026-09-01.1');
+    expect(
+      third.index.modules.single.url,
+      '$_release/build-2027-01-01/aaa-2026-09-01.1.hb',
+    );
   });
 
   test('source copy reused for the same date', () async {
@@ -571,6 +706,7 @@ void main() {
         _translation('c/../d', date: '2026-09-01', ot: 3),
         _translation('e f', date: '2026-09-01', ot: 3),
         _translation('', date: '2026-09-01', ot: 3),
+        _translation('ggg', date: '2026-02-30', ot: 3),
       ],
       after: first,
       now: DateTime.utc(2026, 12),
@@ -581,6 +717,7 @@ void main() {
       'c/../d': contains('translationId'),
       'e f': contains('translationId'),
       '': contains('translationId'),
+      'ggg': contains('UpdateDate'),
     });
     expect(second.index, first.index);
     expect(second.lock, first.lock);
@@ -588,7 +725,7 @@ void main() {
     expect(second.deletions, isEmpty);
     expect(fetcher.calls, hasLength(2), reason: 'only the first run fetched');
     final text = second.report.toMarkdown();
-    expect(text, contains('- Skipped rows: 4\n'));
+    expect(text, contains('- Skipped rows: 5\n'));
     expect(text, contains('c/../d: translationId "c/../d"'));
     expect(text, contains('(no translationId): '));
   });

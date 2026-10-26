@@ -38,8 +38,8 @@ Uri? csvAddress(String csv) {
 const _usage =
     'usage:\n'
     '  dart run catalog_builder:build [--csv <path or url>] [--limit <N>] '
-    '[--deadline <minutes>] [--allow-mass-withdrawal] [--dry-run] '
-    '[--work <dir>]\n'
+    '[--deadline <minutes>] [--rebuild <id>]... [--allow-mass-withdrawal] '
+    '[--dry-run] [--work <dir>]\n'
     '  dart run catalog_builder:build --one <zip> --csv <csv> '
     '[--out <file>]\n'
     '  dart run catalog_builder:build --apply-deletions <deletions.json>';
@@ -52,10 +52,16 @@ final _datedId = RegExp(r'^(.+)-\d{4}-\d{2}-\d{2}$');
 /// с указателем и коммитится с ним.
 const pendingDeletionsPath = 'sources/pending-deletions.json';
 
-/// Разбирает аргументы [args] сборки: ключи со значениями и флаги
-/// `--dry-run` и `--allow-mass-withdrawal` (значение — пустая строка);
-/// незнакомый ключ, ключ без значения или повтор — `null`.
-Map<String, String>? parseCliOptions(List<String> args) {
+/// Разобранные аргументы сборки: ключи со значениями и флаги в
+/// `options`, id из повторяемого ключа `--rebuild` в `rebuild`.
+typedef CliOptions = ({Map<String, String> options, List<String> rebuild});
+
+/// Разбирает аргументы [args] сборки: ключи со значениями, флаги
+/// `--dry-run` и `--allow-mass-withdrawal` (значение — пустая строка)
+/// и повторяемый `--rebuild <id>`; незнакомый ключ, ключ без значения,
+/// повтор другого ключа или id `--rebuild` не по [translationIdPattern] —
+/// `null`.
+CliOptions? parseCliOptions(List<String> args) {
   const valued = {
     '--one',
     '--csv',
@@ -67,12 +73,19 @@ Map<String, String>? parseCliOptions(List<String> args) {
   };
   const flags = {'--dry-run', '--allow-mass-withdrawal'};
   final options = <String, String>{};
+  final rebuild = <String>[];
   for (var i = 0; i < args.length; i++) {
     final key = args[i];
     if (options.containsKey(key)) {
       return null;
     }
-    if (flags.contains(key)) {
+    if (key == '--rebuild' && i + 1 < args.length) {
+      final id = args[++i];
+      if (!translationIdPattern.hasMatch(id)) {
+        return null;
+      }
+      rebuild.add(id);
+    } else if (flags.contains(key)) {
       options[key] = '';
     } else if (valued.contains(key) && i + 1 < args.length) {
       options[key] = args[++i];
@@ -81,7 +94,7 @@ Map<String, String>? parseCliOptions(List<String> args) {
     }
   }
 
-  return options;
+  return (options: options, rebuild: rebuild);
 }
 
 // Команда сборки с выводом в [_out] и [_err].
@@ -92,8 +105,14 @@ final class _Cli {
   final StringSink _err;
 
   Future<int> run(List<String> args) async {
-    final options = parseCliOptions(args);
-    if (options == null) {
+    final parsed = parseCliOptions(args);
+    if (parsed == null) {
+      return _badArguments();
+    }
+    final (:options, :rebuild) = parsed;
+    if (rebuild.isNotEmpty &&
+        (options.containsKey('--one') ||
+            options.containsKey('--apply-deletions'))) {
       return _badArguments();
     }
     if (options.containsKey('--one')) {
@@ -129,6 +148,7 @@ final class _Cli {
       deadline: minutes == null
           ? null
           : DateTime.now().toUtc().add(Duration(minutes: minutes)),
+      rebuild: rebuild.toSet(),
       allowMassWithdrawal: options.containsKey('--allow-mass-withdrawal'),
       dryRun: options.containsKey('--dry-run'),
       work: options['--work'] ?? p.join('out', 'work'),
@@ -145,6 +165,7 @@ final class _Cli {
     required String csv,
     required int? limit,
     required DateTime? deadline,
+    required Set<String> rebuild,
     required bool allowMassWithdrawal,
     required bool dryRun,
     required String work,
@@ -172,6 +193,7 @@ final class _Cli {
         work: Directory(work)..createSync(recursive: true),
         now: DateTime.now().toUtc(),
         limit: limit,
+        rebuild: rebuild,
         allowMassWithdrawal: allowMassWithdrawal,
         deadline: deadline,
         keepFiles: dryRun,
