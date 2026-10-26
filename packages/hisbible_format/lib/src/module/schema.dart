@@ -14,9 +14,17 @@ const int formatApplicationId = 1214857833;
 
 /// На сколько `verse_end` слитых стихов может быть больше `verse`.
 ///
-/// Больший `verse_end` — негодный файл: `VerseEndOutOfRange` у
+/// Больший `verse_end` — негодный файл: `VerseOutOfRange` у
 /// `checkModuleFile`.
 const int maxVerseEndSpan = 200;
+
+/// Наибольший номер главы в `verses`: в самой длинной книге, Псалтири,
+/// 150 глав. Больший — негодный файл: `VerseOutOfRange`.
+const int maxChapterNumber = 200;
+
+/// Наибольший номер стиха в `verses`: в самой длинной главе, Псалме 118
+/// (119), 176 стихов. Больший — негодный файл: `VerseOutOfRange`.
+const int maxVerseNumber = 1000;
 
 /// Направление письма модуля.
 enum WritingDirection {

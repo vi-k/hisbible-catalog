@@ -87,11 +87,13 @@ final class EmptyModule extends ModuleProblem {
   String toString() => 'EmptyModule()';
 }
 
-/// У слитых стихов Библии `verse_end` больше `verse` больше чем на 200
-/// (`maxVerseEndSpan`): файл испорчен или собран со злым умыслом.
-final class VerseEndOutOfRange extends ModuleProblem {
+/// Номера стиха Библии вне границ формата: глава больше 200
+/// (`maxChapterNumber`), стих больше 1000 (`maxVerseNumber`) или
+/// `verse_end` больше стиха больше чем на 200 (`maxVerseEndSpan`). Файл
+/// испорчен или собран со злым умыслом.
+final class VerseOutOfRange extends ModuleProblem {
   /// Создаёт причину для стиха [chapter]:[verse] книги с кодом [book].
-  const VerseEndOutOfRange(this.book, this.chapter, this.verse);
+  const VerseOutOfRange(this.book, this.chapter, this.verse);
 
   /// Код книги в файле.
   final String book;
@@ -99,21 +101,48 @@ final class VerseEndOutOfRange extends ModuleProblem {
   /// Глава.
   final int chapter;
 
-  /// Стих, у которого негодный `verse_end`.
+  /// Стих; у слитых стихов — первый.
   final int verse;
 
   @override
   bool operator ==(Object other) =>
-      other is VerseEndOutOfRange &&
+      other is VerseOutOfRange &&
       other.book == book &&
       other.chapter == chapter &&
       other.verse == verse;
 
   @override
-  int get hashCode => Object.hash(VerseEndOutOfRange, book, chapter, verse);
+  int get hashCode => Object.hash(VerseOutOfRange, book, chapter, verse);
 
   @override
-  String toString() => 'VerseEndOutOfRange($book $chapter:$verse)';
+  String toString() => 'VerseOutOfRange($book $chapter:$verse)';
+}
+
+/// В модуле есть объект схемы, кроме таблиц и их индексов: представление,
+/// триггер или виртуальная таблица. Запрос к такому модулю может зависнуть
+/// или сделать то, чего читатель не ждёт.
+final class UnsupportedSchemaObject extends ModuleProblem {
+  /// Создаёт причину для объекта [name] вида [type].
+  const UnsupportedSchemaObject(this.type, this.name);
+
+  /// Вид объекта: `view`, `trigger`, `virtual table` или другой `type`
+  /// из `sqlite_master`.
+  final String type;
+
+  /// Имя объекта.
+  final String name;
+
+  @override
+  bool operator ==(Object other) =>
+      other is UnsupportedSchemaObject &&
+      other.type == type &&
+      other.name == name;
+
+  @override
+  int get hashCode => Object.hash(UnsupportedSchemaObject, type, name);
+
+  @override
+  String toString() => 'UnsupportedSchemaObject($type $name)';
 }
 
 /// Тип модуля приложение не читает.

@@ -15,9 +15,12 @@ const int _notADatabase = 26;
 /// Проверяются подпись и версия формата, обязательные ключи `meta`, таблицы
 /// типа модуля и их столбцы, а у Библии — хотя бы один стих книги из
 /// `books`; у толкований и ссылок — хотя бы одна запись с известной книгой.
-/// У Библии `verse_end` больше `verse` больше чем на [maxVerseEndSpan] —
-/// [VerseEndOutOfRange]; `verse_end`, который заходит на следующий стих
-/// главы, файл не портит: читатель считает такой стих одним.
+/// В файле только таблицы и их индексы, иначе — [UnsupportedSchemaObject]
+/// до любого запроса к `meta`. У Библии глава больше [maxChapterNumber],
+/// стих больше [maxVerseNumber] или `verse_end` больше `verse` больше чем
+/// на [maxVerseEndSpan] — [VerseOutOfRange]; `verse_end`, который заходит
+/// на следующий стих главы, файл не портит: читатель считает такой стих
+/// одним.
 /// Исключений наружу не бросает: любой отказ — это [ModuleProblem].
 ModuleProblem? checkModuleFile(String path) {
   final Database db;
@@ -43,7 +46,7 @@ ModuleProblem? checkModuleFile(String path) {
       return const EmptyModule();
     }
 
-    return meta.type == ModuleType.bible ? _verseEndProblem(db) : null;
+    return meta.type == ModuleType.bible ? _verseProblem(db) : null;
   } on ModuleOpenException catch (e) {
     return e.problem;
   } on SqliteException catch (e) {
@@ -125,10 +128,12 @@ Database openModuleReadOnly(String path) {
 ModuleProblem problemOfSqlite(SqliteException e) =>
     e.resultCode == _notADatabase ? const NotSqlite() : Unreadable(e.message);
 
-/// Проверяет подпись и версию формата и читает `meta` открытой базы.
+/// Проверяет подпись и версию формата, объекты схемы и читает `meta`
+/// открытой базы.
 ///
 /// Чужая база — [NotHisbibleModule], версия новее [formatVersion] —
-/// [NewerFormat], без таблицы `meta` — [MissingTable]; всё это
+/// [NewerFormat], что-то кроме таблиц и их индексов —
+/// [UnsupportedSchemaObject], без таблицы `meta` — [MissingTable]; всё это
 /// в [ModuleOpenException].
 ModuleMeta readCheckedMeta(Database db) {
   final applicationId = db.select('PRAGMA application_id').single.columnAt(0);
@@ -139,8 +144,34 @@ ModuleMeta readCheckedMeta(Database db) {
   if (version > formatVersion) {
     throw ModuleOpenException(NewerFormat(version));
   }
+  if (_unsupportedObject(db) case final problem?) {
+    throw ModuleOpenException(problem);
+  }
 
   return ModuleMeta.fromValues(readMetaValues(db));
+}
+
+// Первый объект схемы, кроме таблиц и их индексов, или `null`. Чтение
+// `sqlite_master` разбирает схему, но не выполняет ни представлений, ни
+// триггеров.
+UnsupportedSchemaObject? _unsupportedObject(Database db) {
+  for (final row in db.select(
+    'SELECT type, name, sql FROM sqlite_master ORDER BY rowid',
+  )) {
+    final type = '${row.columnAt(0)}';
+    final sql = row.columnAt(2);
+    final virtual =
+        sql is String &&
+        sql.trimLeft().toUpperCase().startsWith('CREATE VIRTUAL');
+    if (virtual || (type != 'table' && type != 'index')) {
+      return UnsupportedSchemaObject(
+        virtual ? 'virtual table' : type,
+        '${row.columnAt(1)}',
+      );
+    }
+  }
+
+  return null;
 }
 
 /// Пары `meta` открытой базы; без таблицы — [MissingTable] в исключении.
@@ -200,9 +231,11 @@ bool _hasKnownBook(Database db, String table) {
   return false;
 }
 
-// Первый стих книги из `books`, чей `verse_end` больше `verse` больше чем
-// на [maxVerseEndSpan], как [VerseEndOutOfRange]; нет такого — `null`.
-ModuleProblem? _verseEndProblem(Database db) {
+// Первый стих книги из `books` с номерами вне границ формата (глава больше
+// [maxChapterNumber], стих больше [maxVerseNumber], `verse_end` больше
+// `verse` больше чем на [maxVerseEndSpan]) как [VerseOutOfRange]; нет
+// такого — `null`.
+ModuleProblem? _verseProblem(Database db) {
   final codes = readBookCodes(db).keys.toList();
   if (codes.isEmpty) {
     return null;
@@ -212,16 +245,17 @@ ModuleProblem? _verseEndProblem(Database db) {
     '(${List.filled(codes.length, '?').join(', ')}) '
     'AND chapter >= 1 AND verse >= 1 '
     "AND typeof(chapter) = 'integer' AND typeof(verse) = 'integer' "
-    "AND typeof(verse_end) = 'integer' AND verse_end - verse > ? "
+    'AND (chapter > ? OR verse > ? '
+    "OR (typeof(verse_end) = 'integer' AND verse_end - verse > ?)) "
     'ORDER BY book, chapter, verse LIMIT 1',
-    [...codes, maxVerseEndSpan],
+    [...codes, maxChapterNumber, maxVerseNumber, maxVerseEndSpan],
   );
   if (rows.isEmpty) {
     return null;
   }
   final row = rows.single;
 
-  return VerseEndOutOfRange(
+  return VerseOutOfRange(
     row.columnAt(0) as String,
     row.columnAt(1) as int,
     row.columnAt(2) as int,

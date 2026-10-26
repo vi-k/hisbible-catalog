@@ -21,7 +21,9 @@ export 'src/module/schema.dart'
         WritingDirection,
         formatApplicationId,
         formatVersion,
-        maxVerseEndSpan;
+        maxChapterNumber,
+        maxVerseEndSpan,
+        maxVerseNumber;
 export 'src/module_type.dart';
 export 'src/problems.dart';
 export 'src/refs/verse_ref.dart';

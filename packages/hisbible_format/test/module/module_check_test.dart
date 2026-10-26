@@ -131,6 +131,104 @@ void main() {
     expect(checkModuleFile(path), isNull);
   });
 
+  test('only tables and their indexes are allowed in a module', () {
+    ModuleProblem? problem(String name, List<String> statements) {
+      final path = fixture(name);
+      final db = sqlite3.open(path);
+      statements.forEach(db.execute);
+      db.close();
+      final problem = checkModuleFile(path);
+      expect(openProblem(path), problem, reason: name);
+      expect(
+        () => readModuleMeta(path),
+        throwsA(
+          isA<ModuleOpenException>().having(
+            (e) => e.problem,
+            'problem',
+            problem,
+          ),
+        ),
+        reason: name,
+      );
+
+      return problem;
+    }
+
+    // Представление `meta` с рекурсивным запросом повесило бы чтение `meta`:
+    // файл отвергается до него.
+    const view =
+        'CREATE VIEW meta AS WITH RECURSIVE n(i) AS '
+        '(SELECT 1 UNION ALL SELECT i + 1 FROM n) '
+        'SELECT key, value FROM meta_rows, n';
+    expect(
+      problem('view.hb', ['ALTER TABLE meta RENAME TO meta_rows', view]),
+      const UnsupportedSchemaObject('view', 'meta'),
+    );
+    expect(
+      problem('trigger.hb', [
+        'CREATE TRIGGER grow AFTER INSERT ON verses BEGIN SELECT 1; END',
+      ]),
+      const UnsupportedSchemaObject('trigger', 'grow'),
+    );
+    expect(
+      problem('virtual.hb', ['CREATE VIRTUAL TABLE box USING rtree(id, a, b)']),
+      const UnsupportedSchemaObject('virtual table', 'box'),
+    );
+
+    // Своё лишнее — таблица с индексом — модуль не портит.
+    final extra = fixture('extra.hb');
+    sqlite3.open(extra)
+      ..execute('CREATE TABLE notes (id INTEGER PRIMARY KEY, text TEXT)')
+      ..execute('CREATE INDEX notes_text ON notes (text)')
+      ..close();
+    expect(checkModuleFile(extra), isNull);
+
+    // Без подписи формата это просто чужая база.
+    final foreign = '${dir.path}/foreign-view.hb';
+    sqlite3.open(foreign)
+      ..execute('CREATE TABLE t (x)')
+      ..execute('CREATE VIEW v AS SELECT x FROM t')
+      ..close();
+    expect(checkModuleFile(foreign), const NotHisbibleModule());
+  });
+
+  test('chapters above $maxChapterNumber and verses above $maxVerseNumber '
+      'are a problem', () {
+    String bible(String name, Set<(int, int)> places) {
+      final path = '${dir.path}/$name';
+      final writer = ModuleWriter.create(path, fixtureMeta)
+        ..addBook(
+          number: 10,
+          shortName: 'Быт',
+          longName: 'Бытие',
+          scheme: VerseScheme.eng,
+        );
+      for (final (chapter, verse) in places) {
+        writer.addVerse(10, chapter, verse, 'Стих');
+      }
+      writer.finish();
+
+      return path;
+    }
+
+    final edge = bible('edge.hb', {(1, 1), (maxChapterNumber, maxVerseNumber)});
+    expect(checkModuleFile(edge), isNull);
+
+    for (final (name, chapter, verse) in [
+      ('chapter', maxChapterNumber + 1, 1),
+      ('verse', 1, maxVerseNumber + 1),
+      ('huge', 1 << 62, 1 << 62),
+    ]) {
+      final path = bible('$name.hb', {(1, 1), (chapter, verse)});
+      expect(
+        checkModuleFile(path),
+        VerseOutOfRange('GEN', chapter, verse),
+        reason: name,
+      );
+      expect(openProblem(path), VerseOutOfRange('GEN', chapter, verse));
+    }
+  });
+
   group('verse_end', () {
     // Пишет Бытие 1 со стихами [verses]: номер → последний из слитых.
     String bible(String name, Map<int, int?> verses) {
@@ -156,10 +254,10 @@ void main() {
 
         expect(
           checkModuleFile(path),
-          const VerseEndOutOfRange('GEN', 1, 3),
+          const VerseOutOfRange('GEN', 1, 3),
           reason: '$end',
         );
-        expect(openProblem(path), const VerseEndOutOfRange('GEN', 1, 3));
+        expect(openProblem(path), const VerseOutOfRange('GEN', 1, 3));
       }
     });
 

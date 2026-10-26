@@ -283,6 +283,31 @@ void main() {
     expect(bible.chapter(10, 2), const [Verse(1, 'Long')]);
   });
 
+  test('verses above 1000 and chapters above 200 are skipped', () {
+    final outcome = build(
+      _translation(ot: 2),
+      zip({
+        'GEN.usfm':
+            '\\id GEN\n\\c 1\n\\p\n\\v 1 One\n\\v 1000 Last\n'
+            '\\s Lost heading\n'
+            r'\v 1001 Too far\f + \ft Lost note.\f*'
+            '\n\\c 201\n\\s Lost too\n\\p\n\\v 1 Too many chapters\n',
+      }),
+    );
+
+    expect(built(outcome).warnings, [
+      'GEN 1:1001: verse above $maxVerseNumber, skipped',
+      'GEN 201:1: chapter above $maxChapterNumber, skipped',
+    ]);
+    final bible = BibleModule.open(out());
+    addTearDown(bible.close);
+    expect(bible.chapter(10, 1), const [Verse(1, 'One'), Verse(1000, 'Last')]);
+    expect(bible.chapter(10, 201), isEmpty);
+    expect(bible.headings(10, 1), isEmpty);
+    expect(bible.headings(10, 201), isEmpty);
+    expect(bible.footnotes(10, 1), isEmpty);
+  });
+
   test('public domain needs both copr.htm and the Copyright column', () {
     String license(String copyright) {
       final outcome = build(

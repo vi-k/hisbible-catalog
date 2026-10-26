@@ -261,8 +261,8 @@ String _sample(List<_Book> books) {
   return out.toString();
 }
 
-// Пишет модуль [path]; повторные стихи пропускаются и попадают
-// в [warnings].
+// Пишет модуль [path]; повторные стихи и стихи с номерами вне границ
+// формата пропускаются и попадают в [warnings].
 void _write(
   String path,
   ModuleMeta meta,
@@ -270,12 +270,17 @@ void _write(
   List<String> warnings, {
   required bool russian,
 }) {
+  final skipped = {for (final book in books) book.number: _skipped(book.usfm)};
   final ends = {
     for (final book in books) book.number: _verseEnds(book.usfm, warnings),
   };
   final schemes = Versification.standard.detect({
     for (final book in books)
-      book.number: _lastVerses(book.usfm, ends[book.number]!),
+      book.number: _lastVerses(
+        book.usfm,
+        ends[book.number]!,
+        skipped[book.number]!.outOfRange,
+      ),
   }, russianFlag: russian);
   final writer = ModuleWriter.create(path, meta);
   try {
@@ -294,7 +299,14 @@ void _write(
         title: _filled(usfm.toc1),
         scheme: schemes.of(book.number),
       );
-      _writeText(writer, book, ends[book.number]!, noteOffset, warnings);
+      _writeText(
+        writer,
+        book,
+        ends[book.number]!,
+        skipped[book.number]!,
+        noteOffset,
+        warnings,
+      );
       var lastNote = 0;
       for (final note in usfm.notes) {
         lastNote = note.id > lastNote ? note.id : lastNote;
@@ -309,25 +321,32 @@ void _write(
 }
 
 // Пишет стихи, заголовки и сноски книги; последний из слитых стихов —
-// из [ends], номера сносок сдвинуты на [offset]. Повторный стих
-// пропускается вместе со своими заголовками и сносками.
+// из [ends], номера сносок сдвинуты на [offset]. Стихи из [skipped]
+// пропускаются вместе со своими заголовками и сносками.
 void _writeText(
   ModuleWriter writer,
   _Book book,
   Map<UsfmVerse, int?> ends,
+  _Skipped skipped,
   int offset,
   List<String> warnings,
 ) {
   final _Book(:number, :usfm) = book;
-  final repeated = _repeated(usfm);
-  for (final verse in repeated.verses) {
-    warnings.add(
-      '${usfm.code} ${verse.chapter}:${verse.verse}: repeated '
-      'verse, skipped',
-    );
+  for (final verse in usfm.verses) {
+    final place = '${usfm.code} ${verse.chapter}:${verse.verse}';
+    if (skipped.outOfRange.contains(verse)) {
+      warnings.add(
+        verse.chapter > maxChapterNumber
+            ? '$place: chapter above $maxChapterNumber, skipped'
+            : '$place: verse above $maxVerseNumber, skipped',
+      );
+    } else if (skipped.repeated.contains(verse)) {
+      warnings.add('$place: repeated verse, skipped');
+    }
   }
   for (final verse in usfm.verses) {
-    if (repeated.verses.contains(verse)) {
+    if (skipped.repeated.contains(verse) ||
+        skipped.outOfRange.contains(verse)) {
       continue;
     }
     writer.addVerse(
@@ -339,7 +358,7 @@ void _writeText(
     );
   }
   for (final heading in usfm.headings) {
-    if (repeated.headings.contains(heading)) {
+    if (skipped.headings.contains(heading)) {
       continue;
     }
     writer.addHeading(
@@ -352,7 +371,7 @@ void _writeText(
     );
   }
   for (final note in usfm.notes) {
-    if (repeated.notes.contains(note.id)) {
+    if (skipped.notes.contains(note.id)) {
       continue;
     }
     writer.addFootnote(
@@ -367,18 +386,28 @@ void _writeText(
   }
 }
 
-// Повторные стихи книги (тот же номер главы и стиха, что у стиха раньше),
-// их заголовки и номера сносок в тех и других.
+// Стихи книги, которые не пишутся, их заголовки и номера сносок в тех
+// и других.
+typedef _Skipped = ({
+  Set<UsfmVerse> repeated,
+  Set<UsfmVerse> outOfRange,
+  Set<UsfmHeading> headings,
+  Set<int> notes,
+});
+
+// Пропускаемые стихи книги: повторные (тот же номер главы и стиха, что
+// у стиха раньше) и с номерами вне границ формата (глава больше
+// [maxChapterNumber] или стих больше [maxVerseNumber]); с их заголовками
+// и сносками.
 //
 // Разбор добавляет заголовки в начале своего стиха, поэтому список
 // заголовков — подряд идущие заголовки каждого стиха по порядку стихов.
 // Если между первым стихом и повтором ни у одного стиха заголовков нет,
 // заголовки повтора от заголовков первого не отличить: они остаются над
 // первым стихом.
-({Set<UsfmVerse> verses, Set<UsfmHeading> headings, Set<int> notes}) _repeated(
-  UsfmBook usfm,
-) {
-  final verses = Set<UsfmVerse>.identity();
+_Skipped _skipped(UsfmBook usfm) {
+  final repeated = Set<UsfmVerse>.identity();
+  final outOfRange = Set<UsfmVerse>.identity();
   final headings = Set<UsfmHeading>.identity();
   final notes = <int>{};
   final seen = <(int, int)>{};
@@ -386,21 +415,32 @@ void _writeText(
   for (final verse in usfm.verses) {
     final key = (verse.chapter, verse.verse);
     final repeat = !seen.add(key);
+    final beyond =
+        verse.chapter > maxChapterNumber || verse.verse > maxVerseNumber;
     while (next < usfm.headings.length &&
         (usfm.headings[next].chapter, usfm.headings[next].verse) == key) {
-      if (repeat) {
+      if (repeat || beyond) {
         headings.add(usfm.headings[next]);
         _collectNotes(usfm.headings[next].nodes, notes);
       }
       next++;
     }
-    if (repeat) {
-      verses.add(verse);
+    if (beyond) {
+      outOfRange.add(verse);
+    } else if (repeat) {
+      repeated.add(verse);
+    }
+    if (repeat || beyond) {
       _collectNotes(verse.nodes, notes);
     }
   }
 
-  return (verses: verses, headings: headings, notes: notes);
+  return (
+    repeated: repeated,
+    outOfRange: outOfRange,
+    headings: headings,
+    notes: notes,
+  );
 }
 
 // Добавляет в [ids] номера сносок [nodes].
@@ -485,9 +525,17 @@ Map<UsfmVerse, int?> _verseEnds(UsfmBook usfm, List<String> warnings) {
 }
 
 // Глава → последний стих; у слитых стихов — последний из них по [ends].
-Map<int, int> _lastVerses(UsfmBook usfm, Map<UsfmVerse, int?> ends) {
+// Стихи из [outOfRange] не считаются.
+Map<int, int> _lastVerses(
+  UsfmBook usfm,
+  Map<UsfmVerse, int?> ends,
+  Set<UsfmVerse> outOfRange,
+) {
   final lasts = <int, int>{};
   for (final verse in usfm.verses) {
+    if (outOfRange.contains(verse)) {
+      continue;
+    }
     final last = ends[verse] ?? verse.verse;
     if (last > (lasts[verse.chapter] ?? 0)) {
       lasts[verse.chapter] = last;

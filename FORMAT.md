@@ -23,6 +23,8 @@ the other types.
 - Adding an optional `meta` key, a table, or a column does not change the
   version: readers skip what they do not know. The version grows only with an
   incompatible change.
+- A module contains only tables and their indexes: no views, triggers or
+  virtual tables. A reader refuses a file with any other schema object.
 
 ### Schema of version 1
 
@@ -94,6 +96,8 @@ Notes:
 - `scheme` is the verse numbering of the book, named as the SIL versification
   files: `eng` (English), `org` (original: a psalm title is verse 1), `rso`
   (Russian Synodal, full edition), `rsc` (Russian Synodal, canonical edition).
+- In `verses`, `chapter` is at most 200 and `verse` at most 1000. A file with a
+  larger number in a row of a book from `books` is not a valid module.
 - Merged verses are one row: `verse` is the first verse, `verse_end` the last.
   `verse_end` is greater than `verse`, at most `verse` + 200, and less than the
   `verse` of the next row of the same chapter. A reader reads any other
