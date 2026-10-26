@@ -1,0 +1,548 @@
+{
+  "format": 1,
+  "catalog": "hisbible",
+  "name": "HisBible",
+  "updated": "2026-10-26",
+  "modules": [
+    {
+      "id": "aai",
+      "type": "bible",
+      "abbreviation": "aai",
+      "name": "TUR GEWASIN O BAIBASIT BOUBUN",
+      "description": "The New Testament in the Miniafia Language of Oro Province, Papua New Guinea",
+      "language": "aai",
+      "languageName": "Miniafia",
+      "languageNameEnglish": "Miniafia",
+      "script": "Latn",
+      "direction": "ltr",
+      "license": "CC-BY-NC-ND-4.0",
+      "copyright": "Copyright © 2009 Wyclyffe Bible Translators, Inc.",
+      "books": {
+        "ot": 0,
+        "nt": 27,
+        "dc": 0
+      },
+      "size": 1650688,
+      "sha256": "be087079487c17e9076232467e174f032911bd55e51cba78839e0d7be70005e5",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/aai-2026-03-09.hb",
+      "version": "2026-03-09",
+      "moduleFormat": 1
+    },
+    {
+      "id": "aak",
+      "type": "bible",
+      "abbreviation": "aak",
+      "name": "Xwɨyí̵á Gorɨxoyá Sɨŋí̵pɨrɨnɨ",
+      "description": "The New Testament in the Ankave language of Papua New Guinea",
+      "language": "aak",
+      "languageName": "Angave",
+      "languageNameEnglish": "Ankave",
+      "script": "Latn",
+      "direction": "ltr",
+      "license": "CC-BY-NC-ND-4.0",
+      "copyright": "Copyright © 1990 Wycliffe Bible Translators, Inc.",
+      "books": {
+        "ot": 0,
+        "nt": 27,
+        "dc": 0
+      },
+      "size": 2859008,
+      "sha256": "10ef4e3dd32df2e3018dc89ad7429e870512a28c092ddb8fd3bdcbb482ead8a3",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/aak-2012-10-03.hb",
+      "version": "2012-10-03",
+      "moduleFormat": 1
+    },
+    {
+      "id": "aau",
+      "type": "bible",
+      "abbreviation": "aau",
+      "name": "God so Sokior-ok Iwon",
+      "description": "The New Testament in the Abau Language of the Green River area, Sandaun Province, Papua New Guinea",
+      "language": "aau",
+      "languageName": "Abau",
+      "languageNameEnglish": "Abau",
+      "script": "Latn",
+      "direction": "ltr",
+      "license": "CC-BY-NC-ND-4.0",
+      "copyright": "Copyright © 2006 Wycliffe Bible Translators, Inc.",
+      "books": {
+        "ot": 0,
+        "nt": 27,
+        "dc": 0
+      },
+      "size": 2023424,
+      "sha256": "70541d3127a6a0024d6dc54160651e1af033d25f8da6cb6cc1b28fe184bd54f5",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/aau-2013-01-03.hb",
+      "version": "2013-01-03",
+      "moduleFormat": 1
+    },
+    {
+      "id": "aaz",
+      "type": "bible",
+      "abbreviation": "aaz",
+      "name": "Uisneno In Kabin ma Prenat: Rais Manba'an Fe'u nok Reta' Ahun-hunut",
+      "description": "Genesis and the New Testament in the Amarasi language of Indonesia",
+      "language": "aaz",
+      "languageName": "Amarasi",
+      "languageNameEnglish": "Amarasi",
+      "script": "Latn",
+      "direction": "ltr",
+      "license": "CC-BY-ND-4.0",
+      "copyright": "Copyright © 1999-2014 Unit Bahasa dan Budaya, Kupang NTT, Indonesia",
+      "books": {
+        "ot": 1,
+        "nt": 27,
+        "dc": 0
+      },
+      "size": 2613248,
+      "sha256": "c10c856ca6fd3004a6ed67aa4b298a12732ea75bb8926d11c6c08a1c5a9e0c85",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/aaz-2022-03-11.hb",
+      "version": "2022-03-11",
+      "moduleFormat": 1
+    },
+    {
+      "id": "abc",
+      "type": "bible",
+      "abbreviation": "abc",
+      "name": "Ayta Ambala NT Portions",
+      "description": "Ayta, Ambala: Ayta Ambala NT Portions (New Testament)",
+      "language": "abc",
+      "languageName": "Ambala Ayta",
+      "languageNameEnglish": "Ayta, Ambala",
+      "script": "Latn",
+      "direction": "ltr",
+      "license": "CC-BY-SA-4.0",
+      "copyright": "Copyright © 2024 Wycliffe Bible Translators, Inc.",
+      "books": {
+        "ot": 0,
+        "nt": 6,
+        "dc": 0
+      },
+      "size": 221184,
+      "sha256": "9ba40be3095f6f45e149b59b9d4bbcf94e740155ec95049df931feb1aeb89e0f",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/abc-2025-04-25.hb",
+      "version": "2025-04-25",
+      "moduleFormat": 1
+    },
+    {
+      "id": "abt-maprik",
+      "type": "bible",
+      "abbreviation": "abt-maprik",
+      "name": "Gotna Kudi",
+      "description": "The New Testament in the Maprik dialect of the Ambulas Language",
+      "language": "abt",
+      "languageName": "Ambulas (Maprik)",
+      "languageNameEnglish": "Ambulas",
+      "script": "Latn",
+      "direction": "ltr",
+      "license": "CC-BY-NC-ND-4.0",
+      "copyright": "Copyright © 1983 Wycliffe Bible Translators, Inc.",
+      "books": {
+        "ot": 0,
+        "nt": 27,
+        "dc": 0
+      },
+      "size": 2527232,
+      "sha256": "ad640d40739889c5e7c5738161266f5459576f99e0e6049e4d26f5534e791827",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/abt-maprik-2013-01-04.hb",
+      "version": "2013-01-04",
+      "moduleFormat": 1
+    },
+    {
+      "id": "abt-wosera",
+      "type": "bible",
+      "abbreviation": "abt-wosera",
+      "name": "Gotna Kundi",
+      "description": "The New Testament in the Wosara-Kamu Dialect of the Ambulas Language of Papua New Guinea",
+      "language": "abt",
+      "languageName": "Ambulas (Wosera)",
+      "languageNameEnglish": "Wosera-Kamu dialect of Ambulas",
+      "script": "Latn",
+      "direction": "ltr",
+      "license": "CC-BY-NC-ND-4.0",
+      "copyright": "Copyright © 1996 Wycliffe Bible Translators, Inc.",
+      "books": {
+        "ot": 0,
+        "nt": 27,
+        "dc": 0
+      },
+      "size": 2424832,
+      "sha256": "5b6e17cbdda9a216d4a87cbf065d5669a7eb2e55e39c7646283a8476e430b880",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/abt-wosera-2013-01-07.hb",
+      "version": "2013-01-07",
+      "moduleFormat": 1
+    },
+    {
+      "id": "abx",
+      "type": "bible",
+      "abbreviation": "abx",
+      "name": "I Baha'o Kasuratan",
+      "description": "New Testament in Inabaknon",
+      "language": "abx",
+      "languageName": "Inabaknon",
+      "languageNameEnglish": "Inabaknon",
+      "script": "Latn",
+      "direction": "ltr",
+      "license": "CC-BY-NC-ND-3.0",
+      "copyright": "Copyright © 1996 Wycliffe Bible Translators, Inc.",
+      "books": {
+        "ot": 0,
+        "nt": 27,
+        "dc": 0
+      },
+      "size": 1761280,
+      "sha256": "bedc0dd86df4de745c3494a3b394c122f3808f17db23cb811bb36363c7ddfe3b",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/abx-2014-08-06.hb",
+      "version": "2014-08-06",
+      "moduleFormat": 1
+    },
+    {
+      "id": "aby",
+      "type": "bible",
+      "abbreviation": "aby",
+      "name": "GODINU IRAU WAKE",
+      "description": "The New Testament in the Aneme Wake Language of Papua New Guinea",
+      "language": "aby",
+      "languageName": "Aneme Wake",
+      "languageNameEnglish": "Aneme Wake",
+      "script": "Latn",
+      "direction": "ltr",
+      "license": "CC-BY-NC-ND-4.0",
+      "copyright": "Copyright © 1988 Wycliffe Bible Translators, Inc.",
+      "books": {
+        "ot": 0,
+        "nt": 27,
+        "dc": 0
+      },
+      "size": 1667072,
+      "sha256": "6d6f6fec1e9aec66d9d96bb0625e7d68cc73004a21a440e9fc6b3ccb8fa9fa94",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/aby-2013-01-07.hb",
+      "version": "2013-01-07",
+      "moduleFormat": 1
+    },
+    {
+      "id": "acfNT",
+      "type": "bible",
+      "abbreviation": "acfNT",
+      "name": "Tèstèman nèf-la: Épi an posyòn an liv samz-la",
+      "description": "New Testament in Saint Lucian Creole French (Saint Lucian Creole French New Testament)",
+      "language": "acf",
+      "languageName": "Saint Lucian Creole French",
+      "languageNameEnglish": "Saint Lucian Creole French",
+      "script": "Latn",
+      "direction": "ltr",
+      "license": "CC-BY-NC-ND-3.0",
+      "copyright": "Copyright © 1999 Wycliffe Bible Translators, Inc.",
+      "books": {
+        "ot": 0,
+        "nt": 27,
+        "dc": 0
+      },
+      "size": 1437696,
+      "sha256": "cde08d352c1e0e8b1ae734eb59252cb5acc4042b0bf8ea699de4f1b3f9168cb4",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/acfNT-2014-04-30.hb",
+      "version": "2014-04-30",
+      "moduleFormat": 1
+    },
+    {
+      "id": "acr-acc",
+      "type": "bible",
+      "abbreviation": "acr-acc",
+      "name": "I 'utz laj tzij re i dios",
+      "description": "New Testament in Achi (I 'utz laj tzij re i dios)",
+      "language": "acr",
+      "languageName": "Achi",
+      "languageNameEnglish": "Achi",
+      "script": "Latn",
+      "direction": "ltr",
+      "license": "CC-BY-NC-ND-3.0",
+      "copyright": "Copyright © 2009 Wycliffe Bible Translators, Inc.",
+      "books": {
+        "ot": 0,
+        "nt": 27,
+        "dc": 0
+      },
+      "size": 1810432,
+      "sha256": "21b54011a379178265f4b52c9722cf5f1b6b6dd9f6f9e993290cc84eddb6fa2a",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/acr-acc-2013-01-05.hb",
+      "version": "2013-01-05",
+      "moduleFormat": 1
+    },
+    {
+      "id": "acrNNT",
+      "type": "bible",
+      "abbreviation": "acrNNT",
+      "name": "Ri utzilaj tzij re ri kanimajawal Jesucristo",
+      "description": "New Testament in Achi Rabinal; acr (GT:acrN:Achi)",
+      "language": "acr",
+      "languageName": "Achi",
+      "languageNameEnglish": "Achi",
+      "script": "Latn",
+      "direction": "ltr",
+      "license": "CC-BY-NC-ND-3.0",
+      "copyright": "Copyright © 2009 Wycliffe Bible Translators, Inc.",
+      "books": {
+        "ot": 0,
+        "nt": 27,
+        "dc": 0
+      },
+      "size": 1990656,
+      "sha256": "210d637b44198fcf0f338cdf08d3098dd7e7b3a72c0d772f16374132fdbb9015",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/acrNNT-2014-04-18.hb",
+      "version": "2014-04-18",
+      "moduleFormat": 1
+    },
+    {
+      "id": "acrTNT",
+      "type": "bible",
+      "abbreviation": "acrTNT",
+      "name": "Ri utzilaj tzij re ri kanimajawal Jesucristo",
+      "description": "New Testament in Achi Rabinal; acr (GT:acrT:Achi)",
+      "language": "acr",
+      "languageName": "Achi",
+      "languageNameEnglish": "Achi",
+      "script": "Latn",
+      "direction": "ltr",
+      "license": "CC-BY-NC-ND-3.0",
+      "copyright": "Copyright © 2009 Wycliffe Bible Translators, Inc.",
+      "books": {
+        "ot": 0,
+        "nt": 27,
+        "dc": 0
+      },
+      "size": 1941504,
+      "sha256": "f1c9838d347f433622d8e2eebcef62cc3f2697fa55e95c6b850c386730b62812",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/acrTNT-2014-04-21.hb",
+      "version": "2014-04-21",
+      "moduleFormat": 1
+    },
+    {
+      "id": "adz",
+      "type": "bible",
+      "abbreviation": "adz",
+      "name": "Adzera Baibel",
+      "description": "Portions of the Holy Bible in the Adzera Language of Papua New Guinea",
+      "language": "adz",
+      "languageName": "Adzera",
+      "languageNameEnglish": "Adzera",
+      "script": "Latn",
+      "direction": "ltr",
+      "license": "CC-BY-NC-ND-4.0",
+      "copyright": "Copyright © 2009-2026 Wycliffe Bible Translators, Inc.",
+      "books": {
+        "ot": 2,
+        "nt": 7,
+        "dc": 0
+      },
+      "size": 1191936,
+      "sha256": "ed6dece5cd3e3acb49cfaaf46f383c6dafcbbd61240b945846172b5b326535b8",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/adz-2026-10-22.hb",
+      "version": "2026-10-22",
+      "moduleFormat": 1
+    },
+    {
+      "id": "aeb",
+      "type": "bible",
+      "abbreviation": "aeb",
+      "name": "العهد الجديد بالدارجة التونسية 2022",
+      "description": "Arabic, Tunisian Spoken: العهد الجديد بالعربية التونسية (New Testament)",
+      "language": "ar",
+      "languageName": "العهد الجديد بالدارجة التونسية 2022",
+      "languageNameEnglish": "العهد الجديد بالدارجة التونسية 2022",
+      "script": "Arab",
+      "direction": "rtl",
+      "license": "CC-BY-NC-ND-4.0",
+      "copyright": "Copyright © 2020 Wycliffe Bible Translators, Inc.",
+      "books": {
+        "ot": 0,
+        "nt": 27,
+        "dc": 0
+      },
+      "size": 2285568,
+      "sha256": "964fc3094e4a0294cc0aad73816e637ba8008253b1f878b01a730ac7afe7c1ec",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/aeb-2025-04-26.hb",
+      "version": "2025-04-26",
+      "moduleFormat": 1
+    },
+    {
+      "id": "aer",
+      "type": "bible",
+      "abbreviation": "aer",
+      "name": "Angkentye Mwerre",
+      "description": "Portions of the Holy Bible in the Central and Eastern Arrente language of Australia",
+      "language": "aer",
+      "languageName": "Eastern Arrente",
+      "languageNameEnglish": "Arrernte, Eastern",
+      "script": "Latn",
+      "direction": "ltr",
+      "license": "CC-BY-NC-ND-4.0",
+      "copyright": "Copyright © 2002-2014 Wycliffe Bible Translators",
+      "books": {
+        "ot": 3,
+        "nt": 27,
+        "dc": 0
+      },
+      "size": 3588096,
+      "sha256": "f6d84876f1582c6e64618cb917f5d4b27ef465528c011a9a57e7a3a597be6876",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/aer-2019-05-14.hb",
+      "version": "2019-05-14",
+      "moduleFormat": 1
+    },
+    {
+      "id": "aeu",
+      "type": "bible",
+      "abbreviation": "aeu",
+      "name": "العهد الجديد بالدارجة التونسية 2022",
+      "description": "Akeu: Jalliq aqsivq Gaolkheel daoq New Testament",
+      "language": "ar",
+      "languageName": "Gaolkheel",
+      "languageNameEnglish": "Arabic, Tunisian Spoken",
+      "script": "Arab",
+      "direction": "rtl",
+      "license": "CC-BY-NC-ND-4.0",
+      "copyright": "Copyright © 2015 Wycliffe Bible Translators, Inc.",
+      "books": {
+        "ot": 0,
+        "nt": 27,
+        "dc": 0
+      },
+      "size": 2285568,
+      "sha256": "bb73e7107ede677a4671206afeaea87dd653b54bbe448373d5c3293b5348bf13",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/aeu-2025-04-26.hb",
+      "version": "2025-04-26",
+      "moduleFormat": 1
+    },
+    {
+      "id": "aey",
+      "type": "bible",
+      "abbreviation": "aey",
+      "name": "BAL CEHEC JE HAUN",
+      "description": "Genesis and the New Testament in the Amele language of Papua New Guinea",
+      "language": "aey",
+      "languageName": "Amele",
+      "languageNameEnglish": "Amele",
+      "script": "Latn",
+      "direction": "ltr",
+      "license": "CC-BY-NC-ND-4.0",
+      "copyright": "Copyright © 1997 Wycliffe Bible Translators, Inc.",
+      "books": {
+        "ot": 1,
+        "nt": 27,
+        "dc": 0
+      },
+      "size": 1818624,
+      "sha256": "495b400243213fee14b134ba5427086d0e607ddf92caf613b69379d10233462c",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/aey-1997-01-01.hb",
+      "version": "1997-01-01",
+      "moduleFormat": 1
+    }
+  ],
+  "fonts": {
+    "Armn": {
+      "family": "Noto Sans Armenian",
+      "license": "OFL-1.1",
+      "size": 18772,
+      "sha256": "73bde9f3c63aa5ed39236e8a2837224605210a98b54d65724676c0119fcaa24c",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/fonts/NotoSansArmenian-Regular-73bde9f3.ttf"
+    },
+    "Bali": {
+      "family": "Noto Sans Balinese",
+      "license": "OFL-1.1",
+      "size": 92380,
+      "sha256": "cee58a184e7e00c4332087ac01870a69ac52fd5fa17ea3783ac728c945af1827",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/fonts/NotoSansBalinese-Regular-cee58a18.ttf"
+    },
+    "Cher": {
+      "family": "Noto Sans Cherokee",
+      "license": "OFL-1.1",
+      "size": 65168,
+      "sha256": "4460410f1a089f79af329d5d26e09381ba553a05baa7c1f3c352fc43bb96878d",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/fonts/NotoSansCherokee-Regular-4460410f.ttf"
+    },
+    "Copt": {
+      "family": "Noto Sans Coptic",
+      "license": "OFL-1.1",
+      "size": 31368,
+      "sha256": "37712bf2c7e2d0b9597769663a7b7db97a7845a34ae1bff85d8285a45a4771c0",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/fonts/NotoSansCoptic-Regular-37712bf2.ttf"
+    },
+    "Ethi": {
+      "family": "Noto Sans Ethiopic",
+      "license": "OFL-1.1",
+      "size": 289244,
+      "sha256": "86b9c07c049e68438388d00a34033fa28cabeef91b26e1bbed67512d360166d4",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/fonts/NotoSansEthiopic-Regular-86b9c07c.ttf"
+    },
+    "Geor": {
+      "family": "Noto Sans Georgian",
+      "license": "OFL-1.1",
+      "size": 35300,
+      "sha256": "f4b229b126859725b75031dd8c051335d20c85e4eb6d525af28f3e83e471baa4",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/fonts/NotoSansGeorgian-Regular-f4b229b1.ttf"
+    },
+    "Java": {
+      "family": "Noto Sans Javanese",
+      "license": "OFL-1.1",
+      "size": 120456,
+      "sha256": "016f43b042c0b01e29688f71607e5d6fdb0effef6fc7aa3aa8eae6b4427fdca8",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/fonts/NotoSansJavanese-Regular-016f43b0.ttf"
+    },
+    "Kali": {
+      "family": "Noto Sans Kayah Li",
+      "license": "OFL-1.1",
+      "size": 9272,
+      "sha256": "b4ed32acfe50f0019f55b5440a6ea67cc3806b9f9522d542391ecc9beb5d4772",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/fonts/NotoSansKayahLi-Regular-b4ed32ac.ttf"
+    },
+    "Mong": {
+      "family": "Noto Sans Mongolian",
+      "license": "OFL-1.1",
+      "size": 342708,
+      "sha256": "2986e50b7c66b7cbc42a0d82cc8143697a25ef56e134fe19adfd685c5f4ea57f",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/fonts/NotoSansMongolian-Regular-2986e50b.ttf"
+    },
+    "Sylo": {
+      "family": "Noto Sans Syloti Nagri",
+      "license": "OFL-1.1",
+      "size": 16692,
+      "sha256": "4b594b82bb7481e9154cbc8eb7fcdbd02748c73cbc7c40790961044033ceb946",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/fonts/NotoSansSylotiNagri-Regular-4b594b82.ttf"
+    },
+    "Syrc": {
+      "family": "Noto Sans Syriac",
+      "license": "OFL-1.1",
+      "size": 53584,
+      "sha256": "1ec0391c549b5e63e4f8d810b4485a64c5551445bfb2bdbf309ce8368bef9d4c",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/fonts/NotoSansSyriac-Regular-1ec0391c.ttf"
+    },
+    "Tfng": {
+      "family": "Noto Sans Tifinagh",
+      "license": "OFL-1.1",
+      "size": 59124,
+      "sha256": "bfc82bcdf511b49a1579023610a7aeb98256b7d8dab5cb0c75d7a09eac2d5431",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/fonts/NotoSansTifinagh-Regular-bfc82bcd.ttf"
+    },
+    "Thaa": {
+      "family": "Noto Sans Thaana",
+      "license": "OFL-1.1",
+      "size": 27308,
+      "sha256": "7543935bdcef770c9d3dd54222651b29040e5ec82f3bc58542392b2c7a9cbd3c",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/fonts/NotoSansThaana-Regular-7543935b.ttf"
+    },
+    "Vaii": {
+      "family": "Noto Sans Vai",
+      "license": "OFL-1.1",
+      "size": 54956,
+      "sha256": "ea03a953e2c578c56e17c5baa2e717e9ef0218ccb4ab221c11ec0604814377b3",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/fonts/NotoSansVai-Regular-ea03a953.ttf"
+    },
+    "Yiii": {
+      "family": "Noto Sans Yi",
+      "license": "OFL-1.1",
+      "size": 182988,
+      "sha256": "ab2c82578a368ad99e08ec4b299303c7f16830768df7278605d382fa1d0ee14b",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/fonts/NotoSansYi-Regular-ab2c8257.ttf"
+    }
+  },
+  "withdrawn": []
+}
