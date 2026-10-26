@@ -5739,6 +5739,1399 @@
       "release": "sources-2026-10-26",
       "asset": "nop-2016-08-30_usfm.zip",
       "fetched": "2026-10-26"
+    },
+    "notNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "ec5920913c266e7a7222580487d7ca50b128dc14331d5951594301a68c790d32",
+      "release": "sources-2026-10-26",
+      "asset": "notNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "nou": {
+      "updateDate": "2012-01-19",
+      "sha256": "4ee0b044da02b8afd5910797960d4cd07354086027c679c013087110f595f1db",
+      "release": "sources-2026-10-26",
+      "asset": "nou-2012-01-19_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "npioncb": {
+      "updateDate": "2025-05-17",
+      "sha256": "fd933672f027f5c7889d374f19b0b3f3e6252bca3b8a4110bc891b94ef0dcaea",
+      "release": "sources-2026-10-26",
+      "asset": "npioncb-2025-05-17_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "npiulb": {
+      "updateDate": "2020-06-10",
+      "sha256": "a6f1127ee49900a5e0a1287a2fcf2b7d5cd5c8dafeb65e67187210bfbbb8dce1",
+      "release": "sources-2026-10-26",
+      "asset": "npiulb-2020-06-10_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "nplNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "85d5728b9205eabdb09e20470b47e7bea6887ed877b61ba35c8b12eadd16f730",
+      "release": "sources-2026-10-26",
+      "asset": "nplNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "nrz": {
+      "updateDate": "2026-08-04",
+      "sha256": "c7b85bda7c6dd845e1dd49e36d803991be0eee756fcf69a33fe3aea33b2be6fb",
+      "release": "sources-2026-10-26",
+      "asset": "nrz-2026-08-04_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "nsn": {
+      "updateDate": "2012-01-19",
+      "sha256": "d89fbdf4f39ed3e2268b0465d7ec749e4d5f60dab6c4ae14255008d313dda7c1",
+      "release": "sources-2026-10-26",
+      "asset": "nsn-2012-01-19_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "nss": {
+      "updateDate": "2026-10-23",
+      "sha256": "469738577f7dfa9f5cd5c92b4e4079fbf4c61cf9adf6d765d934bc9f1fa28585",
+      "release": "sources-2026-10-26",
+      "asset": "nss-2026-10-23_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "ntj": {
+      "updateDate": "2021-11-12",
+      "sha256": "52d8e43532dbf6f940e238dcc276b225832c4fa1e26320de401655b4ba3af378",
+      "release": "sources-2026-10-26",
+      "asset": "ntj-2021-11-12_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "ntpNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "e6da2b480b9707e57de0908913c1075733f186e2f81afd095951e96922fde835",
+      "release": "sources-2026-10-26",
+      "asset": "ntpNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "ntu": {
+      "updateDate": "2017-11-17",
+      "sha256": "bb1f37791e03f791d2de1da115d5c4766c9412bcb63dd83c406fce435240a73e",
+      "release": "sources-2026-10-26",
+      "asset": "ntu-2017-11-17_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "nuq": {
+      "updateDate": "2023-03-22",
+      "sha256": "308ef92b1ef9d1302e797b2a30fbf09ff920db1bef56d7fbdcfa8c76bb2482ba",
+      "release": "sources-2026-10-26",
+      "asset": "nuq-2023-03-22_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "nuy": {
+      "updateDate": "2021-11-12",
+      "sha256": "c8e874c5fc0d82ac1e7abd6301f27d7545612f31ae7933733e7e808a01a438e2",
+      "release": "sources-2026-10-26",
+      "asset": "nuy-2021-11-12_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "nvm": {
+      "updateDate": "2016-08-30",
+      "sha256": "971c37352af0bd8a32872eafc4dd37d57459fc821ddc769f9a6ec6743cb61877",
+      "release": "sources-2026-10-26",
+      "asset": "nvm-2016-08-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "nwi": {
+      "updateDate": "2022-03-11",
+      "sha256": "7e0fa5ec13f6d1a1db5a994eee270d7b6e44da8ef2d36fcb6afac9abb5d6fbec",
+      "release": "sources-2026-10-26",
+      "asset": "nwi-2022-03-11_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "nww": {
+      "updateDate": "2025-07-08",
+      "sha256": "df8228b3c544170245ecc5708f94654355af1201051908341ddbfa8b801e01be",
+      "release": "sources-2026-10-26",
+      "asset": "nww-2025-07-08_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "nya": {
+      "updateDate": "2025-05-20",
+      "sha256": "27e9ca51979f7e52a6593f0ce55bf077d51e2f71d0a4d484b6d91e5da34c3705",
+      "release": "sources-2026-10-26",
+      "asset": "nya-2025-05-20_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "nys": {
+      "updateDate": "2026-10-13",
+      "sha256": "5df5d3b0a3d7eb26a807e6f3d872ea1e012770eb1559426cf94838fd18eca9f8",
+      "release": "sources-2026-10-26",
+      "asset": "nys-2026-10-13_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "oboNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "6b4bd2be896d7da510e41c887b5f9a3090b4775a573d4fcde1ebbd187ef370bf",
+      "release": "sources-2026-10-26",
+      "asset": "oboNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "okv": {
+      "updateDate": "2012-11-24",
+      "sha256": "62817eede184648f5361b9b883e0a9a1ca33dc08a70ec47c394a118391c2d130",
+      "release": "sources-2026-10-26",
+      "asset": "okv-2012-11-24_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "okvh": {
+      "updateDate": "2023-02-21",
+      "sha256": "31643a5409994a87f74078dae60396844fc9d6f6413b0dd27a244822641c4d00",
+      "release": "sources-2026-10-26",
+      "asset": "okvh-2023-02-21_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "omb": {
+      "updateDate": "2025-05-20",
+      "sha256": "11a17d2f1c9ffe6e7ee766022c9a842e7e48357d88e06d326174f6b27320e58a",
+      "release": "sources-2026-10-26",
+      "asset": "omb-2025-05-20_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "omw": {
+      "updateDate": "2016-08-30",
+      "sha256": "e9c280f13b7a7f117c568adda4c5101601cf18b8ef383827df9faff658f20ae2",
+      "release": "sources-2026-10-26",
+      "asset": "omw-2016-08-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "omw-a": {
+      "updateDate": "2012-02-27",
+      "sha256": "c722f4064a3f33bb413ab35d2203afa2ef97a59a88001e7bae8c671eec88d897",
+      "release": "sources-2026-10-26",
+      "asset": "omw-a-2012-02-27_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "omw-v": {
+      "updateDate": "2012-03-19",
+      "sha256": "7ca269c6ddfae6fe4d5c9b151826e40647f892c7a4baaf97b333c34e283b2155",
+      "release": "sources-2026-10-26",
+      "asset": "omw-v-2012-03-19_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "ong": {
+      "updateDate": "2016-08-30",
+      "sha256": "712d4a82fa464fff8b8abe157a1a33cf41fa9c93ffea76e9c60d321d94088ab5",
+      "release": "sources-2026-10-26",
+      "asset": "ong-2016-08-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "ons": {
+      "updateDate": "2012-10-23",
+      "sha256": "0b3368749039f4787be60130819ce46633a0e4c46d7dfe6f377e6d5c8e68bb9a",
+      "release": "sources-2026-10-26",
+      "asset": "ons-2012-10-23_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "oodNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "a50ec22102a4348fb5bd0ce464ad378390f24ad43d9a49d7ce871c4e3e55e07b",
+      "release": "sources-2026-10-26",
+      "asset": "oodNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "opm": {
+      "updateDate": "2016-08-30",
+      "sha256": "13c493a8dfe2d1c55d9095a53d6bc8ba9debe39b1c5f188686ca1674495e85a9",
+      "release": "sources-2026-10-26",
+      "asset": "opm-2016-08-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "ory": {
+      "updateDate": "2020-04-09",
+      "sha256": "3066390090c8f89030fd1f5506a004a3f3b2b48349b6126b849c12e7c1eed9f0",
+      "release": "sources-2026-10-26",
+      "asset": "ory-2020-04-09_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "oteNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "253756151ab1c5c965f11c663dd25ec2ebd36aa33fb28ef9920146b469a28805",
+      "release": "sources-2026-10-26",
+      "asset": "oteNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "otmNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "0cb2d31b9d97221c02933001fa137e12a3848bb94bc3bffe5b1361d77051924c",
+      "release": "sources-2026-10-26",
+      "asset": "otmNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "otnNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "711eb5bf5b32ac279f0700c3f4b048a67c0254bacdb3a8ef7e6249c8c28a34c5",
+      "release": "sources-2026-10-26",
+      "asset": "otnNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "otqNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "f1a14e2ae76cc3a1bc6968a03cef71533b7ffa806ffdf52db2e96ece10532611",
+      "release": "sources-2026-10-26",
+      "asset": "otqNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "otsNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "d86c91f6280c844498edb4f965f45bf1dfaf72eebe36aa37564c0766e7def258",
+      "release": "sources-2026-10-26",
+      "asset": "otsNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "oyde": {
+      "updateDate": "2025-05-20",
+      "sha256": "dbd929c9051dc3936cbc7c396d1b013ca265d86ef462763f6e5ad6a05f4c2f2a",
+      "release": "sources-2026-10-26",
+      "asset": "oyde-2025-05-20_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "oydl": {
+      "updateDate": "2025-05-20",
+      "sha256": "d9beeda60eb9c6fa6996d738a2ef032f9ba578dedc3ac3a63a810a31ee81b9c8",
+      "release": "sources-2026-10-26",
+      "asset": "oydl-2025-05-20_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "pabNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "0f1b908c000d394420980386e581837e99c1ba27271c8b9d1b4211cff67618cf",
+      "release": "sources-2026-10-26",
+      "asset": "pabNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "padNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "58cd44a3a5e4588376a61e7a893a7db0d182be43848add5a6e3a4494287c554b",
+      "release": "sources-2026-10-26",
+      "asset": "padNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "pahNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "3054cbae49ee91eba1efbf54eeaaa4da49b10885118873c411d7446bf95dd50b",
+      "release": "sources-2026-10-26",
+      "asset": "pahNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "pan": {
+      "updateDate": "2023-04-13",
+      "sha256": "9de349e8ee6fe611e807d0b64a677ebaa68b0342786e0f725e15a69e89d5137d",
+      "release": "sources-2026-10-26",
+      "asset": "pan-2023-04-13_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "paoNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "c20d3c4f9414ab39fb1bc9000ed6242307b3de68eac4b9055de367906b28cbe0",
+      "release": "sources-2026-10-26",
+      "asset": "paoNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "pdo": {
+      "updateDate": "2025-05-20",
+      "sha256": "11e916014afa3c976762db7c21d135e65636480d361ef69c9e2de32ff6545aed",
+      "release": "sources-2026-10-26",
+      "asset": "pdo-2025-05-20_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "peg": {
+      "updateDate": "2025-05-20",
+      "sha256": "8561043f9d619e89d19f624517111d2bb6119921c41f1ec2906c07b10a126fa4",
+      "release": "sources-2026-10-26",
+      "asset": "peg-2025-05-20_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "pesOPV": {
+      "updateDate": "2015-04-21",
+      "sha256": "9d23a84331655df1bd1d674ce1031eb4291c74a71082f53a2f111eebe4a46739",
+      "release": "sources-2026-10-26",
+      "asset": "pesOPV-2015-04-21_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "pesopcb": {
+      "updateDate": "2025-05-20",
+      "sha256": "17380e0ec1279e8fd83dd44a2e22850e7974e21f723bf197817d4cb04b3e028a",
+      "release": "sources-2026-10-26",
+      "asset": "pesopcb-2025-05-20_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "pga": {
+      "updateDate": "2025-07-03",
+      "sha256": "d4f8a9be8f4fa3e2179b0c47006f4bd6b45881d5cf2be1707d9f192a7e13f7ec",
+      "release": "sources-2026-10-26",
+      "asset": "pga-2025-07-03_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "pibNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "6769639d5275f039290eaf3fc9a7cc693e4bfa6a3a9a8124ef727279191d75db",
+      "release": "sources-2026-10-26",
+      "asset": "pibNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "pioNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "4e9e1abeb788c501f64d396b4d823e7728557b121076a4db4056d7059297f4c6",
+      "release": "sources-2026-10-26",
+      "asset": "pioNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "pirNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "fca3d57046422f89033310a3193422d4a7b41e4ffc68bfb4347f08dcfa341df9",
+      "release": "sources-2026-10-26",
+      "asset": "pirNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "piu2006": {
+      "updateDate": "2020-01-06",
+      "sha256": "cbb0ad6dcf1e62e3a6751c8290c630565a8aa2cbe30e486b6007a9d895e771e1",
+      "release": "sources-2026-10-26",
+      "asset": "piu2006-2020-01-06_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "pjt": {
+      "updateDate": "2020-04-23",
+      "sha256": "fa1e47568257e2e8bdca9b9e6742dd68fd6242583bde08bfed6e8d025f430377",
+      "release": "sources-2026-10-26",
+      "asset": "pjt-2020-04-23_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "plj": {
+      "updateDate": "2025-07-03",
+      "sha256": "8110b03d5345d45340967c7a978a361726abb2048483df22f59aae8fa1fe2ac3",
+      "release": "sources-2026-10-26",
+      "asset": "plj-2025-07-03_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "pll": {
+      "updateDate": "2025-05-20",
+      "sha256": "6a37d58fd5c6ec98d6caf0df7d3eac84367736dba4f17b4e142c1c8a7a015332",
+      "release": "sources-2026-10-26",
+      "asset": "pll-2025-05-20_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "plsNT": {
+      "updateDate": "2018-11-16",
+      "sha256": "426971916a56ab0ddf8fe543a0bc8e390cfafb9ec9c30856b608c53c21852c7a",
+      "release": "sources-2026-10-26",
+      "asset": "plsNT-2018-11-16_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "plu": {
+      "updateDate": "2015-03-17",
+      "sha256": "03b7df93553ee10e5aacdeed2e5103ee56ac9b0288f9cd8e2a3f2b03fad24d0f",
+      "release": "sources-2026-10-26",
+      "asset": "plu-2015-03-17_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "pma": {
+      "updateDate": "2022-03-11",
+      "sha256": "51a555e65b174a5487c32ff9872d8ce5464f28eff5c91b01f3f08f7bf2e52359",
+      "release": "sources-2026-10-26",
+      "asset": "pma-2022-03-11_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "poeNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "0d1e6e56b428e74598e341d036c3e03517e1c10212d09d1081798ac2c82f236e",
+      "release": "sources-2026-10-26",
+      "asset": "poeNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "pohNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "b64787544d4aa88f9ee52fb1b5c4f66ce47e8a3ac52b198ddf0e3da38348d262",
+      "release": "sources-2026-10-26",
+      "asset": "pohNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "poiNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "af12b9e88ca1948938181ef1b2defea2e2d4e49a1f9ef7d6e80ee45ad3830de5",
+      "release": "sources-2026-10-26",
+      "asset": "poiNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "polsz": {
+      "updateDate": "2025-05-20",
+      "sha256": "933f015c2d3b0e031a79663faf78d5f94d0a2fd540112e8b97e955de2013ee1d",
+      "release": "sources-2026-10-26",
+      "asset": "polsz-2025-05-20_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "polubg": {
+      "updateDate": "2018-10-23",
+      "sha256": "9bd5224020f3b4ad7bcf47ac49c43a4831a207c664d12b06b26ffec58011f321",
+      "release": "sources-2026-10-26",
+      "asset": "polubg-2018-10-23_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "pon": {
+      "updateDate": "2023-07-17",
+      "sha256": "7beec6bad4eb96aebfc8e776f3d1c702c55846e46f318577a2c15f42d0add71d",
+      "release": "sources-2026-10-26",
+      "asset": "pon-2023-07-17_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "pon-pdn": {
+      "updateDate": "2024-07-28",
+      "sha256": "7a8951ec09242937e15ad065a3060bb48ef9fcf4137ba303253adadfef895045",
+      "release": "sources-2026-10-26",
+      "asset": "pon-pdn-2024-07-28_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "pon2006": {
+      "updateDate": "2024-08-08",
+      "sha256": "921edddf46bac758fe7fff3078e5d54d41bb46b1c1ea60fdabcc3c2e7db6cb02",
+      "release": "sources-2026-10-26",
+      "asset": "pon2006-2024-08-08_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "pon2006a": {
+      "updateDate": "2017-09-08",
+      "sha256": "0be7ff2ed81c0095e3c6e39c721089c472abb49137ea9a698925b18720b3b4e5",
+      "release": "sources-2026-10-26",
+      "asset": "pon2006a-2017-09-08_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "porblt": {
+      "updateDate": "2022-03-08",
+      "sha256": "a4d8ad26fa48612b3ac62e8d7d518dc906eec889c1d59643d7508a101d1ab76c",
+      "release": "sources-2026-10-26",
+      "asset": "porblt-2022-03-08_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "porbr2018": {
+      "updateDate": "2022-03-08",
+      "sha256": "499d562f744bc27a3d85bceb6225ae58c4bb8abb13bbe82e7fde3bc1bb676992",
+      "release": "sources-2026-10-26",
+      "asset": "porbr2018-2022-03-08_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "porbrbsl": {
+      "updateDate": "2026-10-08",
+      "sha256": "16375fb06fff9186a8db06353743fe8075dc77d976cc1629263dbb4497630749",
+      "release": "sources-2026-10-26",
+      "asset": "porbrbsl-2026-10-08_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "poronbv": {
+      "updateDate": "2025-05-20",
+      "sha256": "3085d59184ce7912c9c85ad9f4f843b2393497e9dc2c6690e2313c1dfa63a486",
+      "release": "sources-2026-10-26",
+      "asset": "poronbv-2025-05-20_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "portft": {
+      "updateDate": "2018-09-11",
+      "sha256": "525f879811d8408c97efbdcde0be5919c2299c6e1a3ff2048848a56a8006c12b",
+      "release": "sources-2026-10-26",
+      "asset": "portft-2018-09-11_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "poy": {
+      "updateDate": "2019-12-30",
+      "sha256": "a4b8033b44b61445273647aaceca66c28cb0cee633ff9b599b3ae45e31933874",
+      "release": "sources-2026-10-26",
+      "asset": "poy-2019-12-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "ppo": {
+      "updateDate": "2009-10-31",
+      "sha256": "855436a2b6353893bef27a62e37ab99a015bcea90d2e27fbfbaedac9ae885019",
+      "release": "sources-2026-10-26",
+      "asset": "ppo-2009-10-31_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "prfNT": {
+      "updateDate": "2014-05-15",
+      "sha256": "b594d16c831c8cd1755fac06a2a4cabd0beaa46180af502f0b5b8d490adfda2a",
+      "release": "sources-2026-10-26",
+      "asset": "prfNT-2014-05-15_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "priNT": {
+      "updateDate": "2022-03-11",
+      "sha256": "720c0f154b763c89c41ec676ec5736582af2574e0c2e43aca5f17b6fcb1fdee0",
+      "release": "sources-2026-10-26",
+      "asset": "priNT-2022-03-11_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "ptp": {
+      "updateDate": "2016-09-14",
+      "sha256": "cbf021d08d9e2d81041f455de077b86833d76a69ef545fcbfda37d117be04927",
+      "release": "sources-2026-10-26",
+      "asset": "ptp-2016-09-14_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "ptu": {
+      "updateDate": "2022-03-11",
+      "sha256": "e34b21e93e29e99b7b9e5cd01f41165183db1f97d107f72454a992db55630543",
+      "release": "sources-2026-10-26",
+      "asset": "ptu-2022-03-11_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "pub": {
+      "updateDate": "2025-06-25",
+      "sha256": "4ba6e44148359682d0b7d0d76e51f95722d08032f906e2844af14d88f0ffff4f",
+      "release": "sources-2026-10-26",
+      "asset": "pub-2025-06-25_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "puu": {
+      "updateDate": "2025-06-25",
+      "sha256": "0eaf727ced9866984c1ee6be08b39bede007b80921063fae3abd99dd33177a6e",
+      "release": "sources-2026-10-26",
+      "asset": "puu-2025-06-25_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "pwg": {
+      "updateDate": "2022-11-07",
+      "sha256": "b7275c760507ed4f8e5fdfd063e1684fa64af30e49d1f60362e1edf063aa3a1a",
+      "release": "sources-2026-10-26",
+      "asset": "pwg-2022-11-07_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "pwr": {
+      "updateDate": "2025-06-25",
+      "sha256": "3dc3ba392c471816ea0bfb1d8f7197af360581dca6dc5995689e052eba9bd9b9",
+      "release": "sources-2026-10-26-2",
+      "asset": "pwr-2025-06-25_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "qub": {
+      "updateDate": "2014-08-06",
+      "sha256": "5a919f42faf48cfe427572e572add55c40128b195b666a95a7e7b38db2ace228",
+      "release": "sources-2026-10-26-2",
+      "asset": "qub-2014-08-06_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "qucNNT": {
+      "updateDate": "2014-04-27",
+      "sha256": "a04ef5b72743ad5886f0dbb947fe8347e3bf8826f37526d86023251fb622d861",
+      "release": "sources-2026-10-26-2",
+      "asset": "qucNNT-2014-04-27_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "qucTNT": {
+      "updateDate": "2014-04-27",
+      "sha256": "5544a028bbf48000b55be8c86d08ef21889cbcc796bff18018cbf88fd843317e",
+      "release": "sources-2026-10-26-2",
+      "asset": "qucTNT-2014-04-27_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "quctt": {
+      "updateDate": "2023-04-13",
+      "sha256": "8d19cf97ab8dc745e7429120112e1fab7789ff29580bda5bb208b25b47d69f95",
+      "release": "sources-2026-10-26-2",
+      "asset": "quctt-2023-04-13_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "qufNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "b3ddab6c9b2d239e3b02293b0a97ba8790a58a61a6bf0357e6c57189b7825c32",
+      "release": "sources-2026-10-26-2",
+      "asset": "qufNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "quhNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "8140993e8a949079fb36b2b77a5a6f4eefa205ba6799a593e4927a7ec7730397",
+      "release": "sources-2026-10-26-2",
+      "asset": "quhNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "qulNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "a7ddf2b848bcbfd7143227d46232dda76fff49fa9173ca3da8f50e643a52bda6",
+      "release": "sources-2026-10-26-2",
+      "asset": "qulNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "qupNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "0037c819089b0aea359647a08cd46f2c51047513d3fed71f8975c7026578f653",
+      "release": "sources-2026-10-26-2",
+      "asset": "qupNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "qvcNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "57a174ba9002fae5044a1a71a676bad9faead8d65691e70d58e486423edbcaf0",
+      "release": "sources-2026-10-26-2",
+      "asset": "qvcNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "qveNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "62e8465bb4bb7fb578cdd7e002b3b175517d0a802fb91c6cf1358c5571d62f5e",
+      "release": "sources-2026-10-26-2",
+      "asset": "qveNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "qvhNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "41a865733a6c8b2813e38d75420031af1bb6d0dd0bd41d964f3e745d8e460f67",
+      "release": "sources-2026-10-26-2",
+      "asset": "qvhNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "qvmNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "5acae7c10edd8bf229c903f33bfa02759656034d2bfcb1b1967fe4fc61b9f0e8",
+      "release": "sources-2026-10-26-2",
+      "asset": "qvmNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "qvnNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "f66a838412309ffa648c67e9cafa5b91433ae8ecb3d772c530ce5659bb84067e",
+      "release": "sources-2026-10-26-2",
+      "asset": "qvnNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "qvsNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "7f7160ace4700a81ca0f93d178b9caf41d5ab60c8ba1d4f5c626f631241fbb26",
+      "release": "sources-2026-10-26-2",
+      "asset": "qvsNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "qvwNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "608af46c398cdeaf2672fe8a87c8572720dc943571668d16aaaa4663aa3cea09",
+      "release": "sources-2026-10-26-2",
+      "asset": "qvwNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "qvzNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "37f0d7d8602a82fc2ba702a6170d677a310af3e1e46379a67569217e09d46360",
+      "release": "sources-2026-10-26-2",
+      "asset": "qvzNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "qwhNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "674c195f4403fab1be67bdc1bb2192a201ca6380323f83454dceb29f40d79ce0",
+      "release": "sources-2026-10-26-2",
+      "asset": "qwhNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "qxhNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "3f67494659574db1fe3e005d38f3e6fda11649ea8d16f7a0ca6b26e750f14ede",
+      "release": "sources-2026-10-26-2",
+      "asset": "qxhNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "qxnNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "ba115297d7e81cd8b01358fa6ba32cb5a0992364f472c923f77e09bd567085e4",
+      "release": "sources-2026-10-26-2",
+      "asset": "qxnNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "qxoNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "94abe9306b288b45977dd38eff5caee39c166b8434e3fecc9fa90c7d2b8ed696",
+      "release": "sources-2026-10-26-2",
+      "asset": "qxoNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rai": {
+      "updateDate": "2025-08-30",
+      "sha256": "9bc5870ac59896f3ad63429ffdd47ffdacc9d78b26109b42f77e646af9c37ee1",
+      "release": "sources-2026-10-26-2",
+      "asset": "rai-2025-08-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "reg": {
+      "updateDate": "2020-10-06",
+      "sha256": "745c6156dda2e886ff815bc7d94a807bdd5e985d869deb5c530af0e6f727e44f",
+      "release": "sources-2026-10-26-2",
+      "asset": "reg-2020-10-06_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rei": {
+      "updateDate": "2025-06-26",
+      "sha256": "45a48bbc0108c2260670299083b9dc0d042fc64a9ce43ff2854cb69f2c6234e8",
+      "release": "sources-2026-10-26-2",
+      "asset": "rei-2025-06-26_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rgu": {
+      "updateDate": "2016-06-28",
+      "sha256": "d642845d335b3cdab04a3cecaad76cd3386c628c75f9b45c11591207aa3f031e",
+      "release": "sources-2026-10-26-2",
+      "asset": "rgu-2016-06-28_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rhg": {
+      "updateDate": "2025-06-27",
+      "sha256": "faa5e393fba80cc1933827bdb4c14a9ecb85690b64caed7de013b88c1863e0a6",
+      "release": "sources-2026-10-26-2",
+      "asset": "rhg-2025-06-27_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rhgc": {
+      "updateDate": "2025-06-27",
+      "sha256": "302ed0754274362b7b3b606d3255707652259e538223afbf980d294d31bdf9cd",
+      "release": "sources-2026-10-26-2",
+      "asset": "rhgc-2025-06-27_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rifa": {
+      "updateDate": "2025-07-25",
+      "sha256": "9b9a4db851bceb24ca7fa53f63187139f18fdab7bdd050a39b4b08c8d5284b78",
+      "release": "sources-2026-10-26-2",
+      "asset": "rifa-2025-07-25_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rifl": {
+      "updateDate": "2025-07-25",
+      "sha256": "be8c54dec6f924ac3f0fc3bafec16f7758a4f40af4754effc6c1cb1a2eb97030",
+      "release": "sources-2026-10-26-2",
+      "asset": "rifl-2025-07-25_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rift": {
+      "updateDate": "2025-07-25",
+      "sha256": "23c1f28f576168c46dbf5e05ad09fb21d4909eb283c9a0857a2500181fe72d52",
+      "release": "sources-2026-10-26-2",
+      "asset": "rift-2025-07-25_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rkbNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "7c3b55a0210b660951455d3a6ee9b9f64dad7945c79f2d0ea0771b238b2b0348",
+      "release": "sources-2026-10-26-2",
+      "asset": "rkbNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rki": {
+      "updateDate": "2025-06-27",
+      "sha256": "efa51a890aa2adb071c7eebdc6e8dc434c484737fe4c153c80427c404540528c",
+      "release": "sources-2026-10-26-2",
+      "asset": "rki-2025-06-27_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rmb": {
+      "updateDate": "2025-11-27",
+      "sha256": "40994b6d5c1b2046587deda3bcf9b0abf4cd52c141d831c92964d44c663f9c5e",
+      "release": "sources-2026-10-26-2",
+      "asset": "rmb-2025-11-27_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rmc": {
+      "updateDate": "2019-12-29",
+      "sha256": "4fb1758f0f2b01bce15ab787fbbb407703e1ef9ff7da5a06bfa1bf96e400869a",
+      "release": "sources-2026-10-26-2",
+      "asset": "rmc-2019-12-29_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rmczrb": {
+      "updateDate": "2023-04-13",
+      "sha256": "3481860b2bdb26c16994dca4969bbfa249375bcdc28508948a644f902bc96fe7",
+      "release": "sources-2026-10-26-2",
+      "asset": "rmczrb-2023-04-13_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rmn": {
+      "updateDate": "2025-06-27",
+      "sha256": "4da885455da872c7863ef5cfd0bcd23c7742aa1b7838be4c9ef889b1c4f3641b",
+      "release": "sources-2026-10-26-2",
+      "asset": "rmn-2025-06-27_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rmna": {
+      "updateDate": "2025-06-27",
+      "sha256": "90905a965fc18ab5d810cd9d1108b9984affdd96b52d7ac884d2f221527fe29c",
+      "release": "sources-2026-10-26-2",
+      "asset": "rmna-2025-06-27_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rmyArli": {
+      "updateDate": "2026-10-20",
+      "sha256": "14ae79a40ca0ab5d7fd46bb38326bfc547db11034e6cd25e29dce3b3bbe29090",
+      "release": "sources-2026-10-26-2",
+      "asset": "rmyArli-2026-10-20_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rmyChergash": {
+      "updateDate": "2025-06-28",
+      "sha256": "dd10eae71eaec4198354451f9463bb7e250122fa5ece1373af7ad4b86ef05f31",
+      "release": "sources-2026-10-26-2",
+      "asset": "rmyChergash-2025-06-28_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rmyGurbet": {
+      "updateDate": "2025-06-28",
+      "sha256": "e6eafbb15115d5e2f48c8a9e1d62ccf2fac57638eb1f5065dd717dea59efa792",
+      "release": "sources-2026-10-26-2",
+      "asset": "rmyGurbet-2025-06-28_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rmylovari": {
+      "updateDate": "2025-06-28",
+      "sha256": "73ae5d1d16de891069dbf70ad4c8cb995fb43f51a42125c345a863812374a0a8",
+      "release": "sources-2026-10-26-2",
+      "asset": "rmylovari-2025-06-28_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rmyservi": {
+      "updateDate": "2025-06-27",
+      "sha256": "0952000d320fb7d41a954639615a350f4f2294e35129c7d59a03d290736a7fd8",
+      "release": "sources-2026-10-26-2",
+      "asset": "rmyservi-2025-06-27_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rmyvlakh": {
+      "updateDate": "2025-06-28",
+      "sha256": "93a6eb2e758fee6e77a4653a71c938267c6c37ac21ef28ac98b5bfea3b486880",
+      "release": "sources-2026-10-26-2",
+      "asset": "rmyvlakh-2025-06-28_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "ron1924": {
+      "updateDate": "2022-01-13",
+      "sha256": "9d4dca0b5e4fc8e747f31aba350d63fba2cbc65ce0cf2d4d71ba530406b57f47",
+      "release": "sources-2026-10-26-2",
+      "asset": "ron1924-2022-01-13_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "ronBayash": {
+      "updateDate": "2026-10-26",
+      "sha256": "bf62fb07d9df8243401289ddc44f1cfe8e1b43a4449c3ee9862c64bce8c6b334",
+      "release": "sources-2026-10-26-2",
+      "asset": "ronBayash-2026-10-26_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "ronbl": {
+      "updateDate": "2026-10-24",
+      "sha256": "493e179ca869e38e9e6d81bfa64ec6dbfd728e906f26af3a698bee71a89a49d7",
+      "release": "sources-2026-10-26-2",
+      "asset": "ronbl-2026-10-24_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "ronludari": {
+      "updateDate": "2026-07-15",
+      "sha256": "015b77d88b314ee2d1af050c5595539dc041a520b1b017ad913c04143beff7b5",
+      "release": "sources-2026-10-26-2",
+      "asset": "ronludari-2026-07-15_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "roo": {
+      "updateDate": "2016-09-20",
+      "sha256": "6b1387e62168c5d4991539a975bd4db88d0c40e77d9f99635951548ee1256b77",
+      "release": "sources-2026-10-26-2",
+      "asset": "roo-2016-09-20_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rop": {
+      "updateDate": "2026-01-11",
+      "sha256": "254c8fb4158c6bd9f617a645d4803c80dcad6f33b8dd8dd6f3c774c40ed00489",
+      "release": "sources-2026-10-26-2",
+      "asset": "rop-2026-01-11_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "row": {
+      "updateDate": "2022-03-11",
+      "sha256": "899b9ea2d2740be02883974cb081365f1bd97dddbafa70cd718e1ca72edac89e",
+      "release": "sources-2026-10-26-2",
+      "asset": "row-2022-03-11_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rro": {
+      "updateDate": "2016-09-20",
+      "sha256": "d6787b636a58787c277bc06997ff4b1763bb06d2c6c46d5546fd8094bf0a435e",
+      "release": "sources-2026-10-26-2",
+      "asset": "rro-2016-09-20_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "ruf": {
+      "updateDate": "2019-12-29",
+      "sha256": "91cb2d68192a79645227c47c6dab328a9d2907b4fd2f1984d23bd986ca078da7",
+      "release": "sources-2026-10-26-2",
+      "asset": "ruf-2019-12-29_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rug": {
+      "updateDate": "2017-11-06",
+      "sha256": "77eade0f39d9e892fc1cd30625da74deaf93eca318a0efa9779f2fad4a7c8725",
+      "release": "sources-2026-10-26-2",
+      "asset": "rug-2017-11-06_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rup": {
+      "updateDate": "2025-07-02",
+      "sha256": "1d58ac56a9929066b07e197b3b5363c168de36b52dd3aedb05d01e5585e13e91",
+      "release": "sources-2026-10-26-2",
+      "asset": "rup-2025-07-02_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "russyn": {
+      "updateDate": "2022-11-25",
+      "sha256": "25a4a49e51691a271bdb2b7effa4e58760dae2852bff66cc9900fd9dc9355776",
+      "release": "sources-2026-10-26-2",
+      "asset": "russyn-2022-11-25_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rwo-karo": {
+      "updateDate": "2016-09-22",
+      "sha256": "179b3891fe27d5f176e844775474f190f28d27d9d6423126ac7a557db534bfad",
+      "release": "sources-2026-10-26-2",
+      "asset": "rwo-karo-2016-09-22_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "rwo-rawa": {
+      "updateDate": "2025-06-28",
+      "sha256": "b9f44039cd5445e81ed5740c81a2d1790f17ba0e8326309c1e79537886949c96",
+      "release": "sources-2026-10-26-2",
+      "asset": "rwo-rawa-2025-06-28_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sabNT": {
+      "updateDate": "2014-04-22",
+      "sha256": "1ea55e3e32e718711b4a96a396e46d00e5cd2622d96f34f55b1eb4f95e320ae6",
+      "release": "sources-2026-10-26-2",
+      "asset": "sabNT-2014-04-22_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sanasm": {
+      "updateDate": "2020-01-01",
+      "sha256": "1be256100727bfabe2da4109cf8157d8d9ec8a8335e266f93831cd224b7a6d11",
+      "release": "sources-2026-10-26-2",
+      "asset": "sanasm-2020-01-01_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sanben": {
+      "updateDate": "2020-01-01",
+      "sha256": "35146ba1976c7ee36cadb12ed5d120b8f15633bbc7f1a8a69a44c85bcf568415",
+      "release": "sources-2026-10-26-2",
+      "asset": "sanben-2020-01-01_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sanbur": {
+      "updateDate": "2020-01-01",
+      "sha256": "f37a437c87593a2867175019ea42c8d1f39fa5d6044acb4f5d8d3a6ff60c836f",
+      "release": "sources-2026-10-26-2",
+      "asset": "sanbur-2020-01-01_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sancol": {
+      "updateDate": "2020-01-01",
+      "sha256": "05c6a30aec1a35a6e0cb76fc79d5fee95ce64bf89fba10db44d3b58e1dcb0b1d",
+      "release": "sources-2026-10-26-2",
+      "asset": "sancol-2020-01-01_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sandev": {
+      "updateDate": "2020-01-01",
+      "sha256": "5c3579bf66937964a39138f82db1f6328d9c254468949242423dbb0a6ab77f9a",
+      "release": "sources-2026-10-26-2",
+      "asset": "sandev-2020-01-01_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sanguj": {
+      "updateDate": "2020-01-01",
+      "sha256": "0f3247e27891ed3bb550bf81551a052765800af1da2fd49ce1ab32f400a931e3",
+      "release": "sources-2026-10-26-2",
+      "asset": "sanguj-2020-01-01_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sanhk": {
+      "updateDate": "2020-01-01",
+      "sha256": "6c068552850b1413608d867a42d8ac0ec295a52728a6a6628f0d6020f06b4094",
+      "release": "sources-2026-10-26-2",
+      "asset": "sanhk-2020-01-01_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sanias": {
+      "updateDate": "2020-01-01",
+      "sha256": "f052eea053e2c95abfe708b3972cf02bb98152ef10e5d861f6b4090aa6d08ed9",
+      "release": "sources-2026-10-26-2",
+      "asset": "sanias-2020-01-01_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "saniso": {
+      "updateDate": "2020-01-01",
+      "sha256": "f2ab9c0f7381153b3563d16fcff9a3d3e911d58afffc854c55507d2e74bfcffb",
+      "release": "sources-2026-10-26-2",
+      "asset": "saniso-2020-01-01_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sanitr": {
+      "updateDate": "2020-01-01",
+      "sha256": "9be6e83887fb9dd3ec6bdca8b5d742cb950c46afb9debb61a6887e82676069bf",
+      "release": "sources-2026-10-26-2",
+      "asset": "sanitr-2020-01-01_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sankan": {
+      "updateDate": "2020-01-01",
+      "sha256": "f46285fcc7ad5d4dc255383dd2df6b78f97d43f4b996dac1ee06896d9807c7fd",
+      "release": "sources-2026-10-26-2",
+      "asset": "sankan-2020-01-01_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sankhm": {
+      "updateDate": "2020-01-01",
+      "sha256": "e51de28abe46f9d7fd9b7b5fb084af0d26ebaf8ce00e6371f6b1d5adaea407d3",
+      "release": "sources-2026-10-26-2",
+      "asset": "sankhm-2020-01-01_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sanmal": {
+      "updateDate": "2020-01-01",
+      "sha256": "9d78e1668ce4d6a07704b91a0818001236cafc55b30ea178dd9b142f3b2acb3f",
+      "release": "sources-2026-10-26-2",
+      "asset": "sanmal-2020-01-01_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sanori": {
+      "updateDate": "2020-01-01",
+      "sha256": "5426f13a9b161f2cfcefd118be2ac5990931e0a146b60ce892da5f76a91a114e",
+      "release": "sources-2026-10-26-2",
+      "asset": "sanori-2020-01-01_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sanpun": {
+      "updateDate": "2020-01-01",
+      "sha256": "1337db4baa7aede27b97a86fa8d32b6271e36de7162c7f96a7ecd0a6bebd3491",
+      "release": "sources-2026-10-26-2",
+      "asset": "sanpun-2020-01-01_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sansin": {
+      "updateDate": "2020-01-01",
+      "sha256": "9ebfffeda108bbaf8c61ef1fb84e34574591f4095204864f7f888a90e481baa0",
+      "release": "sources-2026-10-26-2",
+      "asset": "sansin-2020-01-01_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "santam": {
+      "updateDate": "2020-01-01",
+      "sha256": "f9a256aab98e0b298ef54241a8d4b57cee6539bf38aeeec1d1f8f8ad12c5cefb",
+      "release": "sources-2026-10-26-2",
+      "asset": "santam-2020-01-01_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "santel": {
+      "updateDate": "2020-01-01",
+      "sha256": "0e6128537d881abad7be7a4263ce95709ae7ce606fb2496df1beb6f3db7bdf90",
+      "release": "sources-2026-10-26-2",
+      "asset": "santel-2020-01-01_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "santha": {
+      "updateDate": "2020-01-01",
+      "sha256": "0704a8276a53db92c2f0eedc8ea7b07fd7811bceb1049bd4236e14c4f02e6b28",
+      "release": "sources-2026-10-26-2",
+      "asset": "santha-2020-01-01_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "santib": {
+      "updateDate": "2020-01-01",
+      "sha256": "e2b5be197db9f2f3668323ed0fa979271fe0f0096bc1cc776564687a0b1f8ce7",
+      "release": "sources-2026-10-26-2",
+      "asset": "santib-2020-01-01_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sanurd": {
+      "updateDate": "2020-01-01",
+      "sha256": "b5774c71c204824abebbd17c4c718f86a27912c3873bf3293017ec1db7743214",
+      "release": "sources-2026-10-26-2",
+      "asset": "sanurd-2020-01-01_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sanvel": {
+      "updateDate": "2020-01-01",
+      "sha256": "5f6b74e84164953d5d08fe0e22a148855410848f49162e2c309b74e44a129883",
+      "release": "sources-2026-10-26-2",
+      "asset": "sanvel-2020-01-01_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sav": {
+      "updateDate": "2025-06-28",
+      "sha256": "074b5660330fa5f37aec3869b4d9f1fdde6a5df5a442a6cfa714f968f4c41197",
+      "release": "sources-2026-10-26-2",
+      "asset": "sav-2025-06-28_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sbe": {
+      "updateDate": "2026-10-15",
+      "sha256": "04045886543b14b557f659d6e2f5d5b5e14833440ebfa07d89d46fe56e2729fe",
+      "release": "sources-2026-10-26-2",
+      "asset": "sbe-2026-10-15_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sbk": {
+      "updateDate": "2020-11-06",
+      "sha256": "81d2ede112ae226e1c4dbc0362ac39252e0fc714e0771328a0586b90e755f3a9",
+      "release": "sources-2026-10-26-2",
+      "asset": "sbk-2020-11-06_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sbs": {
+      "updateDate": "2020-08-17",
+      "sha256": "15d9aaa5f330830d37c4d88af8c22a1978af7a275a829baf2049bd1f385f2843",
+      "release": "sources-2026-10-26-2",
+      "asset": "sbs-2020-08-17_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sby": {
+      "updateDate": "2023-04-14",
+      "sha256": "9a96c00a3b1841805446944806cdca1136b670140d65c6bcc2bbbe1b2710ada6",
+      "release": "sources-2026-10-26-2",
+      "asset": "sby-2023-04-14_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sce": {
+      "updateDate": "2025-07-02",
+      "sha256": "09946be1d1a142d4b666b779bc655cee3722e67d87b6a6c8f6e54faa78a938e8",
+      "release": "sources-2026-10-26-2",
+      "asset": "sce-2025-07-02_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sch": {
+      "updateDate": "2023-04-14",
+      "sha256": "06e172274d93c0b7bee5353d31597f99fdeaee25402238f5d0f9cac1cc7b8975",
+      "release": "sources-2026-10-26-2",
+      "asset": "sch-2023-04-14_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "seh": {
+      "updateDate": "2016-06-30",
+      "sha256": "dc9fbf24b00d013c04ac385980223c5fa36d88fc8297db75372ef2c4daf677a0",
+      "release": "sources-2026-10-26-2",
+      "asset": "seh-2016-06-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "seyNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "ae712c6c2c2c6d211e6723ebcd21123ee6d761a55d0d7268d32f553992745f07",
+      "release": "sources-2026-10-26-2",
+      "asset": "seyNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sgb": {
+      "updateDate": "2015-03-17",
+      "sha256": "66d0aa307f98d6897f97cd30231700a34daf50403d35e21bd5d1870929632fc1",
+      "release": "sources-2026-10-26-2",
+      "asset": "sgb-2015-03-17_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sgz": {
+      "updateDate": "2017-09-09",
+      "sha256": "a22ed8ba1d35491b15afa090e60a7dd53ce801f1ec63ac3754d96d642c5777c9",
+      "release": "sources-2026-10-26-2",
+      "asset": "sgz-2017-09-09_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "shj": {
+      "updateDate": "2022-06-21",
+      "sha256": "948e8c3277d91ec2a7e09d679d9dfcd088b137ba43d5382564baf9c6887bf07c",
+      "release": "sources-2026-10-26-2",
+      "asset": "shj-2022-06-21_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "shpNTpo": {
+      "updateDate": "2014-04-30",
+      "sha256": "7b037c30ead4c2d7d879d1c9dee95ab130c83bd221ce8feefeedcd472406e5f6",
+      "release": "sources-2026-10-26-2",
+      "asset": "shpNTpo-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "shr": {
+      "updateDate": "2025-07-02",
+      "sha256": "307754913a21f0a123932a54c5ff672b08a188e0eae2370583f79842720f1420",
+      "release": "sources-2026-10-26-2",
+      "asset": "shr-2025-07-02_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sim": {
+      "updateDate": "2012-01-20",
+      "sha256": "b242431e10726d25f5a268c96655446eda2c45c5106eaf67df48ab73a8391139",
+      "release": "sources-2026-10-26-2",
+      "asset": "sim-2012-01-20_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "six": {
+      "updateDate": "2025-07-02",
+      "sha256": "7c4bc9f41bd3e75cd882f91c2422f6faa48d8dd2eb3a62c2c998bdf51ccb5586",
+      "release": "sources-2026-10-26-2",
+      "asset": "six-2025-07-02_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sjaNT": {
+      "updateDate": "2014-04-23",
+      "sha256": "269a95d971719debb938b5c62a9c8cce32d0e4778ed15284f4d7e1ed7a929756",
+      "release": "sources-2026-10-26-2",
+      "asset": "sjaNT-2014-04-23_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sle": {
+      "updateDate": "2025-07-02",
+      "sha256": "af13e886b722610f98d475eff915453f2a407bd8329321d0c2da8862735d0e52",
+      "release": "sources-2026-10-26-2",
+      "asset": "sle-2025-07-02_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "slk": {
+      "updateDate": "2025-05-21",
+      "sha256": "24392d146aa9a4280e086b95c05683beabc9129d6d9775781ef17f7c3fe5b8fc",
+      "release": "sources-2026-10-26-2",
+      "asset": "slk-2025-05-21_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sll": {
+      "updateDate": "2012-01-20",
+      "sha256": "dac7c445bccd1dbbc2a45b7d8392d4e32f1a7ffd5e05e270728d46da769da63e",
+      "release": "sources-2026-10-26-2",
+      "asset": "sll-2012-01-20_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "smkNT": {
+      "updateDate": "2022-03-11",
+      "sha256": "00aa5cc4734083c4d7150d93ab201059a6def9f6c2b82ba86db87cc0c2e51b87",
+      "release": "sources-2026-10-26-2",
+      "asset": "smkNT-2022-03-11_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sna": {
+      "updateDate": "2023-04-14",
+      "sha256": "406a886dca0df2e31cd1c3d2f16a80d74541caf764a71d14b22cd30452f7ed1d",
+      "release": "sources-2026-10-26-2",
+      "asset": "sna-2023-04-14_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "snc": {
+      "updateDate": "2012-01-20",
+      "sha256": "9dbf01048b7d2f007745682c04f1c7732037f3966d42e13bebd9de2dd3b6d766",
+      "release": "sources-2026-10-26-2",
+      "asset": "snc-2012-01-20_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "snnNT": {
+      "updateDate": "2014-04-30",
+      "sha256": "4aea64b5c959a07eeb424c95ab644dde1522542f928c8f396966cf8d48f1e148",
+      "release": "sources-2026-10-26-2",
+      "asset": "snnNT-2014-04-30_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "snp": {
+      "updateDate": "2012-11-24",
+      "sha256": "2d8c5d66b1cba5f41a7120919be10cd09b283329c874865d2cf942e56d79f761",
+      "release": "sources-2026-10-26-2",
+      "asset": "snp-2012-11-24_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "snp-lambau": {
+      "updateDate": "2012-01-19",
+      "sha256": "0f018d2a3cb07d60d71d7f0a04a3f6ccc931b79adf8698e5646d83557512efba",
+      "release": "sources-2026-10-26-2",
+      "asset": "snp-lambau-2012-01-19_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "snx": {
+      "updateDate": "2022-08-18",
+      "sha256": "907b80b4a550e2b163db353ee26de21a0f9f6aa6a4d7784dbe6a44a72dbbe549",
+      "release": "sources-2026-10-26-2",
+      "asset": "snx-2022-08-18_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sny": {
+      "updateDate": "2012-10-23",
+      "sha256": "a38c5a0487dac907c98da3a664a50ed80944cb65bd3a3b0eb9179efe7619057f",
+      "release": "sources-2026-10-26-2",
+      "asset": "sny-2012-10-23_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "som": {
+      "updateDate": "2017-08-31",
+      "sha256": "9ac3b1e08d708cd2e98d4095dc74031839f183bbc149ecf0f9b200b36ff606d1",
+      "release": "sources-2026-10-26-2",
+      "asset": "som-2017-08-31_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "soq": {
+      "updateDate": "2012-01-20",
+      "sha256": "bff28b4e34e12533e8f505c313dedc1ea3c26147498ebd98dc61ac47f9b4fd84",
+      "release": "sources-2026-10-26-2",
+      "asset": "soq-2012-01-20_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "soy": {
+      "updateDate": "2014-10-02",
+      "sha256": "5aa631e43a071c428d067684a10d0d3b9da60926c429a8a895c94cd6075c34de",
+      "release": "sources-2026-10-26-2",
+      "asset": "soy-2014-10-02_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "spaRV1909": {
+      "updateDate": "2013-12-13",
+      "sha256": "b8c5f45ef19a6d26faa0844dedbb2c8aceefd8698f5ed1e070878f41715b1869",
+      "release": "sources-2026-10-26-2",
+      "asset": "spaRV1909-2013-12-13_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "spabes": {
+      "updateDate": "2026-10-20",
+      "sha256": "6c2467976741cab87dec9ceac07857a60f7a5f1dc07224629a74a7b89a4c45d8",
+      "release": "sources-2026-10-26-2",
+      "asset": "spabes-2026-10-20_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "spabll": {
+      "updateDate": "2026-10-20",
+      "sha256": "a8f0a5d2a00bcdb9f3162f65fb95870cf3fed73338851a1f5102022a20df5349",
+      "release": "sources-2026-10-26-2",
+      "asset": "spabll-2026-10-20_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "spablm": {
+      "updateDate": "2026-10-20",
+      "sha256": "cb36d16aada4f1d4e5f35d6361b8548df9d8aad224ec62184940b58de056c14c",
+      "release": "sources-2026-10-26-2",
+      "asset": "spablm-2026-10-20_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "spaonbv": {
+      "updateDate": "2025-05-21",
+      "sha256": "f7352fe7da2ae056255f1d28e7df279e53921e98688038dc2857b86111bb1a4a",
+      "release": "sources-2026-10-26-2",
+      "asset": "spaonbv-2025-05-21_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "spapddpt": {
+      "updateDate": "2026-10-20",
+      "sha256": "8cde8fb7d23ccc1ea6927bba90b4552b8528f3323a455d5e53ccafebc8d8ce7d",
+      "release": "sources-2026-10-26-2",
+      "asset": "spapddpt-2026-10-20_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "sparvg": {
+      "updateDate": "2026-10-20",
+      "sha256": "44e276c233def682f2d8b01bcdcab495b6520930adced22629cdc1b1fcd2e5d4",
+      "release": "sources-2026-10-26-2",
+      "asset": "sparvg-2026-10-20_usfm.zip",
+      "fetched": "2026-10-26"
+    },
+    "spav1602p": {
+      "updateDate": "2026-10-20",
+      "sha256": "12806846a469605e3315709560b4b4d4938cb82a9c8c98b2c9f4521111d8fbb1",
+      "release": "sources-2026-10-26-2",
+      "asset": "spav1602p-2026-10-20_usfm.zip",
+      "fetched": "2026-10-26"
     }
   }
 }
