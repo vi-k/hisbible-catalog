@@ -98,9 +98,10 @@ BuildOutcome buildModule(
   final warnings = <String>[];
   // Архив распаковывается лениво: битая запись видна только при чтении.
   final List<_Book> books;
+  final int skippedVerses;
   final String? copyrightPage;
   try {
-    books = _readBooks(archive, warnings);
+    (:books, :skippedVerses) = _readBooks(archive, warnings);
     copyrightPage = _copyrightPage(archive);
   } on Object catch (e) {
     return BuildFailed(['cannot read ${usfmZip.path}: $e']);
@@ -141,7 +142,7 @@ BuildOutcome buildModule(
 
     return BuildFailed(['cannot write $partPath: $e']);
   }
-  final reasons = validateModule(partPath, t);
+  final reasons = validateModule(partPath, t, skippedVerses: skippedVerses);
   if (reasons.isNotEmpty) {
     _delete(part);
 
@@ -171,12 +172,18 @@ BuildOutcome buildModule(
 typedef _Book = ({int number, BookInfo info, UsfmBook usfm});
 
 // Разбирает книги архива по порядку имён; что пропущено — в [warnings].
-List<_Book> _readBooks(Archive archive, List<String> warnings) {
+// `skippedVerses` — стихи книг вне справочника: `translations.csv` их
+// считает, а в модуль они не идут.
+({List<_Book> books, int skippedVerses}) _readBooks(
+  Archive archive,
+  List<String> warnings,
+) {
   final files = [
     for (final file in archive.files)
       if (file.isFile && _isUsfm(file.name)) file,
   ]..sort((a, b) => a.name.compareTo(b.name));
   final books = <_Book>[];
+  var skippedVerses = 0;
   final numbers = <int>{};
   for (final file in files) {
     final usfm = parseUsfm(_text(file));
@@ -187,6 +194,7 @@ List<_Book> _readBooks(Archive archive, List<String> warnings) {
       warnings.add('${file.name}: no \\id, skipped');
     } else if (number == null || info == null) {
       warnings.add('$code: not in the book catalog, skipped');
+      skippedVerses += usfm.verses.length;
     } else if (usfm.verses.isEmpty) {
       warnings.add('$code: no verses in ${file.name}, skipped');
     } else if (!numbers.add(number)) {
@@ -203,7 +211,7 @@ List<_Book> _readBooks(Archive archive, List<String> warnings) {
     }
   }
 
-  return books;
+  return (books: books, skippedVerses: skippedVerses);
 }
 
 bool _isUsfm(String name) {

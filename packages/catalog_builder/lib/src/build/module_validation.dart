@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:catalog_builder/src/ebible/translations_csv.dart';
 import 'package:hisbible_format/hisbible_format.dart';
 
@@ -15,7 +17,14 @@ import 'package:hisbible_format/hisbible_format.dart';
 ///   больше чем на 2% ожидаемого: |стихов − ожидаемое| × 50 > ожидаемое.
 ///   Ожидается 0 — стихов этой части быть не должно. Слитые стихи
 ///   (`\v 16-17`) считаются одним, как в `translations.csv`.
-List<String> validateModule(String path, EbibleTranslation translation) {
+///   [skippedVerses] — стихи книг вне справочника (`DAG`, `ESG`, `PS2`):
+///   сборка их пропускает, и из ожидаемого `DCverses` они вычитаются
+///   (не ниже 0).
+List<String> validateModule(
+  String path,
+  EbibleTranslation translation, {
+  int skippedVerses = 0,
+}) {
   final BibleModule bible;
   try {
     bible = BibleModule.open(path);
@@ -23,7 +32,7 @@ List<String> validateModule(String path, EbibleTranslation translation) {
     return ['the module does not open: ${e.problem}'];
   }
   try {
-    return _check(bible, translation);
+    return _check(bible, translation, skippedVerses);
   } on Exception catch (e) {
     return ['the module does not read: $e'];
   } finally {
@@ -36,7 +45,11 @@ const _shownPlaces = 10;
 
 final _leftover = RegExp(r'\\[A-Za-z]|\|strong=');
 
-List<String> _check(BibleModule bible, EbibleTranslation translation) {
+List<String> _check(
+  BibleModule bible,
+  EbibleTranslation translation,
+  int skippedVerses,
+) {
   final reasons = <String>[];
   var ot = 0;
   var nt = 0;
@@ -79,7 +92,12 @@ List<String> _check(BibleModule bible, EbibleTranslation translation) {
   for (final (part, actual, column, expected) in [
     ('Old Testament', ot, 'OTverses', translation.otVerses),
     ('New Testament', nt, 'NTverses', translation.ntVerses),
-    ('deuterocanonical books', dc, 'DCverses', translation.dcVerses),
+    (
+      'deuterocanonical books',
+      dc,
+      'DCverses',
+      math.max(0, translation.dcVerses - skippedVerses),
+    ),
   ]) {
     if ((actual - expected).abs() * 50 > expected) {
       reasons.add(

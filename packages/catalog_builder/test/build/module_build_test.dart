@@ -214,6 +214,19 @@ void main() {
     expect([for (final b in bible.books) b.code], ['GEN']);
   });
 
+  test('verses of a skipped book are not expected', () {
+    final outcome = build(
+      _translation(ot: 31, dc: 40),
+      zip({
+        'GEN.usfm': _usfm('GEN', [31]),
+        'TOB.usfm': _usfm('TOB', [30]),
+        'DAG.usfm': _usfm('DAG', [10]),
+      }),
+    );
+
+    expect(built(outcome).warnings, ['DAG: not in the book catalog, skipped']);
+  });
+
   test('dropped text and unknown markers are warnings', () {
     final outcome = build(
       _translation(ot: 31),
@@ -476,6 +489,7 @@ EbibleTranslation _translation({
   String language = 'eng',
   int ot = 0,
   int nt = 0,
+  int dc = 0,
   String copyright = '© 2026 Tests',
 }) => EbibleTranslation(
   languageCode: language,
@@ -490,7 +504,7 @@ EbibleTranslation _translation({
   publicationUrl: 'http://ebible.org/eng-test/',
   otVerses: ot,
   ntVerses: nt,
-  dcVerses: 0,
+  dcVerses: dc,
   textDirection: WritingDirection.ltr,
   downloadable: true,
   shortTitle: 'Test',
