@@ -146,7 +146,7 @@ void main() {
 
   test('names fall back to the header and the catalog', () {
     final outcome = build(
-      _translation(nt: 25 + 25),
+      _translation(language: 'spa', nt: 25 + 25),
       zip({
         'MAT.usfm': _usfm('MAT', [25], fields: '\\h Matthew\n'),
         'MRK.usfm': _usfm('MRK', [25]),
@@ -225,6 +225,30 @@ void main() {
     );
 
     expect(built(outcome).warnings, ['DAG: not in the book catalog, skipped']);
+  });
+
+  test('russian and english books without an abbreviation take ours', () {
+    String shortName(String language, String fields) {
+      final outcome = build(
+        _translation(language: language, ot: 3),
+        zip({
+          'GEN.usfm': _usfm('GEN', [3], fields: fields),
+        }),
+      );
+      built(outcome);
+      final bible = BibleModule.open(out());
+      try {
+        return bible.book(10)!.shortName;
+      } finally {
+        bible.close();
+      }
+    }
+
+    expect(shortName('rus', '\\h Бытие\n'), 'Быт');
+    expect(shortName('rus', '\\h Бытие\n\\toc3 Бытие\n'), 'Быт');
+    expect(shortName('eng', '\\h Genesis\n\\toc2 Genesis\n'), 'Gen');
+    expect(shortName('eng', '\\h Genesis\n\\toc3 Gn\n'), 'Gn');
+    expect(shortName('spa', '\\h Génesis\n'), 'Génesis');
   });
 
   test('dropped text and unknown markers are warnings', () {

@@ -136,7 +136,14 @@ BuildOutcome buildModule(
   final part = File(partPath);
   try {
     part.parent.createSync(recursive: true);
-    _write(partPath, meta, books, warnings, russian: russian);
+    _write(
+      partPath,
+      meta,
+      books,
+      warnings,
+      russian: russian,
+      language: language,
+    );
   } on Object catch (e) {
     _delete(part);
 
@@ -271,6 +278,29 @@ String _sample(List<_Book> books) {
   return out.toString();
 }
 
+// Короткое название книги: `\toc3`. У русского и английского перевода,
+// где `\toc3` нет или в нём полное название, — сокращение справочника
+// («Быт», «Gen»; решение владельца 2026-10-26).
+String _shortName(_Book book, String language) {
+  final usfm = book.usfm;
+  final toc3 = _filled(usfm.toc3);
+  final full = {
+    usfm.header,
+    usfm.toc1,
+    usfm.toc2,
+  }.map(_filled).nonNulls.toSet();
+  final ours = switch (language.split('-').first) {
+    'ru' => book.info.ruShort,
+    'en' => book.info.enShort,
+    _ => null,
+  };
+  if (ours != null && (toc3 == null || full.contains(toc3))) {
+    return ours;
+  }
+
+  return toc3 ?? _filled(usfm.header) ?? book.info.enShort;
+}
+
 // Пишет модуль [path]; повторные стихи и стихи с номерами вне границ
 // формата пропускаются и попадают в [warnings].
 void _write(
@@ -279,6 +309,7 @@ void _write(
   List<_Book> books,
   List<String> warnings, {
   required bool russian,
+  required String language,
 }) {
   final skipped = {for (final book in books) book.number: _skipped(book.usfm)};
   final ends = {
@@ -299,8 +330,7 @@ void _write(
       final usfm = book.usfm;
       writer.addBook(
         number: book.number,
-        shortName:
-            _filled(usfm.toc3) ?? _filled(usfm.header) ?? book.info.enShort,
+        shortName: _shortName(book, language),
         longName:
             _filled(usfm.toc2) ??
             _filled(usfm.header) ??
