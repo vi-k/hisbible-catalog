@@ -9,6 +9,7 @@ import 'package:catalog_builder/src/catalog/fetcher.dart';
 import 'package:catalog_builder/src/catalog/fonts.dart';
 import 'package:catalog_builder/src/catalog/overrides.dart';
 import 'package:catalog_builder/src/catalog/publisher.dart';
+import 'package:catalog_builder/src/catalog/report.dart';
 import 'package:catalog_builder/src/catalog/sources_lock.dart';
 import 'package:catalog_builder/src/ebible/translations_csv.dart';
 import 'package:path/path.dart' as p;
@@ -17,8 +18,9 @@ import 'package:path/path.dart' as p;
 /// в [out] и [err], по умолчанию `stdout` и `stderr`.
 ///
 /// Режимы и ключи описаны в `bin/build.dart`. Возвращает код выхода:
-/// 0 — готово, 1 — не собрано или не всё удалено, 64 — неверные
-/// аргументы.
+/// 0 — готово, 1 — не собрано или не всё удалено,
+/// [withdrawalRefusedExitCode] — прогон записал свои файлы, но отказался
+/// от массового отзыва, 64 — неверные аргументы.
 Future<int> runBuildCli(
   List<String> args, {
   StringSink? out,
@@ -34,6 +36,16 @@ Uri? csvAddress(String csv) {
       ? uri
       : null;
 }
+
+/// Код выхода прогона, который записал указатель, список исходников
+/// и отчёт, но отказался от массового отзыва: сборка `build` коммитит
+/// записанное и только потом падает.
+const int withdrawalRefusedExitCode = 3;
+
+/// Код выхода прогона каталога, который дошёл до отчёта [report]: 0 или
+/// [withdrawalRefusedExitCode], если прогон отказался от массового отзыва.
+int catalogExitCode(BuildReport report) =>
+    report.withdrawalRefused == null ? 0 : withdrawalRefusedExitCode;
 
 const _usage =
     'usage:\n'
@@ -237,7 +249,7 @@ final class _Cli {
         }
       }
 
-      return 0;
+      return catalogExitCode(report);
     } on Object catch (e) {
       _err.writeln('catalog build failed: $e');
 

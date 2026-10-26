@@ -45,7 +45,13 @@ jobs:
       # Прогон сперва удаляет файлы, которые прошлый прогон записал
       # в sources/pending-deletions.json, потом собирает и записывает туда
       # файлы, на которые его указатель больше не ссылается.
+      #
+      # Код 3: сборка отказалась от массового отзыва, но указатель, список
+      # исходников и отчёт записала, и все модули в них остались. Такой
+      # прогон коммитится как обычно, а падает последний шаг, «Refuse the
+      # mass withdrawal».
       - name: Build the catalog
+        id: build
         env:
           GH_TOKEN: ${{ github.token }}
           LIMIT: ${{ inputs.limit }}
@@ -60,7 +66,13 @@ jobs:
           if [ "$ALLOW_MASS_WITHDRAWAL" = true ]; then
             args+=(--allow-mass-withdrawal)
           fi
-          dart run catalog_builder:build "${args[@]}"
+          status=0
+          dart run catalog_builder:build "${args[@]}" || status=$?
+          if [ "$status" -eq 3 ]; then
+            echo 'withdrawal_refused=true' >> "$GITHUB_OUTPUT"
+          elif [ "$status" -ne 0 ]; then
+            exit "$status"
+          fi
       - name: Keep the report and the deletion list
         if: always()
         uses: actions/upload-artifact@v4
@@ -85,3 +97,9 @@ jobs:
           # а тогда отказ и нужен.
           git pull --rebase origin main
           git push origin HEAD:main
+      - name: Refuse the mass withdrawal
+        if: steps.build.outputs.withdrawal_refused == 'true'
+        run: |
+          reason=$(grep -m 1 -o 'Withdrawal refused: [^*]*' out/report.md || true)
+          echo "::error title=Mass withdrawal refused::${reason:-Withdrawal refused, see the report.} The index and the lock are committed with all modules kept; the report is in the summary and the artifact. In this workflow the key is the allow_mass_withdrawal input."
+          exit 1

@@ -46,9 +46,13 @@ dart run catalog_builder:build --apply-deletions <deletions.json>
   report; the module built from it earlier stays as it is.
 - A run withdraws at most 20 modules, or 5% of the catalog if that is more. If
   more translations disappear from `translations.csv`, the run withdraws none
-  of them, deletes nothing of theirs, and says so in the report. If eBible
-  really withdrew them, run the build again with `--allow-mass-withdrawal` (in
-  the workflow, the `allow_mass_withdrawal` input).
+  of them, deletes nothing of theirs, and says so in the report. It still
+  writes the index, the lock and the report with all modules kept, and then
+  exits with code 3. The `build` workflow commits and pushes `index/` and
+  `sources/` as usual, and only then fails, naming the reason and the key. If
+  eBible really withdrew them, run the build again with
+  `--allow-mass-withdrawal` (in the workflow, the `allow_mass_withdrawal`
+  input).
 - When `gh` reports the GitHub API rate limit, the run stops at once: the
   translation in progress fails, the rest wait for the next run, and the report
   says why. A `GITHUB_TOKEN` allows about 1000 API requests an hour, and each
