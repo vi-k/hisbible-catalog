@@ -1,3 +1,292 @@
 {
-  "deletions": []
+  "deletions": [
+    {
+      "release": "build-2026-10-26",
+      "asset": "arb-vd-2020-08-03.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "arbnav-2025-04-25.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "ces1613-2023-10-20.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "cmn-cu89s-2021-10-15.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "cmn-cu89t-2024-12-30.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "cmncbs-2025-05-01.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "cmncbt-2025-04-30.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "deu1912-2025-12-29.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "deu1951-2022-03-30.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "deuelo-2023-09-19.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "eng-asv-2026-10-20.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "eng-kjv-2026-09-26.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "eng-kjv2006-2026-09-26.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "eng-lxx2012-2026-03-12.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "eng-rv-2026-10-20.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "eng-t4t-2026-10-20.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "eng-uk-lxx2012-2025-12-19.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engBBE-2020-04-17.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engDBY-2019-11-15.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engDRA-2022-11-03.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engPEV-2026-10-20.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engULB-2020-12-04.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engWycliffe-2016-11-08.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engaoi-2021-11-23.hb"
+    },
+    {
+      "release": "build-2026-10-26-2",
+      "asset": "engasvbt-2026-10-20.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engbarkly-2026-04-14.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engbsb-2026-10-20.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engemtv-2020-12-20.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engf35-2026-10-20.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engfbv-2026-10-20.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "enggnv-2024-03-16.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engjps-2023-09-19.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engkjvcpb-2026-09-26.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "englsv-2026-10-20.hb"
+    },
+    {
+      "release": "build-2026-10-26-2",
+      "asset": "englxxup-2026-02-18.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engmsb-2026-10-20.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engnet-2026-10-20.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engnna-2026-01-06.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engoebcw-2026-10-20.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engoebus-2026-10-20.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engojb-2026-01-06.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engtcent-2026-10-20.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engwebp-2026-10-20.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engwebpb-2026-10-17.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engwebster-2024-08-01.hb"
+    },
+    {
+      "release": "build-2026-10-26-2",
+      "asset": "engwebu-2026-10-20.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engwmb-2026-10-17.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engwmbb-2026-10-13.hb"
+    },
+    {
+      "release": "build-2026-10-26-2",
+      "asset": "engwyc2017-2019-09-26.hb"
+    },
+    {
+      "release": "build-2026-10-26-2",
+      "asset": "engwyc2018-2019-09-25.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "engylt-2019-10-20.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "fraLSG-2026-10-20.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "fra_fob-2026-10-20.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "frajnd-2025-05-02.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "grc-tisch-2014-01-11.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "grcbyz-2026-10-20.hb"
+    },
+    {
+      "release": "build-2026-10-26-2",
+      "asset": "grclxx-2026-02-13.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "grcsbl-2026-10-20.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "grctcgnt-2026-10-26.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "grctr-2026-10-20.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "hboWLC-2017-12-27.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "ita1885-2025-05-03.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "ita1927-2019-12-17.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "latVUC-2014-08-23.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "nldnbg-2024-08-13.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "pesOPV-2015-04-21.hb"
+    },
+    {
+      "release": "build-2026-10-26",
+      "asset": "polubg-2018-10-23.hb"
+    },
+    {
+      "release": "build-2026-10-26-2",
+      "asset": "russyn-2022-11-25.hb"
+    },
+    {
+      "release": "build-2026-10-26-2",
+      "asset": "spaRV1909-2013-12-13.hb"
+    },
+    {
+      "release": "build-2026-10-26-2",
+      "asset": "sparvg-2026-10-20.hb"
+    },
+    {
+      "release": "build-2026-10-26-2",
+      "asset": "swef-2024-12-18.hb"
+    },
+    {
+      "release": "build-2026-10-26-2",
+      "asset": "turytc-2026-10-26.hb"
+    }
+  ]
 }

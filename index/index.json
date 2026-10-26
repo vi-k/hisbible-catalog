@@ -1543,7 +1543,7 @@
     {
       "id": "arb-vd",
       "type": "bible",
-      "abbreviation": "arb-vd",
+      "abbreviation": "SVD",
       "name": "الكتاب المقدس باللغة العربية، فان دايك",
       "description": "Arabic Van Dyck translation of the Holy Bible",
       "language": "ar",
@@ -1559,15 +1559,15 @@
         "dc": 0
       },
       "size": 8413184,
-      "sha256": "164ff1be67ea1a92811fc317ae884dd0013e96a2d5a87244e8a5344ee4c568a9",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/arb-vd-2020-08-03.hb",
-      "version": "2020-08-03",
+      "sha256": "9be18e1b184aafa5009623573f2af549d654d7b86c5df7ab838ab53651232456",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/arb-vd-2020-08-03.1.hb",
+      "version": "2020-08-03.1",
       "moduleFormat": 1
     },
     {
       "id": "arbnav",
       "type": "bible",
-      "abbreviation": "arbnav",
+      "abbreviation": "NAV",
       "name": "Ketab El Hayat Majani/كتاب الحياة مجانى",
       "description": "Biblica® Open New Arabic Version 2012",
       "language": "ar",
@@ -1583,9 +1583,9 @@
         "dc": 0
       },
       "size": 9011200,
-      "sha256": "8879416e8dcdc4f004cfe717ba2a94d19382def3d080fd9809c451e955cf1403",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/arbnav-2025-04-25.hb",
-      "version": "2025-04-25",
+      "sha256": "dadb310ce5df51e9b8d1af2903d339139695ca21fc68f27cf76e4cbd09f67892",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/arbnav-2025-04-25.1.hb",
+      "version": "2025-04-25.1",
       "moduleFormat": 1
     },
     {
@@ -4831,7 +4831,7 @@
     {
       "id": "ces1613",
       "type": "bible",
-      "abbreviation": "ces1613",
+      "abbreviation": "BKR",
       "name": "Bible Kralická 1613",
       "description": "The Holy Bible in the Czech language from the last Kralická edition of 1613.",
       "language": "cs",
@@ -4847,9 +4847,9 @@
         "dc": 0
       },
       "size": 4476928,
-      "sha256": "b9ddcbdfa10d454d35791ff118704726b200c2d2bb7294654dcdc1e4a4a7a65f",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/ces1613-2023-10-20.hb",
-      "version": "2023-10-20",
+      "sha256": "009ba1a534f48548482739902144d0ea8e6cb46157ba23afa18760446d065d2d",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/ces1613-2023-10-20.1.hb",
+      "version": "2023-10-20.1",
       "moduleFormat": 1
     },
     {
@@ -5239,7 +5239,7 @@
     {
       "id": "cmn-cu89s",
       "type": "bible",
-      "abbreviation": "cmn-cu89s",
+      "abbreviation": "CUNPS",
       "name": "新标点和合本",
       "description": "Chinese Union Version (simplified)",
       "language": "zh",
@@ -5255,15 +5255,15 @@
         "dc": 0
       },
       "size": 4235264,
-      "sha256": "2f733922015f2d85af1d43d11a2e0cdb2c0cfab3ce6614c61b4b5be3d0949592",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/cmn-cu89s-2021-10-15.hb",
-      "version": "2021-10-15",
+      "sha256": "69e35f254b5cb63573e086fb17a924fc7d90471953ee39da6d83310356fe95da",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/cmn-cu89s-2021-10-15.1.hb",
+      "version": "2021-10-15.1",
       "moduleFormat": 1
     },
     {
       "id": "cmn-cu89t",
       "type": "bible",
-      "abbreviation": "cmn-cu89t",
+      "abbreviation": "CUNPT",
       "name": "新標點和合本",
       "description": "Chinese Union Version (traditional)",
       "language": "zh",
@@ -5279,15 +5279,15 @@
         "dc": 0
       },
       "size": 4235264,
-      "sha256": "2bf8884ad19c26b3473a75ea72f196b6c06e30f150fbf2559dc0cf40ebbf2ab3",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/cmn-cu89t-2024-12-30.hb",
-      "version": "2024-12-30",
+      "sha256": "c86f6ee4d89b3c12b1d89e9ecb3bbf280cc64a8b498b0d7553a09b5154c60722",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/cmn-cu89t-2024-12-30.1.hb",
+      "version": "2024-12-30.1",
       "moduleFormat": 1
     },
     {
       "id": "cmncbs",
       "type": "bible",
-      "abbreviation": "cmncbs",
+      "abbreviation": "CCB",
       "name": "Biblica® 圣经当代译本开放资源",
       "description": "Chinese, Mandarin: Biblica® 圣经当代译本开放资源 Open Contemporary Bible, simplified scrip",
       "language": "zh",
@@ -5303,15 +5303,15 @@
         "dc": 0
       },
       "size": 4108288,
-      "sha256": "145bc4fdc25e6f0a6449e70b0c1fb05ab695a39d0cb4d87f1a08f05404f85fae",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/cmncbs-2025-05-01.hb",
-      "version": "2025-05-01",
+      "sha256": "9c07b755ed7ae46b62925fde6f70320ff0121258fe745e05fbd5fc69b5617791",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/cmncbs-2025-05-01.1.hb",
+      "version": "2025-05-01.1",
       "moduleFormat": 1
     },
     {
       "id": "cmncbt",
       "type": "bible",
-      "abbreviation": "cmncbt",
+      "abbreviation": "CCBT",
       "name": "Biblica® 聖經，當代譯本開放資源",
       "description": "Chinese, Mandarin: Biblica® 聖經，當代譯本開放資源 Open Contemporary Bible, Traditional Script",
       "language": "zh",
@@ -5327,9 +5327,9 @@
         "dc": 0
       },
       "size": 4108288,
-      "sha256": "c223900f40d16c9934d4ac0b2a07627f6b5de0dc5dda5336083329842b2a15ef",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/cmncbt-2025-04-30.hb",
-      "version": "2025-04-30",
+      "sha256": "dcab389fc8bb22fc003f73927f101811395bcbeef89879b2659e2eda33e5c401",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/cmncbt-2025-04-30.1.hb",
+      "version": "2025-04-30.1",
       "moduleFormat": 1
     },
     {
@@ -6343,7 +6343,7 @@
     {
       "id": "deu1912",
       "type": "bible",
-      "abbreviation": "deu1912",
+      "abbreviation": "LUT1912",
       "name": "Lutherbibel 1912",
       "description": "The Holy Bible in German, Luther 1912",
       "language": "de",
@@ -6359,15 +6359,15 @@
         "dc": 0
       },
       "size": 11415552,
-      "sha256": "f702d89ba397af52e05964af4df0a150aed99315ff598c007337926bfeab2991",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/deu1912-2025-12-29.hb",
-      "version": "2025-12-29",
+      "sha256": "6818ff09293cd660b5a43a19579b598008b8e6450e8fbd8bb213fe5cb6310814",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/deu1912-2025-12-29.1.hb",
+      "version": "2025-12-29.1",
       "moduleFormat": 1
     },
     {
       "id": "deu1951",
       "type": "bible",
-      "abbreviation": "deu1951",
+      "abbreviation": "SCH1951",
       "name": "Die Schlachter-Bibel 1951",
       "description": "The Holy Bible in German, Schlachter 1951 version",
       "language": "de",
@@ -6383,9 +6383,9 @@
         "dc": 0
       },
       "size": 4849664,
-      "sha256": "dcb5e258ee1150b9e17c7de37ddcd6c16f44e4861a64f5ea38c32abee8a33e5c",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/deu1951-2022-03-30.hb",
-      "version": "2022-03-30",
+      "sha256": "c6239533e6c6d0b0a2aebbaf59b4c8976bccc9e3f42d8821a787e038cfe3afd5",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/deu1951-2022-03-30.1.hb",
+      "version": "2022-03-30.1",
       "moduleFormat": 1
     },
     {
@@ -6415,7 +6415,7 @@
     {
       "id": "deuelo",
       "type": "bible",
-      "abbreviation": "deuelo",
+      "abbreviation": "ELB1871",
       "name": "Darby Unrevidierte Elberfelder",
       "description": "The Holy Bible in German, Unrevised Elberfelder 1905",
       "language": "de",
@@ -6431,9 +6431,9 @@
         "dc": 0
       },
       "size": 4943872,
-      "sha256": "512dabc5b0de2cd2fa033ae6ad69643902683905512c26bfa583a4414ec8a807",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/deuelo-2023-09-19.hb",
-      "version": "2023-09-19",
+      "sha256": "4dad570928982369267937111d6cb7abb28560d047ad4bedc716967051ea996b",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/deuelo-2023-09-19.1.hb",
+      "version": "2023-09-19.1",
       "moduleFormat": 1
     },
     {
@@ -7279,7 +7279,7 @@
     {
       "id": "eng-asv",
       "type": "bible",
-      "abbreviation": "eng-asv",
+      "abbreviation": "ASV",
       "name": "American Standard Version (1901)",
       "description": "The American Standard Version of the Holy Bible, first published in 1901.",
       "language": "en",
@@ -7295,9 +7295,9 @@
         "dc": 0
       },
       "size": 22642688,
-      "sha256": "673110db98b2c79edb23e6454a001ae151aee230399ca10a33b27692021bc705",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/eng-asv-2026-10-20.hb",
-      "version": "2026-10-20",
+      "sha256": "fb93e0c00d17e3764b78789a1d3770495fe2c7ec01b2bcca60eb20b98d9cf9fd",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/eng-asv-2026-10-20.1.hb",
+      "version": "2026-10-20.1",
       "moduleFormat": 1
     },
     {
@@ -7327,7 +7327,7 @@
     {
       "id": "eng-kjv",
       "type": "bible",
-      "abbreviation": "eng-kjv",
+      "abbreviation": "KJVA",
       "name": "King James Version + Apocrypha",
       "description": "The King James Version or Authorized Version of the Holy Bible, using the standardized text of 1769, with Apocrypha/Deuterocanon",
       "language": "en",
@@ -7343,15 +7343,15 @@
         "dc": 13
       },
       "size": 13029376,
-      "sha256": "0d9d3279d89a9ecc1d27e84ed87b5050fe2065a362bb0aed9f52a40d093638d5",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/eng-kjv-2026-09-26.hb",
-      "version": "2026-09-26",
+      "sha256": "fad53b3d0490ef793d65df6963172e545807e2ceeef0f05e18f22563a8f61702",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/eng-kjv-2026-09-26.1.hb",
+      "version": "2026-09-26.1",
       "moduleFormat": 1
     },
     {
       "id": "eng-kjv2006",
       "type": "bible",
-      "abbreviation": "eng-kjv2006",
+      "abbreviation": "KJV",
       "name": "King James (Authorized) Version",
       "description": "The King James Version or Authorized Version of the Holy Bible, using the standardized text of 1769, protocanon only, with Strong's numbers added.",
       "language": "en",
@@ -7367,9 +7367,9 @@
         "dc": 0
       },
       "size": 12144640,
-      "sha256": "df2d65d348bfb8ddfc011e967f0c4e5620097f466f2aeab34be610b6d525905d",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/eng-kjv2006-2026-09-26.hb",
-      "version": "2026-09-26",
+      "sha256": "c88cb11fea3d0eaa1c98bc56d37f458ba80f452064bace486e13a1894f45e173",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/eng-kjv2006-2026-09-26.1.hb",
+      "version": "2026-09-26.1",
       "moduleFormat": 1
     },
     {
@@ -7391,15 +7391,15 @@
         "dc": 15
       },
       "size": 4878336,
-      "sha256": "d499518af79ea54c84ba55f0c01e0bebb31a32fece4ddea349deeb1f86c9616e",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/eng-lxx2012-2026-03-12.hb",
-      "version": "2026-03-12",
+      "sha256": "ff294b911ca37b7391c030e2e9b2eb67edd43e9c20b511b8d8c46fbfb9de7f45",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/eng-lxx2012-2026-03-12.1.hb",
+      "version": "2026-03-12.1",
       "moduleFormat": 1
     },
     {
       "id": "eng-rv",
       "type": "bible",
-      "abbreviation": "eng-rv",
+      "abbreviation": "RV",
       "name": "Revised Version with Apocrypha (1895)",
       "description": "The Revised Version of the Holy Bible (1895) with Apocrypha",
       "language": "en",
@@ -7415,15 +7415,15 @@
         "dc": 13
       },
       "size": 24059904,
-      "sha256": "562e5561639a51777c8cc70ae02a855b3e7e442e5cbdf733b34e056c1552babf",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/eng-rv-2026-10-20.hb",
-      "version": "2026-10-20",
+      "sha256": "45d4402ec9d5c483687899c9244e5ca7cc50583f1e37480c16ecc81714dc81ad",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/eng-rv-2026-10-20.1.hb",
+      "version": "2026-10-20.1",
       "moduleFormat": 1
     },
     {
       "id": "eng-t4t",
       "type": "bible",
-      "abbreviation": "eng-t4t",
+      "abbreviation": "T4T",
       "name": "Translation for Translators",
       "description": "A Bible Translation for Bible Translators which makes implied information explicit in the text as an aid to the translator who may need that information to correctly translate into a particular language.",
       "language": "en",
@@ -7439,9 +7439,9 @@
         "dc": 0
       },
       "size": 29331456,
-      "sha256": "06583f52384b8863b0df841f033171d3a45b0610a35b1ed250a4cd3652621264",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/eng-t4t-2026-10-20.hb",
-      "version": "2026-10-20",
+      "sha256": "0349afa35aba3116014870015ac1008a8b62061be2f7bb48c885f5434171d842",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/eng-t4t-2026-10-20.1.hb",
+      "version": "2026-10-20.1",
       "moduleFormat": 1
     },
     {
@@ -7463,9 +7463,9 @@
         "dc": 15
       },
       "size": 4878336,
-      "sha256": "8f44b25865401d0cd17dc180c89f6d9361ed1b5514128f204f8ba0b726c60e95",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/eng-uk-lxx2012-2025-12-19.hb",
-      "version": "2025-12-19",
+      "sha256": "050097b9a73cca44af012a1895419ee41cdcd5b92281211c13f7f69361440c08",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/eng-uk-lxx2012-2025-12-19.1.hb",
+      "version": "2025-12-19.1",
       "moduleFormat": 1
     },
     {
@@ -7543,7 +7543,7 @@
     {
       "id": "engBBE",
       "type": "bible",
-      "abbreviation": "engBBE",
+      "abbreviation": "BBE",
       "name": "Bible in Basic English",
       "description": "The Bible in Basic English",
       "language": "en",
@@ -7559,15 +7559,15 @@
         "dc": 0
       },
       "size": 23138304,
-      "sha256": "7c915746b6331ed29c3c9f9b6f714042f2fddaca73b69b6e945cb7e698e22aa1",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engBBE-2020-04-17.hb",
-      "version": "2020-04-17",
+      "sha256": "ed5689a3d002739474653ad34b958833eb7008c525adad448b46ed10f6d9e840",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engBBE-2020-04-17.1.hb",
+      "version": "2020-04-17.1",
       "moduleFormat": 1
     },
     {
       "id": "engDBY",
       "type": "bible",
-      "abbreviation": "engDBY",
+      "abbreviation": "DARBY",
       "name": "Darby Translation",
       "description": "The Holy Scriptures, a New Translation from the Original Languages by J. N. Darby",
       "language": "en",
@@ -7583,15 +7583,15 @@
         "dc": 0
       },
       "size": 21078016,
-      "sha256": "3c5dec84506397e58324c7847c30be2856fd52a95bb9e71779e20c16e544e893",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engDBY-2019-11-15.hb",
-      "version": "2019-11-15",
+      "sha256": "60b49e24d93b6f3711800105436dfa0299e25b78a4ca60b8a9bc1f92c80f8e78",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engDBY-2019-11-15.1.hb",
+      "version": "2019-11-15.1",
       "moduleFormat": 1
     },
     {
       "id": "engDRA",
       "type": "bible",
-      "abbreviation": "engDRA",
+      "abbreviation": "DRA",
       "name": "Douay-Rheims 1899",
       "description": "The Holy Bible in English, Douay-Rheims American Edition of 1899, translated from the Latin Vulgate",
       "language": "en",
@@ -7607,9 +7607,9 @@
         "dc": 7
       },
       "size": 20328448,
-      "sha256": "b9ee150f839ed65399bc7346ea2eb2e855c6d2a903775cff5300141c39e96562",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engDRA-2022-11-03.hb",
-      "version": "2022-11-03",
+      "sha256": "442ba11b6e6e1287b13efe670eeb099b726fbef9fb721da505b472c33723cd28",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engDRA-2022-11-03.1.hb",
+      "version": "2022-11-03.1",
       "moduleFormat": 1
     },
     {
@@ -7631,15 +7631,15 @@
         "dc": 0
       },
       "size": 10543104,
-      "sha256": "1ecf72b55fa324bb7bb0f57383424842407c02a1c81d2c3e31db6f26474cc33c",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engPEV-2026-10-20.hb",
-      "version": "2026-10-20",
+      "sha256": "7eb10b8f490cd15ef689ec2c6a50824d749a521d18c9dcae91b06b165f8077ab",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engPEV-2026-10-20.1.hb",
+      "version": "2026-10-20.1",
       "moduleFormat": 1
     },
     {
       "id": "engULB",
       "type": "bible",
-      "abbreviation": "engULB",
+      "abbreviation": "ULB",
       "name": "Unlocked Literal Bible",
       "description": "The Holy Bible in English, Unlocked Literal Bible translation",
       "language": "en",
@@ -7655,15 +7655,15 @@
         "dc": 0
       },
       "size": 4960256,
-      "sha256": "b56a588d4b98afe9a35611c549b10ed2d4b3e64f29bedf8e3a64b64e3956f1fb",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engULB-2020-12-04.hb",
-      "version": "2020-12-04",
+      "sha256": "7ca8f0abff85dcbe951a8e772c5bda5eeb4d94b3c102ea96f554f347673d6121",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engULB-2020-12-04.1.hb",
+      "version": "2020-12-04.1",
       "moduleFormat": 1
     },
     {
       "id": "engWycliffe",
       "type": "bible",
-      "abbreviation": "engWycliffe",
+      "abbreviation": "WYC",
       "name": "Wycliffe Bible",
       "description": "This is the Pentateuch and Gospels from The Holy Bible, containing the Old and New Testaments, with the apocryphal books, in the earliest English version made from the latin Vulgate by John Wycliffe and his followers. c.1395",
       "language": "en",
@@ -7679,9 +7679,9 @@
         "dc": 0
       },
       "size": 1482752,
-      "sha256": "b72b3146d5c8dee134d68e3cebc1701a9c8d4da6bf9177d49fbd788461aa727c",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engWycliffe-2016-11-08.hb",
-      "version": "2016-11-08",
+      "sha256": "9ab5c95b49ed7b2c585c07567249de7061b7cdb5cd58196eb4e7f6e3e4defdbf",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engWycliffe-2016-11-08.1.hb",
+      "version": "2016-11-08.1",
       "moduleFormat": 1
     },
     {
@@ -7703,9 +7703,9 @@
         "dc": 0
       },
       "size": 634880,
-      "sha256": "eb0c4467b5329a600aa16f193ac9285c335667992476f16ca20b7330f00078f9",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engaoi-2021-11-23.hb",
-      "version": "2021-11-23",
+      "sha256": "fb5172721fe5efd22759a994f8fd136f443cb72f1f67ffa570d016602356799e",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engaoi-2021-11-23.1.hb",
+      "version": "2021-11-23.1",
       "moduleFormat": 1
     },
     {
@@ -7727,9 +7727,9 @@
         "dc": 15
       },
       "size": 23920640,
-      "sha256": "f8cbd6e3d4d995c5ba6225fae7481c48571aca6416d6fc517fd8a2d61874886f",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engasvbt-2026-10-20.hb",
-      "version": "2026-10-20",
+      "sha256": "ae517ea10c449a0da407c6d58a7e670956d212e3b16bf214ce26a463eff9c2a5",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engasvbt-2026-10-20.1.hb",
+      "version": "2026-10-20.1",
       "moduleFormat": 1
     },
     {
@@ -7751,15 +7751,15 @@
         "dc": 0
       },
       "size": 557056,
-      "sha256": "f45bf93964f8889f93178a7201224948b49c500a562116bc2f910647473f96f3",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engbarkly-2026-04-14.hb",
-      "version": "2026-04-14",
+      "sha256": "7b9d17905ee86b8f83a3f0ec22e09fe1d600473b12a66b492b00a14dacd1911e",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engbarkly-2026-04-14.1.hb",
+      "version": "2026-04-14.1",
       "moduleFormat": 1
     },
     {
       "id": "engbsb",
       "type": "bible",
-      "abbreviation": "engbsb",
+      "abbreviation": "BSB",
       "name": "Berean Standard Bible",
       "description": "The Holy Bible in English: Berean Standard Bible",
       "language": "en",
@@ -7775,9 +7775,9 @@
         "dc": 0
       },
       "size": 20066304,
-      "sha256": "ae6a075ada729ea741a184c86a53e71cd8f37d094d8e57fd2aa760ad31454a3e",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engbsb-2026-10-20.hb",
-      "version": "2026-10-20",
+      "sha256": "b9d2ab030b0fe417ff83746c3d7eb60ededfd144b210d969d0d98bfd56ca350a",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engbsb-2026-10-20.1.hb",
+      "version": "2026-10-20.1",
       "moduleFormat": 1
     },
     {
@@ -7807,7 +7807,7 @@
     {
       "id": "engemtv",
       "type": "bible",
-      "abbreviation": "engemtv",
+      "abbreviation": "EMTV",
       "name": "English Majority Text Version",
       "description": "The New Testament, English Majority Text Version",
       "language": "en",
@@ -7823,9 +7823,9 @@
         "dc": 0
       },
       "size": 1232896,
-      "sha256": "839a61156ea4d404093975d01cb467f926faba2eb81590514339d6661618f85f",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engemtv-2020-12-20.hb",
-      "version": "2020-12-20",
+      "sha256": "e55920fb3d5bb0ede2a84525dc39a5d279f897935699ba48eb2a7e681bf3d691",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engemtv-2020-12-20.1.hb",
+      "version": "2020-12-20.1",
       "moduleFormat": 1
     },
     {
@@ -7847,15 +7847,15 @@
         "dc": 0
       },
       "size": 5898240,
-      "sha256": "e033123f2de044e25bf2dea2531e319b70f997d6946a37e42e990692c27648c7",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engf35-2026-10-20.hb",
-      "version": "2026-10-20",
+      "sha256": "9a581f13ede1a6242e8aae4a9eb610d747d17ef09aecf28d08fe46195b522810",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engf35-2026-10-20.1.hb",
+      "version": "2026-10-20.1",
       "moduleFormat": 1
     },
     {
       "id": "engfbv",
       "type": "bible",
-      "abbreviation": "engfbv",
+      "abbreviation": "FBV",
       "name": "Free Bible Version",
       "description": "The New Testament and Psalms in the Free Bible Version translation in American English",
       "language": "en",
@@ -7871,15 +7871,15 @@
         "dc": 0
       },
       "size": 19214336,
-      "sha256": "142441c96184222bd6506e1a3f779a4f6c07a3fadfa36e603ef53acdc6000734",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engfbv-2026-10-20.hb",
-      "version": "2026-10-20",
+      "sha256": "250fa143d4029671092ffe0aa07c806533148bde08890af2dc27615f07276957",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engfbv-2026-10-20.1.hb",
+      "version": "2026-10-20.1",
       "moduleFormat": 1
     },
     {
       "id": "enggnv",
       "type": "bible",
-      "abbreviation": "enggnv",
+      "abbreviation": "GNV",
       "name": "Geneva Bible 1599",
       "description": "The Geneva Bible in Old English of 1599",
       "language": "en",
@@ -7895,15 +7895,15 @@
         "dc": 0
       },
       "size": 4784128,
-      "sha256": "888794a50672f31bd7d37554e7117286498a137a4948509a415414654cbff79f",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/enggnv-2024-03-16.hb",
-      "version": "2024-03-16",
+      "sha256": "da328495d325ffa900657ea50448c105dbb7bd27b35271d5b92d7f2e0a285bc1",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/enggnv-2024-03-16.1.hb",
+      "version": "2024-03-16.1",
       "moduleFormat": 1
     },
     {
       "id": "engjps",
       "type": "bible",
-      "abbreviation": "engjps",
+      "abbreviation": "JPS",
       "name": "JPS TaNaKH 1917",
       "description": "The Jewish Bible (Old Testament) in English, published by the Jewish Publication Society in 1917",
       "language": "en",
@@ -7919,9 +7919,9 @@
         "dc": 0
       },
       "size": 3690496,
-      "sha256": "64546ca1e4ca1dd4b11001015dba7c1b204a844f5e597b91cf6d8c277d26c5e8",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engjps-2023-09-19.hb",
-      "version": "2023-09-19",
+      "sha256": "7b9ea1404d5d8dcfcb0adf17d18f664273bcf464fa7fde100083b7af393b06f5",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engjps-2023-09-19.1.hb",
+      "version": "2023-09-19.1",
       "moduleFormat": 1
     },
     {
@@ -7943,9 +7943,9 @@
         "dc": 13
       },
       "size": 6238208,
-      "sha256": "6e0314ec5413989518391db9734c97e821b3b6c53784f93910a2681fae8004e1",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engkjvcpb-2026-09-26.hb",
-      "version": "2026-09-26",
+      "sha256": "9cbcb47bd49a3d6129c2c4ded5588f86e8fa6323141e96bdaca064e13b5664c8",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engkjvcpb-2026-09-26.1.hb",
+      "version": "2026-09-26.1",
       "moduleFormat": 1
     },
     {
@@ -7975,7 +7975,7 @@
     {
       "id": "englsv",
       "type": "bible",
-      "abbreviation": "englsv",
+      "abbreviation": "LSV",
       "name": "Literal Standard Version",
       "description": "The Holy Bible in English, Literal Standard Version",
       "language": "en",
@@ -7991,9 +7991,9 @@
         "dc": 0
       },
       "size": 22401024,
-      "sha256": "0cd3a974cafebb9c0eaef5bcfff77353d2d5f96bf45c8dae5bbf14730393a8d2",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/englsv-2026-10-20.hb",
-      "version": "2026-10-20",
+      "sha256": "f662ab00dd9a6b2b7fe2487d2698991afefe3bd65064e361fd4fe84dfe8f1ca3",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/englsv-2026-10-20.1.hb",
+      "version": "2026-10-20.1",
       "moduleFormat": 1
     },
     {
@@ -8015,15 +8015,15 @@
         "dc": 14
       },
       "size": 4669440,
-      "sha256": "8575b662425988d44d3e74bfe4aeaa62b72c0a21f6e9c90e9a81703ee3ac2745",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/englxxup-2026-02-18.hb",
-      "version": "2026-02-18",
+      "sha256": "af5a8539ab14b6cefd06c32a50c9046999dcc2ced84fed46f194f19accba0338",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/englxxup-2026-02-18.1.hb",
+      "version": "2026-02-18.1",
       "moduleFormat": 1
     },
     {
       "id": "engmsb",
       "type": "bible",
-      "abbreviation": "engmsb",
+      "abbreviation": "MSB",
       "name": "Majority Standard Bible",
       "description": "The Holy Bible in English, Majority Standard Bible",
       "language": "en",
@@ -8039,15 +8039,15 @@
         "dc": 0
       },
       "size": 19357696,
-      "sha256": "2332661fd9c050bc1b9fad0bbea2662b66b429e11bd764190adb01cfe3f6ce8b",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engmsb-2026-10-20.hb",
-      "version": "2026-10-20",
+      "sha256": "e262491328b90af056403a1b2923b3b90a768d8eb741518f34f10503743c67f0",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engmsb-2026-10-20.1.hb",
+      "version": "2026-10-20.1",
       "moduleFormat": 1
     },
     {
       "id": "engnet",
       "type": "bible",
-      "abbreviation": "engnet",
+      "abbreviation": "NET",
       "name": "NET Bible",
       "description": "NET Bible®, New English Translation (NET)",
       "language": "en",
@@ -8063,9 +8063,9 @@
         "dc": 0
       },
       "size": 20578304,
-      "sha256": "3dbf539a5b56f1de70356226eaedeca42690c3b74fd9537eaf5881490b39224d",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engnet-2026-10-20.hb",
-      "version": "2026-10-20",
+      "sha256": "7f739ae2bcbb86ce5e66f99d94446e1cb9a8b2a60aa1259a2c46e8dcbd57b7ae",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engnet-2026-10-20.1.hb",
+      "version": "2026-10-20.1",
       "moduleFormat": 1
     },
     {
@@ -8087,9 +8087,9 @@
         "dc": 0
       },
       "size": 335872,
-      "sha256": "af8acfc3393682603b52db82df7f9abae85e514c1801e8d8832a245e4c00ea61",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engnna-2026-01-06.hb",
-      "version": "2026-01-06",
+      "sha256": "555b6a3ff69b10a8512d893fda7256ac2356f3d909a41b042caae5765a40ff5d",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engnna-2026-01-06.1.hb",
+      "version": "2026-01-06.1",
       "moduleFormat": 1
     },
     {
@@ -8135,15 +8135,15 @@
         "dc": 0
       },
       "size": 7909376,
-      "sha256": "b38925fb72680a64cd38407787e997ad00a466ccb0e2e95a65478d55a973f8b0",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engoebcw-2026-10-20.hb",
-      "version": "2026-10-20",
+      "sha256": "519a112eae09b16811b92e5200a7d57e3ca52bbfaa5cb722252d376b20aab315",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engoebcw-2026-10-20.1.hb",
+      "version": "2026-10-20.1",
       "moduleFormat": 1
     },
     {
       "id": "engoebus",
       "type": "bible",
-      "abbreviation": "engoebus",
+      "abbreviation": "OEB",
       "name": "Open English Bible (U. S. spelling)",
       "description": "The Holy Bible, Open English Bible translation, U. S. spelling edition",
       "language": "en",
@@ -8159,15 +8159,15 @@
         "dc": 0
       },
       "size": 7909376,
-      "sha256": "c7362b1aa868d9418ae07edad8425a6bcbcbf6bec3e0c4a4d3a67734b3ab97cb",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engoebus-2026-10-20.hb",
-      "version": "2026-10-20",
+      "sha256": "430bc2ed255cda2400cd53b94ae66e262649a760aef48b82648d22469c47f22b",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engoebus-2026-10-20.1.hb",
+      "version": "2026-10-20.1",
       "moduleFormat": 1
     },
     {
       "id": "engojb",
       "type": "bible",
-      "abbreviation": "engojb",
+      "abbreviation": "OJB",
       "name": "The Orthodox Jewish Bible",
       "description": "The Orthodox Jewish Bible -  Tanakh and Orthodox Jewish Brit Chadasha - The Holy Bible",
       "language": "en",
@@ -8183,9 +8183,9 @@
         "dc": 0
       },
       "size": 6160384,
-      "sha256": "33b5ab31450935184dc0c2f01fb91bcaad3c93ecdfdd57c9f8c8dcb37018c85d",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engojb-2026-01-06.hb",
-      "version": "2026-01-06",
+      "sha256": "1c372f503dcdd04d5fc40ab6ddeb5d4b0b75ae82e911e8bea324cec40e893a9b",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engojb-2026-01-06.1.hb",
+      "version": "2026-01-06.1",
       "moduleFormat": 1
     },
     {
@@ -8255,9 +8255,9 @@
         "dc": 0
       },
       "size": 4935680,
-      "sha256": "46b3d82b4621a0b0e92093b0c3f1b261087474ffdc839a90a0c438298775007f",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engtcent-2026-10-20.hb",
-      "version": "2026-10-20",
+      "sha256": "ad24d8c8f35c9a32ef161dc95049d18386a13c78b352977f3a370d56a969789f",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engtcent-2026-10-20.1.hb",
+      "version": "2026-10-20.1",
       "moduleFormat": 1
     },
     {
@@ -8287,7 +8287,7 @@
     {
       "id": "engwebp",
       "type": "bible",
-      "abbreviation": "engwebp",
+      "abbreviation": "WEB",
       "name": "World English Bible",
       "description": "The World English Bible is a Public Domain translation of the Holy Bible into modern English. This edition omits the Deuterocanon/Apocrypha, but is otherwise identical to the World English Bible Updated.",
       "language": "en",
@@ -8303,15 +8303,15 @@
         "dc": 0
       },
       "size": 21864448,
-      "sha256": "230fe3699fa7140b3858c9a2613b0ac422a0939309abefd4ffc036686c3e2268",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engwebp-2026-10-20.hb",
-      "version": "2026-10-20",
+      "sha256": "c1877a4cd1d9a87a43d5ef3c645269662f57905cba32cdcffb25dd9024d5a5d3",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engwebp-2026-10-20.1.hb",
+      "version": "2026-10-20.1",
       "moduleFormat": 1
     },
     {
       "id": "engwebpb",
       "type": "bible",
-      "abbreviation": "engwebpb",
+      "abbreviation": "WEBBE",
       "name": "World English Bible British Edition",
       "description": "The World English Bible British Edition is a Public Domain translation of the Holy Bible into contemporary British/International English. This edition only contains the 66 books of the Old and New Testament..",
       "language": "en",
@@ -8327,15 +8327,15 @@
         "dc": 0
       },
       "size": 21839872,
-      "sha256": "25048711573d1c0e7a47cc37607242c5163501079ce123d7aebb10a8142d682e",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engwebpb-2026-10-17.hb",
-      "version": "2026-10-17",
+      "sha256": "0c09728529a3ec3bdd421627da5b95ae6683f9272eb4c49cdd20e8d3300779b8",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engwebpb-2026-10-17.1.hb",
+      "version": "2026-10-17.1",
       "moduleFormat": 1
     },
     {
       "id": "engwebster",
       "type": "bible",
-      "abbreviation": "engwebster",
+      "abbreviation": "WBT",
       "name": "Noah Webster Bible",
       "description": "The Holy Bible, Containing the Old and New Testaments, in the Common Version, with Amendments of the language by Noah Webster, LL.D.",
       "language": "en",
@@ -8351,15 +8351,15 @@
         "dc": 0
       },
       "size": 4964352,
-      "sha256": "aeaae0b7adabbf1327372e1c6af8c013aa48985f9a1a9c1dcafd70cf7fd833ad",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engwebster-2024-08-01.hb",
-      "version": "2024-08-01",
+      "sha256": "f0ba128fc3ae47330299cc712afe947731282b1a0fd0f3e34678904dc02d27a0",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engwebster-2024-08-01.1.hb",
+      "version": "2024-08-01.1",
       "moduleFormat": 1
     },
     {
       "id": "engwebu",
       "type": "bible",
-      "abbreviation": "engwebu",
+      "abbreviation": "WEBU",
       "name": "World English Bible Updated",
       "description": "The Holy Bible in English, World English Bible Updated translation. This edition in American English uses \"LORD\" or \"GOD\" (all caps) for God's Proper Name in the Old Testament. It is otherwise identical to the Classic edition.",
       "language": "en",
@@ -8375,15 +8375,15 @@
         "dc": 12
       },
       "size": 22908928,
-      "sha256": "723e5dbd83395da99f39fbdacf89a3ba5fbfbfe7008e329936842021933cdaf6",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engwebu-2026-10-20.hb",
-      "version": "2026-10-20",
+      "sha256": "d1efeb6776db1e51c3294ae1f1930dd5940ecbe2a9dcca2b58df74365f140be3",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engwebu-2026-10-20.1.hb",
+      "version": "2026-10-20.1",
       "moduleFormat": 1
     },
     {
       "id": "engwmb",
       "type": "bible",
-      "abbreviation": "engwmb",
+      "abbreviation": "WMB",
       "name": "World Messianic Bible",
       "description": "The World Messianic Bible is a Public Domain translation of the Holy Bible into modern English as spoken among Messianic Jews. It has also been called the World English Bible: Messianic Edition and the Hebrew Names Version.",
       "language": "en",
@@ -8399,15 +8399,15 @@
         "dc": 0
       },
       "size": 21794816,
-      "sha256": "03f407e7c2a4d1f32dcf2b4855067cca26185d83fae6f787552be362a2765994",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engwmb-2026-10-17.hb",
-      "version": "2026-10-17",
+      "sha256": "692a961710c46cadd44fb6f5d0da4bd5b6d2037d8c8d7b784c9a4d0cdf2be690",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engwmb-2026-10-17.1.hb",
+      "version": "2026-10-17.1",
       "moduleFormat": 1
     },
     {
       "id": "engwmbb",
       "type": "bible",
-      "abbreviation": "engwmbb",
+      "abbreviation": "WMBB",
       "name": "World Messianic Bible British Edition",
       "description": "The World Messianic Bible British Edition is a Public Domain translation of the Holy Bible into modern English as spoken among Messianic Jews outside of the United States of America. This translation is also known as the World English Bible: British Messianic Edition.",
       "language": "en",
@@ -8423,9 +8423,9 @@
         "dc": 0
       },
       "size": 21770240,
-      "sha256": "35fd61214227f0adf17c0d30fa8eb06358da8c5220073a2cbb966be62ffd9ece",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engwmbb-2026-10-13.hb",
-      "version": "2026-10-13",
+      "sha256": "0df8c81e782ead5997b75485726e709d2f4bfc9d2b3e17b88d5a8d0d2b81851e",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engwmbb-2026-10-13.1.hb",
+      "version": "2026-10-13.1",
       "moduleFormat": 1
     },
     {
@@ -8447,9 +8447,9 @@
         "dc": 13
       },
       "size": 6115328,
-      "sha256": "fa599f9941bfe244eee7d65d581a15b487545885ca70a8c136d763291c1ea7a0",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engwyc2017-2019-09-26.hb",
-      "version": "2019-09-26",
+      "sha256": "4da4dced6f45093217d9fc423dc0b6d823787af6505aacfda013afe1c5f4faab",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engwyc2017-2019-09-26.1.hb",
+      "version": "2019-09-26.1",
       "moduleFormat": 1
     },
     {
@@ -8471,15 +8471,15 @@
         "dc": 13
       },
       "size": 9629696,
-      "sha256": "4e57d1091bc129f51ad8484e71a10deab7d83310ba0cfb37d50ee9f001309029",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engwyc2018-2019-09-25.hb",
-      "version": "2019-09-25",
+      "sha256": "afb73324e868c04f42ab8156ed2e5e6f6341b1334cc4f1540fc83d149232421e",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engwyc2018-2019-09-25.1.hb",
+      "version": "2019-09-25.1",
       "moduleFormat": 1
     },
     {
       "id": "engylt",
       "type": "bible",
-      "abbreviation": "engylt",
+      "abbreviation": "YLT",
       "name": "Young's Literal Translation",
       "description": "Young's Literal Translation of the Holy Bible",
       "language": "en",
@@ -8495,9 +8495,9 @@
         "dc": 0
       },
       "size": 4775936,
-      "sha256": "50c4d4b585b9e84bfa3e774c2d15c6846c7acc4eeb060f864af4c6a462cf82c4",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/engylt-2019-10-20.hb",
-      "version": "2019-10-20",
+      "sha256": "e0597961670e659fee9d1a47ceef89f721da17ab0d4c84d38c274013a62973ae",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/engylt-2019-10-20.1.hb",
+      "version": "2019-10-20.1",
       "moduleFormat": 1
     },
     {
@@ -8839,7 +8839,7 @@
     {
       "id": "fraLSG",
       "type": "bible",
-      "abbreviation": "fraLSG",
+      "abbreviation": "LSG",
       "name": "Louis Segond 1910",
       "description": "The Holy Bible in French, Louis Segond version of 1910",
       "language": "fr",
@@ -8855,15 +8855,15 @@
         "dc": 0
       },
       "size": 24281088,
-      "sha256": "586bb68c320cae8a632fa1da74644997a0b5eadcd540cfb653513ad53fa9d0d2",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/fraLSG-2026-10-20.hb",
-      "version": "2026-10-20",
+      "sha256": "d67a5e48183f158d6871db62f892733ed05712242adb3a5f97cd8c6138bf024f",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/fraLSG-2026-10-20.1.hb",
+      "version": "2026-10-20.1",
       "moduleFormat": 1
     },
     {
       "id": "fra_fob",
       "type": "bible",
-      "abbreviation": "fra_fob",
+      "abbreviation": "OST",
       "name": "La Sainte Bible",
       "description": "The Holy Bible in French, Ostervald",
       "language": "fr",
@@ -8879,15 +8879,15 @@
         "dc": 0
       },
       "size": 22077440,
-      "sha256": "c647c4dcd08e605f1c39a4830e86e5d94026cb0cef99ae5556040bdbb6fff13a",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/fra_fob-2026-10-20.hb",
-      "version": "2026-10-20",
+      "sha256": "de85f17b855852987047f1a264174992e2affd1cc05d299a77c050793405c0cb",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/fra_fob-2026-10-20.1.hb",
+      "version": "2026-10-20.1",
       "moduleFormat": 1
     },
     {
       "id": "frajnd",
       "type": "bible",
-      "abbreviation": "frajnd",
+      "abbreviation": "JND",
       "name": "Bible J.N. Darby",
       "description": "French: Bible J.N. Darby",
       "language": "fr",
@@ -8903,9 +8903,9 @@
         "dc": 0
       },
       "size": 5984256,
-      "sha256": "4579944f0de79efb11de11d8c921dd92542c243b17386d5c5fce744636241f3a",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/frajnd-2025-05-02.hb",
-      "version": "2025-05-02",
+      "sha256": "ef9a4a1b0e643f66fb328974929154defb833db4f7a128c8417c39618bf81e85",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/frajnd-2025-05-02.1.hb",
+      "version": "2025-05-02.1",
       "moduleFormat": 1
     },
     {
@@ -9919,7 +9919,7 @@
     {
       "id": "grc-tisch",
       "type": "bible",
-      "abbreviation": "grc-tisch",
+      "abbreviation": "TISCH",
       "name": "Η Καινή Διαθήκη",
       "description": "The New Testament in Koine Greek, based on Tischendorf's 8th edition",
       "language": "grc",
@@ -9935,15 +9935,15 @@
         "dc": 0
       },
       "size": 9277440,
-      "sha256": "382994adf25288a9d8596108494c9a59f928b5adbf2952eb2dc0f890188f0025",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/grc-tisch-2014-01-11.hb",
-      "version": "2014-01-11",
+      "sha256": "c8a36d524569f139253049eb0c2d4e5d0da644e79f6af794c6455affa3531812",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/grc-tisch-2014-01-11.1.hb",
+      "version": "2014-01-11.1",
       "moduleFormat": 1
     },
     {
       "id": "grcbyz",
       "type": "bible",
-      "abbreviation": "grcbyz",
+      "abbreviation": "BYZ",
       "name": "Η Καινή Διαθήκη",
       "description": "1904 Patriarchal Greek New Testament with 20 correcctions from later editions",
       "language": "grc",
@@ -9959,9 +9959,9 @@
         "dc": 0
       },
       "size": 4841472,
-      "sha256": "cd91094e3aba8d7d7911d5e092f28ab24de2b7ac9e94337e404d78bce065a5ea",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/grcbyz-2026-10-20.hb",
-      "version": "2026-10-20",
+      "sha256": "920d238a277c5e254324160fd1b25196d49785ad78ee81276863e4a0d7e0a488",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/grcbyz-2026-10-20.1.hb",
+      "version": "2026-10-20.1",
       "moduleFormat": 1
     },
     {
@@ -9991,7 +9991,7 @@
     {
       "id": "grclxx",
       "type": "bible",
-      "abbreviation": "grclxx",
+      "abbreviation": "LXX",
       "name": "Η Παλαιά Διαθήκη κατά τη μετάφραση των εβδομήκοντα (Ο') | SEPTUAGINTA",
       "description": "The Old Testament in Ancient Greek, Septuagint translation",
       "language": "grc",
@@ -10007,9 +10007,9 @@
         "dc": 14
       },
       "size": 7417856,
-      "sha256": "8f044b2f094b54180c1a1c4f0d5ccfb130efe9ec6a26feef117af7111426771c",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/grclxx-2026-02-13.hb",
-      "version": "2026-02-13",
+      "sha256": "eaaea0f1ad0fc3b2398f8e49498c59a355268571a20f1129e1c10be89c5bf6ed",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/grclxx-2026-02-13.1.hb",
+      "version": "2026-02-13.1",
       "moduleFormat": 1
     },
     {
@@ -10039,7 +10039,7 @@
     {
       "id": "grcsbl",
       "type": "bible",
-      "abbreviation": "grcsbl",
+      "abbreviation": "SBLGNT",
       "name": "Η Καινή Διαθήκη",
       "description": "The Greek New Testament: SBL Edition",
       "language": "grc",
@@ -10055,9 +10055,9 @@
         "dc": 0
       },
       "size": 5746688,
-      "sha256": "4e473cc16e9aac9a92579a0e3f85356abe2f2d8b0318f308364f9c43f1806eac",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/grcsbl-2026-10-20.hb",
-      "version": "2026-10-20",
+      "sha256": "65166285cff7a1d97fea41ba1188839ce468a015252ca9af1bf3a1e863aa65ee",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/grcsbl-2026-10-20.1.hb",
+      "version": "2026-10-20.1",
       "moduleFormat": 1
     },
     {
@@ -10087,7 +10087,7 @@
     {
       "id": "grctcgnt",
       "type": "bible",
-      "abbreviation": "grctcgnt",
+      "abbreviation": "TCGNT",
       "name": "Η Καινή Διαθήκη",
       "description": "The New Testament in Ancient Greek with critical text notes",
       "language": "grc",
@@ -10103,15 +10103,15 @@
         "dc": 0
       },
       "size": 6500352,
-      "sha256": "7f2e76297ffbf8b3a2f7b1f2d41d1a8c5bcf60a9b04a174187e16dc8f6416dd1",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/grctcgnt-2026-10-26.hb",
-      "version": "2026-10-26",
+      "sha256": "1e960fe2eac932a33d532093fe2c642d329f474c67bd6d5ae08be53a08df1c54",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/grctcgnt-2026-10-26.1.hb",
+      "version": "2026-10-26.1",
       "moduleFormat": 1
     },
     {
       "id": "grctr",
       "type": "bible",
-      "abbreviation": "grctr",
+      "abbreviation": "TR",
       "name": "Η Καινή Διαθήκη",
       "description": "The Greek Textus Receptus New Testament with manuscript annotations by Adam Boyd",
       "language": "grc",
@@ -10127,9 +10127,9 @@
         "dc": 0
       },
       "size": 4902912,
-      "sha256": "30cd8eca7902b49f56b1ac33708177ad5cfb169212b4c2d64608f10cd94e07a5",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/grctr-2026-10-20.hb",
-      "version": "2026-10-20",
+      "sha256": "8a94177315712a8aa18adc607e9335be7275ea0b4c3153bfdb1e5a1cf9b932c7",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/grctr-2026-10-20.1.hb",
+      "version": "2026-10-20.1",
       "moduleFormat": 1
     },
     {
@@ -10879,7 +10879,7 @@
     {
       "id": "hboWLC",
       "type": "bible",
-      "abbreviation": "hboWLC",
+      "abbreviation": "WLC",
       "name": "כתבי הקודש",
       "description": "The Hebrew Old Testament, Westminster Leningrad Codex",
       "language": "hbo",
@@ -10895,9 +10895,9 @@
         "dc": 0
       },
       "size": 12574720,
-      "sha256": "efde97d13a32a3a429419aeed43471609326df025168f1cfbc6e6477c9f75daf",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/hboWLC-2017-12-27.hb",
-      "version": "2017-12-27",
+      "sha256": "fc14e4729fbe9fa621a5a5607a9be42b4cf43b16e09b1470b7e9a4f370aea80d",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/hboWLC-2017-12-27.1.hb",
+      "version": "2017-12-27.1",
       "moduleFormat": 1
     },
     {
@@ -12271,7 +12271,7 @@
     {
       "id": "ita1885",
       "type": "bible",
-      "abbreviation": "ita1885",
+      "abbreviation": "DIO",
       "name": "Diodati Bibbia 1885",
       "description": "The Holy Bible in Italian, translated by Giovanni Diodati in 1641 and revised in 1821",
       "language": "it",
@@ -12287,15 +12287,15 @@
         "dc": 0
       },
       "size": 7061504,
-      "sha256": "effc9169132b402b8a8dd8f076e65ed78d0e7c6505d6a07ccce86f9cb576bda0",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/ita1885-2025-05-03.hb",
-      "version": "2025-05-03",
+      "sha256": "7e6e0be5d1f2d7884f40a11f91628477f0d081512922dfef2db60535dd5df5d0",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/ita1885-2025-05-03.1.hb",
+      "version": "2025-05-03.1",
       "moduleFormat": 1
     },
     {
       "id": "ita1927",
       "type": "bible",
-      "abbreviation": "ita1927",
+      "abbreviation": "RIV",
       "name": "Riveduta Bibbia 1927",
       "description": "The Holy Bible in Italian, Riveduta 1927",
       "language": "it",
@@ -12311,9 +12311,9 @@
         "dc": 0
       },
       "size": 4788224,
-      "sha256": "bbfbdc623d216d68068f92e32571207b4b2a5315dfaaad5bdf4333ce2c8ab491",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/ita1927-2019-12-17.hb",
-      "version": "2019-12-17",
+      "sha256": "a7fd36e43d8d6b90a3f5eedf5fc382d57782b79625859d9618c1133d6fb296a0",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/ita1927-2019-12-17.1.hb",
+      "version": "2019-12-17.1",
       "moduleFormat": 1
     },
     {
@@ -14983,7 +14983,7 @@
     {
       "id": "latVUC",
       "type": "bible",
-      "abbreviation": "latVUC",
+      "abbreviation": "VULG",
       "name": "Bibbia Vulgata Clementina na 1598",
       "description": "Clementine Vulgate of 1598 with Glossa Ordinaria Migne edition 1880 in Latin",
       "language": "la",
@@ -14999,9 +14999,9 @@
         "dc": 7
       },
       "size": 11419648,
-      "sha256": "b20b87d7e16b23b71c4cf0fbe84a41502c2e51f08882ddd21a22fe956f4eee2a",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/latVUC-2014-08-23.hb",
-      "version": "2014-08-23",
+      "sha256": "06d366a312589e33f773c5c83abe3941c57eda9d710d61d46514fa16783b9d78",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/latVUC-2014-08-23.1.hb",
+      "version": "2014-08-23.1",
       "moduleFormat": 1
     },
     {
@@ -19303,7 +19303,7 @@
     {
       "id": "nldnbg",
       "type": "bible",
-      "abbreviation": "nldnbg",
+      "abbreviation": "NBG51",
       "name": "NBG-vertaling 1951",
       "description": "The Holy Bible in Dutch, NBG 1951 translation.",
       "language": "nl",
@@ -19319,9 +19319,9 @@
         "dc": 0
       },
       "size": 4849664,
-      "sha256": "1bdf8e5c93626238ac4a1c24736cc5bfe179241b88c3ed4af486906d35c79ba8",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/nldnbg-2024-08-13.hb",
-      "version": "2024-08-13",
+      "sha256": "52fe61cf936b90178f78133d0045d38abdca0bc909b8a980c42977cf4814b5ee",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/nldnbg-2024-08-13.1.hb",
+      "version": "2024-08-13.1",
       "moduleFormat": 1
     },
     {
@@ -20599,7 +20599,7 @@
     {
       "id": "pesOPV",
       "type": "bible",
-      "abbreviation": "pesOPV",
+      "abbreviation": "OPV",
       "name": "ترجمه قدیم",
       "description": "The Old Persian Version of the Holy Bible in the Persian language of Iran",
       "language": "fa",
@@ -20615,9 +20615,9 @@
         "dc": 0
       },
       "size": 6524928,
-      "sha256": "5f52e4b55c40e83f40dfa53ee293931e54aae48d0e4574869c9ad0f57d08a0e1",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/pesOPV-2015-04-21.hb",
-      "version": "2015-04-21",
+      "sha256": "364a2c42f2af28a84cf0c27c5c9f81beb0fbdde734327900f29e9e27bcf6a706",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/pesOPV-2015-04-21.1.hb",
+      "version": "2015-04-21.1",
       "moduleFormat": 1
     },
     {
@@ -21007,7 +21007,7 @@
     {
       "id": "polubg",
       "type": "bible",
-      "abbreviation": "polubg",
+      "abbreviation": "UBG",
       "name": "Święta Biblia",
       "description": "The Holy Bible in Polish, Updated Gdansk Version",
       "language": "pl",
@@ -21023,9 +21023,9 @@
         "dc": 0
       },
       "size": 4730880,
-      "sha256": "a6856bb625f61f8d83d7234c11828a79f00835a15f27c4e848139f62d9b3cc29",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26/polubg-2018-10-23.hb",
-      "version": "2018-10-23",
+      "sha256": "4c10ab033a14ace09133e54503bb09c0cbc4881b095b8f9ac0a095b92b8173a0",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/polubg-2018-10-23.1.hb",
+      "version": "2018-10-23.1",
       "moduleFormat": 1
     },
     {
@@ -22759,7 +22759,7 @@
     {
       "id": "russyn",
       "type": "bible",
-      "abbreviation": "russyn",
+      "abbreviation": "RST",
       "name": "Синодальный перевод",
       "description": "Synodal Translation of the Holy Bible in Russian",
       "language": "ru",
@@ -22775,9 +22775,9 @@
         "dc": 0
       },
       "size": 6848512,
-      "sha256": "e0062390daf6866628f5c556fb4b20c57e00fc32f01f76d1b89ddd2411dd8428",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/russyn-2022-11-25.hb",
-      "version": "2022-11-25",
+      "sha256": "cf4f973828857cd47d41a2d5b6df2269564668ea85c85ea82e312642ff8651a4",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/russyn-2022-11-25.1.hb",
+      "version": "2022-11-25.1",
       "moduleFormat": 1
     },
     {
@@ -24127,7 +24127,7 @@
     {
       "id": "spaRV1909",
       "type": "bible",
-      "abbreviation": "spaRV1909",
+      "abbreviation": "RV1909",
       "name": "Santa Biblia — Reina Valera 1909",
       "description": "The Holy Bible in Spanish, Reina Valera translation of 1909",
       "language": "es",
@@ -24143,9 +24143,9 @@
         "dc": 0
       },
       "size": 11747328,
-      "sha256": "77e2f73902fb006487b41535d62224ff48f6e5f6d35c8150b45a4bc54d6389ca",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/spaRV1909-2013-12-13.hb",
-      "version": "2013-12-13",
+      "sha256": "2733ca58dfe6430deaa3bdea6536e31a8576330118e1a87b62584d68238daa3b",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/spaRV1909-2013-12-13.1.hb",
+      "version": "2013-12-13.1",
       "moduleFormat": 1
     },
     {
@@ -24271,7 +24271,7 @@
     {
       "id": "sparvg",
       "type": "bible",
-      "abbreviation": "sparvg",
+      "abbreviation": "RVG",
       "name": "Santa Biblia Reina Valera Gómez",
       "description": "The Holy Bible in Spanish, Reina Valera Gómez translation",
       "language": "es",
@@ -24287,9 +24287,9 @@
         "dc": 0
       },
       "size": 14094336,
-      "sha256": "ffe68d80774e0b6950506e8b75a7cabbb6a29ccc749d287c6fc8179d0a7b5c14",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/sparvg-2026-10-20.hb",
-      "version": "2026-10-20",
+      "sha256": "5cfbf716a602b955675f8acbbe1e87631cf4900e1d89ced1cdc3bb75c9e592c5",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/sparvg-2026-10-20.1.hb",
+      "version": "2026-10-20.1",
       "moduleFormat": 1
     },
     {
@@ -24943,7 +24943,7 @@
     {
       "id": "swef",
       "type": "bible",
-      "abbreviation": "swef",
+      "abbreviation": "SFB",
       "name": "Svenska Folkbibeln",
       "description": "The Holy Bible in Swedish, Svenska Folkbibeln translation",
       "language": "sv",
@@ -24959,9 +24959,9 @@
         "dc": 0
       },
       "size": 7258112,
-      "sha256": "03b6a49080e9a73d435761d454c288ffaf2a2a83021d57dfb8040c9be7fa84b4",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/swef-2024-12-18.hb",
-      "version": "2024-12-18",
+      "sha256": "a96c1413c944f19af8228b499fdd75eeb5a8367fc88dffb5bc3dd2b10c2cda5e",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/swef-2024-12-18.1.hb",
+      "version": "2024-12-18.1",
       "moduleFormat": 1
     },
     {
@@ -26983,7 +26983,7 @@
     {
       "id": "turytc",
       "type": "bible",
-      "abbreviation": "turytc",
+      "abbreviation": "YTC",
       "name": "Yorumsuz Türkçe Çeviri (YTC)",
       "description": "The Holy Bible in the Turkish Language, translated from the World English Bible",
       "language": "tr",
@@ -26999,9 +26999,9 @@
         "dc": 0
       },
       "size": 4935680,
-      "sha256": "37aba95095388fdbf868e67592f86e15864650d33da68fcd50c0b8694914f848",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/turytc-2026-10-26.hb",
-      "version": "2026-10-26",
+      "sha256": "c34e2766571a3e42c65ba2e5c27b422d52bff9c080462c44deed06663613d96f",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-26-2/turytc-2026-10-26.1.hb",
+      "version": "2026-10-26.1",
       "moduleFormat": 1
     },
     {
