@@ -20,7 +20,8 @@ abstract final class BookCatalog {
   /// Номер книги по коду из [codeOf] или `null`, если код не распознан.
   ///
   /// Код `H<номер>` годится только для книги без кода SIL: у книги с кодом
-  /// единственный код — её код SIL.
+  /// единственный код — её код SIL. Номер, который не помещается в `int`,
+  /// — тоже `null`.
   static int? numberOfCode(String code) {
     final known = bySilCode(code);
     if (known != null) {
@@ -30,7 +31,10 @@ abstract final class BookCatalog {
     if (match == null) {
       return null;
     }
-    final number = int.parse(match[1]!);
+    final number = int.tryParse(match[1]!);
+    if (number == null) {
+      return null;
+    }
 
     return byNumber(number)?.silCode == null ? number : null;
   }

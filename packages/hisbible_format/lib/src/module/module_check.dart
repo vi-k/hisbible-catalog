@@ -15,6 +15,9 @@ const int _notADatabase = 26;
 /// Проверяются подпись и версия формата, обязательные ключи `meta`, таблицы
 /// типа модуля и их столбцы, а у Библии — хотя бы один стих книги из
 /// `books`; у толкований и ссылок — хотя бы одна запись с известной книгой.
+/// У Библии `verse_end` больше `verse` больше чем на [maxVerseEndSpan] —
+/// [VerseEndOutOfRange]; `verse_end`, который заходит на следующий стих
+/// главы, файл не портит: читатель считает такой стих одним.
 /// Исключений наружу не бросает: любой отказ — это [ModuleProblem].
 ModuleProblem? checkModuleFile(String path) {
   final Database db;
@@ -40,7 +43,7 @@ ModuleProblem? checkModuleFile(String path) {
       return const EmptyModule();
     }
 
-    return null;
+    return meta.type == ModuleType.bible ? _verseEndProblem(db) : null;
   } on ModuleOpenException catch (e) {
     return e.problem;
   } on SqliteException catch (e) {
@@ -91,6 +94,9 @@ ModuleMeta readModuleMeta(String path) {
 /// Открывает файл только на чтение; негодный файл — [ModuleOpenException].
 ///
 /// Подпись формата здесь не проверяется: это делает [readCheckedMeta].
+/// Файл чужой, поэтому SQLite не доверяет его схеме (`trusted_schema = OFF`:
+/// представления и триггеры файла не зовут функций с побочными действиями)
+/// и не пишет в него (`query_only = ON`).
 Database openModuleReadOnly(String path) {
   if (!File(path).existsSync()) {
     throw ModuleOpenException(const Unreadable('file not found'));
@@ -102,8 +108,11 @@ Database openModuleReadOnly(String path) {
     throw ModuleOpenException(problemOfSqlite(e));
   }
   try {
-    // Заголовок файла проверяется на первом запросе, а не при открытии.
-    db.select('SELECT 1 FROM sqlite_master LIMIT 1');
+    db
+      ..execute('PRAGMA trusted_schema = OFF')
+      ..execute('PRAGMA query_only = ON')
+      // Заголовок файла проверяется на первом запросе, а не при открытии.
+      ..select('SELECT 1 FROM sqlite_master LIMIT 1');
   } on SqliteException catch (e) {
     db.close();
     throw ModuleOpenException(problemOfSqlite(e));
@@ -189,6 +198,34 @@ bool _hasKnownBook(Database db, String table) {
   }
 
   return false;
+}
+
+// Первый стих книги из `books`, чей `verse_end` больше `verse` больше чем
+// на [maxVerseEndSpan], как [VerseEndOutOfRange]; нет такого — `null`.
+ModuleProblem? _verseEndProblem(Database db) {
+  final codes = readBookCodes(db).keys.toList();
+  if (codes.isEmpty) {
+    return null;
+  }
+  final rows = db.select(
+    'SELECT book, chapter, verse FROM verses WHERE book IN '
+    '(${List.filled(codes.length, '?').join(', ')}) '
+    'AND chapter >= 1 AND verse >= 1 '
+    "AND typeof(chapter) = 'integer' AND typeof(verse) = 'integer' "
+    "AND typeof(verse_end) = 'integer' AND verse_end - verse > ? "
+    'ORDER BY book, chapter, verse LIMIT 1',
+    [...codes, maxVerseEndSpan],
+  );
+  if (rows.isEmpty) {
+    return null;
+  }
+  final row = rows.single;
+
+  return VerseEndOutOfRange(
+    row.columnAt(0) as String,
+    row.columnAt(1) as int,
+    row.columnAt(2) as int,
+  );
 }
 
 // Есть ли стих книги из `books` с главой и стихом не меньше 1.

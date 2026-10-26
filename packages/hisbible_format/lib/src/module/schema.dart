@@ -12,6 +12,12 @@ const int formatVersion = 1;
 /// `0x48694269` — байты «HiBi».
 const int formatApplicationId = 1214857833;
 
+/// На сколько `verse_end` слитых стихов может быть больше `verse`.
+///
+/// Больший `verse_end` — негодный файл: `VerseEndOutOfRange` у
+/// `checkModuleFile`.
+const int maxVerseEndSpan = 200;
+
 /// Направление письма модуля.
 enum WritingDirection {
   /// Слева направо.

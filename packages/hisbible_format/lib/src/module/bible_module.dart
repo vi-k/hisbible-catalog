@@ -257,23 +257,36 @@ final class BibleModule {
   };
 
   /// Стихи главы по возрастанию номеров.
+  ///
+  /// `verse_end`, который не больше `verse`, больше его больше чем на
+  /// [maxVerseEndSpan] или заходит на следующий стих главы, читается как
+  /// `null`: стих один.
   List<Verse> chapter(int book, int chapter) {
     final code = _codes[book];
     if (code == null) {
       return const [];
     }
+    final rows = _db.select(
+      'SELECT verse, verse_end, text FROM verses '
+      'WHERE book = ? AND chapter = ? AND verse >= 1 ORDER BY verse',
+      [code, chapter],
+    );
 
     return [
-      for (final row in _db.select(
-        'SELECT verse, verse_end, text FROM verses '
-        'WHERE book = ? AND chapter = ? AND verse >= 1 ORDER BY verse',
-        [code, chapter],
-      ))
-        if ((row.columnAt(0), row.columnAt(2)) case (
+      for (var i = 0; i < rows.length; i++)
+        if ((rows[i].columnAt(0), rows[i].columnAt(2)) case (
           final int verse,
           final String text,
         ))
-          Verse(verse, text, verseEnd: _verseEnd(verse, row.columnAt(1))),
+          Verse(
+            verse,
+            text,
+            verseEnd: _verseEnd(
+              verse,
+              rows[i].columnAt(1),
+              i + 1 < rows.length ? rows[i + 1].columnAt(0) : null,
+            ),
+          ),
     ];
   }
 
@@ -348,19 +361,36 @@ final class BibleModule {
     _db.close();
   }
 
-  // Последний из слитых стихов или `null`, если он не больше [verse].
-  static int? _verseEnd(int verse, Object? value) =>
-      value is int && value > verse ? value : null;
+  // Последний из слитых стихов [value] стиха [verse], за которым в главе идёт
+  // стих [next]; `null`, если [value] не больше [verse], больше его больше
+  // чем на [maxVerseEndSpan] или не меньше [next]. Это же правило —
+  // в запросе [_readLastVerses].
+  static int? _verseEnd(int verse, Object? value, Object? next) =>
+      value is int &&
+          value > verse &&
+          value - verse <= maxVerseEndSpan &&
+          (next is! int || value < next)
+      ? value
+      : null;
 
-  // Книга → глава → последний стих, только у книг из [codes].
+  // Книга → глава → последний стих, только у книг из [codes]; `verse_end`
+  // берётся по правилу [_verseEnd].
   static Map<int, Map<int, int>> _readLastVerses(
     Database db,
     Map<String, int> codes,
   ) {
     final lastVerses = <int, Map<int, int>>{};
     for (final row in db.select(
-      'SELECT book, chapter, MAX(MAX(verse, COALESCE(verse_end, verse))) '
-      'FROM verses WHERE chapter >= 1 AND verse >= 1 GROUP BY book, chapter',
+      'SELECT book, chapter, MAX(CASE '
+      "WHEN typeof(verse_end) = 'integer' AND verse_end > verse "
+      'AND verse_end - verse <= ? '
+      "AND (typeof(next) != 'integer' OR verse_end < next) "
+      'THEN verse_end ELSE verse END) '
+      'FROM (SELECT book, chapter, verse, verse_end, '
+      'LEAD(verse) OVER (PARTITION BY book, chapter ORDER BY verse) AS next '
+      'FROM verses WHERE chapter >= 1 AND verse >= 1) '
+      'GROUP BY book, chapter',
+      [maxVerseEndSpan],
     )) {
       final number = codes[row.columnAt(0)];
       if ((number, row.columnAt(1), row.columnAt(2)) case (

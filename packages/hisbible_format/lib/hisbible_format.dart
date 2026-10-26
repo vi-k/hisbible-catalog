@@ -20,7 +20,8 @@ export 'src/module/schema.dart'
         HeadingKind,
         WritingDirection,
         formatApplicationId,
-        formatVersion;
+        formatVersion,
+        maxVerseEndSpan;
 export 'src/module_type.dart';
 export 'src/problems.dart';
 export 'src/refs/verse_ref.dart';

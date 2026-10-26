@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:hisbible_format/hisbible_format.dart';
+import 'package:hisbible_format/src/module/module_check.dart';
 import 'package:hisbible_format/testing.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:test/test.dart';
@@ -106,6 +107,134 @@ void main() {
       ..execute('DROP TABLE headings')
       ..close();
     expect(checkModuleFile(tableless), const MissingTable('headings'));
+  });
+
+  test('a crafted book code is a problem, not an exception', () {
+    final path = fixture('crafted.hb');
+    sqlite3.open(path)
+      ..execute("UPDATE books SET code = 'H99999999999999999999'")
+      ..execute("UPDATE verses SET book = 'H99999999999999999999'")
+      ..close();
+
+    expect(checkModuleFile(path), const EmptyModule());
+    expect(openProblem(path), const EmptyModule());
+  });
+
+  test('opens untrusted files with defensive settings', () {
+    final path = fixture('good.hb');
+    final db = openModuleReadOnly(path);
+    addTearDown(db.close);
+
+    expect(db.select('PRAGMA trusted_schema').single.columnAt(0), 0);
+    expect(db.select('PRAGMA query_only').single.columnAt(0), 1);
+    expect(readCheckedMeta(db).type, ModuleType.bible);
+    expect(checkModuleFile(path), isNull);
+  });
+
+  group('verse_end', () {
+    // Пишет Бытие 1 со стихами [verses]: номер → последний из слитых.
+    String bible(String name, Map<int, int?> verses) {
+      final path = '${dir.path}/$name';
+      final writer = ModuleWriter.create(path, fixtureMeta)
+        ..addBook(
+          number: 10,
+          shortName: 'Быт',
+          longName: 'Бытие',
+          scheme: VerseScheme.eng,
+        );
+      for (final MapEntry(key: verse, value: end) in verses.entries) {
+        writer.addVerse(10, 1, verse, 'Стих $verse', verseEnd: end);
+      }
+      writer.finish();
+
+      return path;
+    }
+
+    test('more than $maxVerseEndSpan above its verse is a problem', () {
+      for (final end in [3 + maxVerseEndSpan + 1, 1 << 31, 1 << 62]) {
+        final path = bible('far-$end.hb', {1: null, 2: null, 3: end});
+
+        expect(
+          checkModuleFile(path),
+          const VerseEndOutOfRange('GEN', 1, 3),
+          reason: '$end',
+        );
+        expect(openProblem(path), const VerseEndOutOfRange('GEN', 1, 3));
+      }
+    });
+
+    test('up to $maxVerseEndSpan above the last verse is read', () {
+      final path = bible('near.hb', {1: null, 2: 2 + maxVerseEndSpan});
+      expect(checkModuleFile(path), isNull);
+
+      final module = BibleModule.open(path);
+      addTearDown(module.close);
+      expect(module.chapter(10, 1), const [
+        Verse(1, 'Стих 1'),
+        Verse(2, 'Стих 2', verseEnd: 2 + maxVerseEndSpan),
+      ]);
+      expect(module.lastVerses(), {
+        10: {1: 2 + maxVerseEndSpan},
+      });
+    });
+
+    test('reaching the next verse reads as one verse', () {
+      final path = bible('overlap.hb', {
+        1: 3, // заходит на стих 2
+        2: 4, // кончается до стиха 5
+        5: 2, // меньше своего стиха
+        6: 6, // равен своему стиху
+        7: 9, // последний в главе
+      });
+      expect(checkModuleFile(path), isNull);
+
+      final module = BibleModule.open(path);
+      addTearDown(module.close);
+      expect(module.chapter(10, 1), const [
+        Verse(1, 'Стих 1'),
+        Verse(2, 'Стих 2', verseEnd: 4),
+        Verse(5, 'Стих 5'),
+        Verse(6, 'Стих 6'),
+        Verse(7, 'Стих 7', verseEnd: 9),
+      ]);
+      expect(module.lastVerses(), {
+        10: {1: 9},
+      });
+    });
+
+    test('an overlapping end does not count as the last verse', () {
+      final path = bible('overlap-last.hb', {1: 150, 2: null});
+      expect(checkModuleFile(path), isNull);
+
+      final module = BibleModule.open(path);
+      addTearDown(module.close);
+      expect(module.chapter(10, 1), const [
+        Verse(1, 'Стих 1'),
+        Verse(2, 'Стих 2'),
+      ]);
+      expect(module.lastVerses(), {
+        10: {1: 2},
+      });
+    });
+
+    test('a verse_end that is not an integer is skipped', () {
+      final path = bible('text.hb', {1: null, 2: null});
+      sqlite3.open(path)
+        ..execute("UPDATE verses SET verse_end = 'x' WHERE verse = 1")
+        ..execute('UPDATE verses SET verse_end = 1e300 WHERE verse = 2')
+        ..close();
+      expect(checkModuleFile(path), isNull);
+
+      final module = BibleModule.open(path);
+      addTearDown(module.close);
+      expect(module.chapter(10, 1), const [
+        Verse(1, 'Стих 1'),
+        Verse(2, 'Стих 2'),
+      ]);
+      expect(module.lastVerses(), {
+        10: {1: 2},
+      });
+    });
   });
 
   test('meta keys follow the format', () {

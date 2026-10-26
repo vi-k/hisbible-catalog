@@ -87,6 +87,35 @@ final class EmptyModule extends ModuleProblem {
   String toString() => 'EmptyModule()';
 }
 
+/// У слитых стихов Библии `verse_end` больше `verse` больше чем на 200
+/// (`maxVerseEndSpan`): файл испорчен или собран со злым умыслом.
+final class VerseEndOutOfRange extends ModuleProblem {
+  /// Создаёт причину для стиха [chapter]:[verse] книги с кодом [book].
+  const VerseEndOutOfRange(this.book, this.chapter, this.verse);
+
+  /// Код книги в файле.
+  final String book;
+
+  /// Глава.
+  final int chapter;
+
+  /// Стих, у которого негодный `verse_end`.
+  final int verse;
+
+  @override
+  bool operator ==(Object other) =>
+      other is VerseEndOutOfRange &&
+      other.book == book &&
+      other.chapter == chapter &&
+      other.verse == verse;
+
+  @override
+  int get hashCode => Object.hash(VerseEndOutOfRange, book, chapter, verse);
+
+  @override
+  String toString() => 'VerseEndOutOfRange($book $chapter:$verse)';
+}
+
 /// Тип модуля приложение не читает.
 final class UnsupportedType extends ModuleProblem {
   /// Создаёт причину для [suffix]: имени типа или значения `type`.

@@ -95,6 +95,10 @@ Notes:
   files: `eng` (English), `org` (original: a psalm title is verse 1), `rso`
   (Russian Synodal, full edition), `rsc` (Russian Synodal, canonical edition).
 - Merged verses are one row: `verse` is the first verse, `verse_end` the last.
+  `verse_end` is greater than `verse`, at most `verse` + 200, and less than the
+  `verse` of the next row of the same chapter. A reader reads any other
+  `verse_end` as NULL (one verse). A file with a `verse_end` more than 200
+  above its `verse` is not a valid module.
 - Heading kinds: `major` is a heading above several sections, `section` a
   section heading, `title` a title that is part of the text, such as a psalm
   title. Headings above one verse go in `position` order.
@@ -120,7 +124,7 @@ The first five keys are required.
 | `language` | the shortest BCP 47 tag: `ru`, `en`, `grc`; `und` if unknown |
 | `direction` | `ltr` or `rtl` |
 | `script` | ISO 15924 code: `Cyrl`, `Hebr`; may be absent |
-| `license` | `PD`; any Creative Commons license as its SPDX-style id `CC-<terms>-<version>`, such as `CC-BY-4.0`, `CC-BY-SA-4.0`, `CC-BY-ND-4.0`, `CC-BY-NC-4.0`, `CC-BY-NC-SA-4.0` or `CC-BY-NC-ND-4.0`; `redistributable` (the source allows redistribution without naming a license), `unknown` (a user's own file); `unknown` if absent |
+| `license` | `PD`; any Creative Commons license as its SPDX-style id `CC-<terms>-<version>`, such as `CC-BY-4.0`, `CC-BY-SA-4.0`, `CC-BY-ND-4.0`, `CC-BY-NC-4.0`, `CC-BY-NC-SA-4.0` or `CC-BY-NC-ND-4.0`; `redistributable` (the source allows redistribution without naming a license), `unknown` (a user's own file); `unknown` if absent. CC0 and the Public Domain Mark are written `PD`. A jurisdiction port of a Creative Commons license is written without the jurisdiction: `by-nc/2.5/in` is `CC-BY-NC-2.5` |
 | `copyright` | rights holder and copyright notice as given by the source |
 | `description` | description of the module as given by its source |
 | `source` | where the module comes from: `ebible:<translationId>` for a translation from eBible.org; other sources may use their own value |
@@ -255,7 +259,10 @@ URLs.
   modules with a `moduleFormat` newer than it knows and modules of an unknown
   `type`. Unknown fields are skipped.
 - `books` counts the books of the Old Testament, the New Testament, and the
-  deuterocanon; `size` and `sha256` describe the file at `url`.
+  deuterocanon; `size` and `sha256` describe the file at `url`. `sha256` is 64
+  lowercase hex digits.
+- `description` and `copyright` of a module are optional: the field is left out
+  when the source gives no value.
 - A module has an update when its `version` in the index differs from the
   installed one.
 - `fonts` maps ISO 15924 script codes to fonts for scripts that system fonts
