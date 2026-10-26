@@ -236,7 +236,9 @@ The catalog is described by `index/index.json` in this repository. HisBible
 reads it from
 `https://raw.githubusercontent.com/vi-k/hisbible-catalog/main/index/index.json`.
 Another catalog is the same file anywhere: module addresses in it are full
-URLs.
+URLs. HisBible itself reads only this catalog, and takes module and font files
+only from the releases of this repository: a `url` that does not start with
+`https://github.com/vi-k/hisbible-catalog/releases/download/` drops its entry.
 
 ```json
 {
