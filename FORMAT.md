@@ -133,7 +133,7 @@ The first five keys are required.
 | `description` | description of the module as given by its source |
 | `source` | where the module comes from: `ebible:<translationId>` for a translation from eBible.org; other sources may use their own value |
 | `source_url` | page of the source |
-| `version` | module version: for catalog modules, the eBible.org `UpdateDate` |
+| `version` | module version, see "Versions": `YYYY-MM-DD`, for catalog modules the eBible.org `UpdateDate`, optionally followed by a revision `.N` |
 | `created` | date the file was written, `YYYY-MM-DD` |
 | `catalog`, `catalog_id` | the catalog and the module id in it; absent in a user's own files |
 | `chapter_word`, `chapter_word_psalms` | the module's words for "Chapter" and "Psalm" |
@@ -144,6 +144,20 @@ The first five keys are required.
 Values are text. Optional keys with no value (absent or blank) are not written,
 and a reader treats a blank value as absent. A reader keeps unknown keys as
 they are.
+
+### Versions
+
+A module version is a date `YYYY-MM-DD`, optionally followed by `.N`, a
+revision: N is an integer from 1, without leading zeros. Examples:
+`2025-03-04`, `2025-03-04.1`, `2025-03-04.2`. The date must exist in the
+calendar. For a catalog module the date is the eBible.org `UpdateDate` of the
+translation. A revision is a rebuild of the same source by the catalog, for
+example after a fix in the builder: `2025-03-04` → `2025-03-04.1` →
+`2025-03-04.2`. A new `UpdateDate` starts again from the bare date.
+
+Readers compare versions only for inequality and show only the date part. The
+function `moduleVersionDate` of `hisbible_format` checks a version and returns
+its date part. The same rule applies to the `version` of an index entry.
 
 ### Example
 
@@ -267,8 +281,9 @@ URLs.
   lowercase hex digits.
 - `description` and `copyright` of a module are optional: the field is left out
   when the source gives no value.
-- A module has an update when its `version` in the index differs from the
-  installed one.
+- `version` follows "Versions" above; a client drops a module entry whose
+  `version` is not a version. A module has an update when its `version` in the
+  index differs from the installed one.
 - `fonts` maps ISO 15924 script codes to fonts for scripts that system fonts
   may lack. The field is optional; another catalog may leave it out.
 - `withdrawn` lists modules removed from the catalog and the date of removal.
