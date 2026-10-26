@@ -363,7 +363,8 @@ Future<CatalogRun> runCatalogBuild({
 
 // Версия, с которой выйдет модуль перевода [t] при прежней записи [old]:
 // `UpdateDate`, а если у [old] та же дата — её версия или, для [rebuild],
-// следующая правка.
+// следующая правка. Номер правки, который не читается как `int`, —
+// [FormatException]: сборка перевода тогда не удаётся.
 String _versionOf(
   EbibleTranslation t,
   IndexModule? old, {
@@ -376,9 +377,7 @@ String _versionOf(
     return old.version;
   }
   final dot = old.version.indexOf('.');
-  final revision = dot < 0
-      ? 0
-      : int.tryParse(old.version.substring(dot + 1)) ?? 0;
+  final revision = dot < 0 ? 0 : int.parse(old.version.substring(dot + 1));
 
   return '${t.updateDate}.${revision + 1}';
 }

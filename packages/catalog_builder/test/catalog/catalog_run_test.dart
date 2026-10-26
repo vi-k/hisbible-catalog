@@ -363,6 +363,29 @@ void main() {
     expect(third.report.rebuildMissed, ['bbb']);
   });
 
+  test('an unreadable revision fails the rebuild', () async {
+    final first = await run([offer('aaa')]);
+    final broken = CatalogIndex.parse(
+      first.index.toJson().replaceFirst(
+        '"version": "2026-09-01"',
+        '"version": "2026-09-01.99999999999999999999"',
+      ),
+    );
+    expect(broken.modules.single.version, '2026-09-01.99999999999999999999');
+
+    final second = await run(
+      [offer('aaa')],
+      after: CatalogRun(index: broken, lock: first.lock, report: first.report),
+      rebuild: {'aaa'},
+      now: DateTime.utc(2026, 12),
+    );
+
+    expect(second.index.modules, broken.modules);
+    expect(second.report.failed['aaa'], [contains('unexpected error')]);
+    expect(second.report.rebuildMissed, ['aaa']);
+    expect(publisher.files('build-2026-12-01'), isEmpty);
+  });
+
   test('a lost source copy rebuilds with the same version', () async {
     final first = await run([offer('aaa')]);
     final second = await run(
