@@ -100,7 +100,7 @@ BuildOutcome buildModule(
   try {
     books = _readBooks(archive, warnings);
     copyrightPage = _copyrightPage(archive);
-  } on Exception catch (e) {
+  } on Object catch (e) {
     return BuildFailed(['cannot read ${usfmZip.path}: $e']);
   }
   if (books.isEmpty) {
@@ -116,7 +116,7 @@ BuildOutcome buildModule(
     language: language,
     direction: t.textDirection,
     script: scriptCodeOf(t.script, _sample(books)),
-    license: licenseOf(copyrightPage),
+    license: licenseOf(copyrightPage, copyright: t.copyright),
     copyright: t.copyright,
     description: t.description,
     source: 'ebible:${t.translationId}',
@@ -134,7 +134,7 @@ BuildOutcome buildModule(
   try {
     part.parent.createSync(recursive: true);
     _write(partPath, meta, books, warnings, russian: russian);
-  } on Exception catch (e) {
+  } on Object catch (e) {
     _delete(part);
 
     return BuildFailed(['cannot write $partPath: $e']);
@@ -270,8 +270,12 @@ void _write(
   List<String> warnings, {
   required bool russian,
 }) {
+  final ends = {
+    for (final book in books) book.number: _verseEnds(book.usfm, warnings),
+  };
   final schemes = Versification.standard.detect({
-    for (final book in books) book.number: _lastVerses(book.usfm),
+    for (final book in books)
+      book.number: _lastVerses(book.usfm, ends[book.number]!),
   }, russianFlag: russian);
   final writer = ModuleWriter.create(path, meta);
   try {
@@ -290,7 +294,7 @@ void _write(
         title: _filled(usfm.toc1),
         scheme: schemes.of(book.number),
       );
-      _writeText(writer, book, noteOffset, warnings);
+      _writeText(writer, book, ends[book.number]!, noteOffset, warnings);
       var lastNote = 0;
       for (final note in usfm.notes) {
         lastNote = note.id > lastNote ? note.id : lastNote;
@@ -304,12 +308,13 @@ void _write(
   }
 }
 
-// Пишет стихи, заголовки и сноски книги; номера сносок сдвинуты на
-// [offset]. Повторный стих пропускается вместе со своими заголовками
-// и сносками.
+// Пишет стихи, заголовки и сноски книги; последний из слитых стихов —
+// из [ends], номера сносок сдвинуты на [offset]. Повторный стих
+// пропускается вместе со своими заголовками и сносками.
 void _writeText(
   ModuleWriter writer,
   _Book book,
+  Map<UsfmVerse, int?> ends,
   int offset,
   List<String> warnings,
 ) {
@@ -330,7 +335,7 @@ void _writeText(
       verse.chapter,
       verse.verse,
       writeMarkup(_shiftNotes(verse.nodes, offset)),
-      verseEnd: verse.verseEnd,
+      verseEnd: ends[verse],
     );
   }
   for (final heading in usfm.headings) {
@@ -439,11 +444,51 @@ List<MarkupNode> _shiftNotes(List<MarkupNode> nodes, int offset) {
   ];
 }
 
-// Глава → последний стих; у слитых стихов — последний из них.
-Map<int, int> _lastVerses(UsfmBook usfm) {
+// Последний из слитых стихов каждого стиха книги по правилу FORMAT.md:
+// `verse_end`, который заходит на следующий по номеру стих главы или больше
+// своего стиха больше чем на [maxVerseEndSpan], отбрасывается, и стих
+// пишется одним; это попадает в [warnings].
+Map<UsfmVerse, int?> _verseEnds(UsfmBook usfm, List<String> warnings) {
+  final numbers = <int, List<int>>{};
+  for (final verse in usfm.verses) {
+    numbers.putIfAbsent(verse.chapter, () => []).add(verse.verse);
+  }
+  for (final list in numbers.values) {
+    list.sort();
+  }
+  final ends = Map<UsfmVerse, int?>.identity();
+  for (final verse in usfm.verses) {
+    final end = verse.verseEnd;
+    if (end == null || end <= verse.verse) {
+      ends[verse] = null;
+      continue;
+    }
+    final place = '${usfm.code} ${verse.chapter}:${verse.verse}-$end';
+    final next = numbers[verse.chapter]!.firstWhere(
+      (number) => number > verse.verse,
+      orElse: () => 0,
+    );
+    if (next > 0 && end >= next) {
+      warnings.add('$place: reaches verse $next, written as one verse');
+      ends[verse] = null;
+    } else if (end - verse.verse > maxVerseEndSpan) {
+      warnings.add(
+        '$place: more than $maxVerseEndSpan verses, written as one verse',
+      );
+      ends[verse] = null;
+    } else {
+      ends[verse] = end;
+    }
+  }
+
+  return ends;
+}
+
+// Глава → последний стих; у слитых стихов — последний из них по [ends].
+Map<int, int> _lastVerses(UsfmBook usfm, Map<UsfmVerse, int?> ends) {
   final lasts = <int, int>{};
   for (final verse in usfm.verses) {
-    final last = verse.verseEnd ?? verse.verse;
+    final last = ends[verse] ?? verse.verse;
     if (last > (lasts[verse.chapter] ?? 0)) {
       lasts[verse.chapter] = last;
     }

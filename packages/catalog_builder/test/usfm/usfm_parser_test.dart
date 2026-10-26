@@ -123,6 +123,41 @@ void main() {
     expect(book.droppedFragments, 1);
   });
 
+  test('heading levels are clamped to 1..3', () {
+    final book = parseUsfm(
+      '\\id GEN\n\\c 1\n\\s4 Four\n\\s0 Zero\n\\ms9 Nine\n\\ms2 Two\n'
+      r'\v 1 One',
+    );
+    expect(
+      [for (final h in book.headings) (h.kind, h.level)],
+      [
+        (HeadingKind.section, 3),
+        (HeadingKind.section, 1),
+        (HeadingKind.major, 3),
+        (HeadingKind.major, 2),
+      ],
+    );
+  });
+
+  test('a verse number that overflows drops only its marker', () {
+    final book = parseUsfm(
+      '\\id GEN\n\\c 1\n\\v 1 One \\wj Lord\n'
+      '\\v 99999999999999999999 still one\\wj*\n'
+      '\\v 2-99999999999999999999 Two\n\\v 3 Three',
+    );
+    expect(
+      [for (final v in book.verses) (v.verse, v.verseEnd)],
+      [(1, null), (2, null), (3, null)],
+    );
+    // Стиль закрывается на маркере и открывается снова, как на стыке стихов.
+    expect(book.verses.first.nodes, [
+      const TextRun('One '),
+      const StyledSpan(MarkupStyle.wordsOfChrist, [TextRun('Lord ')]),
+      const StyledSpan(MarkupStyle.wordsOfChrist, [TextRun('still one')]),
+    ]);
+    expect(plainText(book.verses[1].nodes), 'Two');
+  });
+
   test('text after a paragraph stays in its verse', () {
     final book = parseUsfm(
       '\\id MAT\n\\c 1\n\\p\n\\v 1 One\n\\p two \\qr Amen\n\\b\n'

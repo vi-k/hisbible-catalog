@@ -906,7 +906,8 @@ final class _Parser {
         final heading = _HeadingBuilder(
           _chapter,
           headingKind,
-          level,
+          // Уровень формата — 1..3: `\s4` и `\ms9` — третий, `\s0` — первый.
+          level.clamp(1, 3),
           _notes.length,
           speaker: name == 'sp',
         );
@@ -1011,6 +1012,16 @@ final class _Parser {
       _setTarget(_Target.silent);
       return;
     }
+    final match = _verseNumber.matchAsPrefix(number);
+    final parsed = match == null ? null : int.tryParse(match[1]!);
+    if (match != null && parsed == null) {
+      // Номер не помещается в `int`: маркер выбрасывается, текст остаётся
+      // в открытом стихе вместе с его незакрытыми стилями.
+      if (_targetKind == _Target.verse) {
+        _target.reopen(carried);
+      }
+      return;
+    }
     for (final heading in _pendingHeadings) {
       if (heading.tail case final tail?) {
         _verse?.content.append(tail);
@@ -1020,11 +1031,9 @@ final class _Parser {
     final lastInChapter = last != null && last.chapter == _chapter
         ? last
         : null;
-    final match = _verseNumber.matchAsPrefix(number);
-    final verseNumber = match == null
-        ? (lastInChapter?.verse ?? 0) + 1
-        : int.parse(match[1]!);
-    final rangeEnd = match?[2] == null ? null : int.parse(match![2]!);
+    final verseNumber = parsed ?? (lastInChapter?.verse ?? 0) + 1;
+    // Конец, который не помещается в `int`, отбрасывается.
+    final rangeEnd = match?[2] == null ? null : int.tryParse(match![2]!);
     final end = rangeEnd != null && rangeEnd > verseNumber ? rangeEnd : null;
     final _VerseBuilder verse;
     if (lastInChapter != null && lastInChapter.verse == verseNumber) {

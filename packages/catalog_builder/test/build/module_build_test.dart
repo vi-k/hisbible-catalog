@@ -259,6 +259,47 @@ void main() {
     expect([for (final f in bible.footnotes(10, 1)) f.text], ['Kept.']);
   });
 
+  test('merged verses that reach the next verse or run far are one verse', () {
+    final outcome = build(
+      _translation(ot: 4),
+      zip({
+        'GEN.usfm':
+            '\\id GEN\n\\c 1\n\\p\n\\v 1-3 One\n\\v 2 Two\n\\v 3-4 Three\n'
+            '\\c 2\n\\p\n\\v 1-250 Long\n',
+      }),
+    );
+
+    expect(built(outcome).warnings, [
+      'GEN 1:1-3: reaches verse 2, written as one verse',
+      'GEN 2:1-250: more than $maxVerseEndSpan verses, written as one verse',
+    ]);
+    final bible = BibleModule.open(out());
+    addTearDown(bible.close);
+    expect(bible.chapter(10, 1), const [
+      Verse(1, 'One'),
+      Verse(2, 'Two'),
+      Verse(3, 'Three', verseEnd: 4),
+    ]);
+    expect(bible.chapter(10, 2), const [Verse(1, 'Long')]);
+  });
+
+  test('public domain needs both copr.htm and the Copyright column', () {
+    String license(String copyright) {
+      final outcome = build(
+        _translation(ot: 3, copyright: copyright),
+        zip({
+          'GEN.usfm': _usfm('GEN', [3]),
+          'copr.htm': '<p>This Bible is in the Public Domain.</p>',
+        }),
+      );
+
+      return built(outcome).meta.license;
+    }
+
+    expect(license('Public Domain'), 'PD');
+    expect(license('© 2026 Tests'), 'redistributable');
+  });
+
   test('an empty copy of a book does not hide the full one', () {
     final outcome = build(
       _translation(ot: 31),
@@ -393,6 +434,7 @@ EbibleTranslation _translation({
   String language = 'eng',
   int ot = 0,
   int nt = 0,
+  String copyright = '© 2026 Tests',
 }) => EbibleTranslation(
   languageCode: language,
   translationId: 'eng-test',
@@ -401,7 +443,7 @@ EbibleTranslation _translation({
   title: 'Test Bible',
   description: 'A Bible for tests',
   redistributable: true,
-  copyright: '© 2026 Tests',
+  copyright: copyright,
   updateDate: '2026-09-26',
   publicationUrl: 'http://ebible.org/eng-test/',
   otVerses: ot,

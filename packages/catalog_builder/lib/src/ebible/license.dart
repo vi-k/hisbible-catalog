@@ -1,14 +1,17 @@
-/// Лицензия модуля по странице `copr.htm` архива eBible.org.
+/// Лицензия модуля по странице `copr.htm` архива eBible.org и столбцу
+/// `Copyright` таблицы переводов [copyright].
 ///
 /// Адрес `creativecommons.org/licenses/<вид>/<версия>` даёт
 /// `CC-<ВИД>-<версия>` (`by-sa/4.0` → `CC-BY-SA-4.0`). CC0
-/// (`creativecommons.org/publicdomain/zero/…`), знак общественного
-/// достояния (`…/publicdomain/mark/…`) и слова «public domain» без адреса
-/// лицензии CC — `PD`; отрицание («not in the public domain», «not public
-/// domain») общественным достоянием не считается. Ничего из этого или
-/// страницы нет — `redistributable`: eBible раздаёт перевод, но лицензию
-/// не называет.
-String licenseOf(String? coprHtml) {
+/// (`creativecommons.org/publicdomain/zero/…`) и знак общественного
+/// достояния (`…/publicdomain/mark/…`) — `PD`. Слова «public domain» без
+/// адреса лицензии CC дают `PD`, только если и [copyright] говорит «public
+/// domain»: ошибка в эту сторону выдала бы чужой текст за общественное
+/// достояние. Отрицание («not in the public domain», «not a public domain»,
+/// «no longer in the public domain», «isn't public domain») общественным
+/// достоянием не считается ни там, ни там. Ничего из этого или страницы
+/// нет — `redistributable`: eBible раздаёт перевод, но лицензию не называет.
+String licenseOf(String? coprHtml, {String copyright = ''}) {
   if (coprHtml == null) {
     return 'redistributable';
   }
@@ -16,7 +19,7 @@ String licenseOf(String? coprHtml) {
     return 'CC-${match[1]!.toUpperCase()}-${match[2]}';
   }
   if (_publicDomainMark.hasMatch(coprHtml) ||
-      _publicDomain.allMatches(coprHtml).any((match) => match[1] == null)) {
+      (_saysPublicDomain(coprHtml) && _saysPublicDomain(copyright))) {
     return 'PD';
   }
 
@@ -33,8 +36,13 @@ final _publicDomainMark = RegExp(
   caseSensitive: false,
 );
 
+// Есть ли в [text] слова «public domain» без отрицания перед ними.
+bool _saysPublicDomain(String text) =>
+    _publicDomain.allMatches(text).any((match) => match[1] == null);
+
 // Слова «public domain»; группа 1 — отрицание перед ними.
 final _publicDomain = RegExp(
-  r'(\bnot\s+(?:in\s+)?(?:the\s+)?)?public\s+domain',
+  r"(\b(?:not|no\s+longer|isn['’]t)\s+(?:a\s+|in\s+)?(?:the\s+)?)?"
+  r'public\s+domain',
   caseSensitive: false,
 );
