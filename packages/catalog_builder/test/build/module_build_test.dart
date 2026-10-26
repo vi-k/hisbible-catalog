@@ -246,6 +246,7 @@ void main() {
 
     expect(shortName('rus', '\\h Бытие\n'), 'Быт');
     expect(shortName('rus', '\\h Бытие\n\\toc3 Бытие\n'), 'Быт');
+    expect(shortName('rus', '\\h Бытие\n\\toc3 БЫТИЕ\n'), 'Быт');
     expect(shortName('eng', '\\h Genesis\n\\toc2 Genesis\n'), 'Gen');
     expect(shortName('eng', '\\h Genesis\n\\toc3 Gn\n'), 'Gn');
     expect(shortName('spa', '\\h Génesis\n'), 'Génesis');

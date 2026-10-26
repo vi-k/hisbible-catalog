@@ -279,8 +279,8 @@ String _sample(List<_Book> books) {
 }
 
 // Короткое название книги: `\toc3`. У русского и английского перевода,
-// где `\toc3` нет или в нём полное название, — сокращение справочника
-// («Быт», «Gen»; решение владельца 2026-10-26).
+// где `\toc3` нет или в нём полное название (без учёта регистра), —
+// сокращение справочника («Быт», «Gen»; решение владельца 2026-10-26).
 String _shortName(_Book book, String language) {
   final usfm = book.usfm;
   final toc3 = _filled(usfm.toc3);
@@ -288,13 +288,13 @@ String _shortName(_Book book, String language) {
     usfm.header,
     usfm.toc1,
     usfm.toc2,
-  }.map(_filled).nonNulls.toSet();
+  }.map(_filled).nonNulls.map((name) => name.toLowerCase()).toSet();
   final ours = switch (language.split('-').first) {
     'ru' => book.info.ruShort,
     'en' => book.info.enShort,
     _ => null,
   };
-  if (ours != null && (toc3 == null || full.contains(toc3))) {
+  if (ours != null && (toc3 == null || full.contains(toc3.toLowerCase()))) {
     return ours;
   }
 
