@@ -19,24 +19,48 @@ files, and writes `index/index.json` and `sources/sources.lock.json`. The
 Run the commands from the repository root after `dart pub get`:
 
 ```
-dart run catalog_builder:build [--csv <path or url>] [--limit <N>] [--dry-run] [--work <dir>]
+dart run catalog_builder:build [--csv <path or url>] [--limit <N>] [--deadline <minutes>] [--allow-mass-withdrawal] [--dry-run] [--work <dir>]
 dart run catalog_builder:build --one <zip> --csv <csv> [--out <file>]
 dart run catalog_builder:build --apply-deletions <deletions.json>
 ```
 
 - Without `--one` or `--apply-deletions`, the command builds the catalog. It
   publishes through `gh release` (credentials from `GH_TOKEN`) and writes
-  `index/index.json`, `sources/sources.lock.json`, `out/report.md`, and
-  `out/deletions.json`, the release files the new index no longer uses.
-  `--limit` caps the number of builds in one run, and the rest wait for the
-  next run; `--work` is the folder for downloaded archives and built modules
-  (default `out/work`).
-- `--dry-run` publishes nothing and writes the same four files to
+  `index/index.json`, `sources/sources.lock.json`,
+  `sources/pending-deletions.json`, and `out/report.md`. `--limit` caps the
+  number of builds in one run, and the rest wait for the next run; `--work` is
+  the folder for downloaded archives and built modules (default `out/work`).
+- A run does not delete the release files that its new index no longer uses. It
+  lists them in `sources/pending-deletions.json`, which is committed with the
+  index. The next run deletes them at its start; by then the CDN of
+  raw.githubusercontent.com serves the new index. A listed file that the
+  current index or `sources/sources.lock.json` uses again is not deleted. A
+  failed deletion stays in the list for the run after that.
+- `--deadline` stops taking new translations that many minutes after the start;
+  the translation in progress is finished, and the run writes its files as
+  usual. The `build` workflow passes `--deadline 300`.
+- If `translations.csv` lacks a column the builder reads, or `Redistributable`
+  or `downloadable` is neither `True` nor `False`, the run fails before it
+  changes anything. A row whose `translationId` is not letters, digits, `_` and
+  `-`, or whose `UpdateDate` is not `YYYY-MM-DD`, is skipped and listed in the
+  report; the module built from it earlier stays as it is.
+- A run withdraws at most 20 modules, or 5% of the catalog if that is more. If
+  more translations disappear from `translations.csv`, the run withdraws none
+  of them, deletes nothing of theirs, and says so in the report. If eBible
+  really withdrew them, run the build again with `--allow-mass-withdrawal` (in
+  the workflow, the `allow_mass_withdrawal` input).
+- When `gh` reports the GitHub API rate limit, the run stops at once: the
+  translation in progress fails, the rest wait for the next run, and the report
+  says why. A `GITHUB_TOKEN` allows about 1000 API requests an hour, and each
+  module takes four or five. Build the first, full catalog in runs of about
+  `--limit 200`, an hour apart.
+- `--dry-run` publishes and deletes nothing and writes the same four files to
   `out/dry-run/`. It still downloads from eBible.org and prints the files a
-  real run would upload.
-- `--apply-deletions` deletes the files listed in `out/deletions.json`. Run it
-  only after the new index is pushed, so the published index never points to a
-  deleted file. Deleting a file that is already gone is not an error.
+  real run would delete and upload.
+- `--apply-deletions` deletes the files listed in a deletion list, for manual
+  use: for example, `sources/pending-deletions.json` when no run is planned
+  soon. Run it only when the pushed index has not used those files for at least
+  ten minutes. Deleting a file that is already gone is not an error.
 - `--one` builds one module from a USFM archive named
   `<translationId>_usfm.zip` or `<translationId>-<UpdateDate>_usfm.zip`; the
   translation is looked up in the given `translations.csv`. It ignores
@@ -54,22 +78,19 @@ to force a rebuild. To rebuild one module:
 1. Delete the translation's entry from `sources/sources.lock.json`. Keep its
    entry in `index/index.json`.
 2. Run the build. Either push the change to `main` and start the `build`
-   workflow, which commits and pushes `index/` and `sources/` itself and then
-   applies the deletions. Or run `dart run catalog_builder:build` locally,
-   commit and push `index/` and `sources/`, and only then run
-   `dart run catalog_builder:build --apply-deletions out/deletions.json`. A dry
-   run first shows the files the run would upload.
+   workflow, which commits and pushes `index/` and `sources/` itself. Or run
+   `dart run catalog_builder:build` locally, then commit and push `index/` and
+   `sources/`. A dry run first shows the files the run would upload.
 3. The run downloads the archive from eBible.org again, uploads it to
    `sources-<date>`, writes a new lock entry, and rebuilds the module into
    `build-<date>`. If the old module file is in another release, it goes to
-   `out/deletions.json` and is deleted by `--apply-deletions`. If the module
+   `sources/pending-deletions.json`, and the next run deletes it. If the module
    was last built the same day, the release and file name are the same: the
    upload overwrites the file (`--clobber`), the URL stays, and nothing goes to
-   `out/deletions.json`.
-4. The old source copy is not in `out/deletions.json`, because the run no
-   longer knows it. If its release and file name differ from the new lock
-   entry, delete it by hand, with the `release` and `asset` of the deleted
-   entry:
+   the deletion list.
+4. The old source copy is not in the deletion list, because the run no longer
+   knows it. If its release and file name differ from the new lock entry,
+   delete it by hand, with the `release` and `asset` of the deleted entry:
 
    ```
    gh release delete-asset <release> <asset> --repo vi-k/hisbible-catalog --yes
@@ -88,3 +109,10 @@ release.
 The code is under the MIT License (see `LICENSE`). Third-party notices are in
 `packages/hisbible_format/NOTICE`. Bible modules keep the licenses of their
 translations.
+
+The releases of this repository also republish files of others:
+
+- the `fonts` release holds Noto fonts, under the SIL Open Font License 1.1
+  (OFL-1.1), which each font file carries;
+- the `sources-<date>` pre-releases hold the USFM archives of eBible.org as
+  they were downloaded, unchanged, under the terms of each translation.

@@ -9,6 +9,11 @@ on:
         description: At most this many new and updated modules; empty is all
         required: false
         default: ''
+      allow_mass_withdrawal:
+        description: Withdraw modules even beyond the mass withdrawal limit
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -20,6 +25,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Через 300 минут (--deadline) сборка не берёт новых переводов, и до
+    # конца задания остаётся время закоммитить собранное.
+    timeout-minutes: 350
     steps:
       - uses: actions/checkout@v4
         with:
@@ -28,11 +36,20 @@ jobs:
         with:
           sdk: 3.13.0
       - run: dart pub get
+      # Прогон сперва удаляет файлы, которые прошлый прогон записал
+      # в sources/pending-deletions.json, потом собирает и записывает туда
+      # файлы, на которые его указатель больше не ссылается.
       - name: Build the catalog
         env:
           GH_TOKEN: ${{ github.token }}
           LIMIT: ${{ inputs.limit }}
-        run: dart run catalog_builder:build --limit "$LIMIT"
+          ALLOW_MASS_WITHDRAWAL: ${{ inputs.allow_mass_withdrawal }}
+        run: |
+          args=(--limit "$LIMIT" --deadline 300)
+          if [ "$ALLOW_MASS_WITHDRAWAL" = true ]; then
+            args+=(--allow-mass-withdrawal)
+          fi
+          dart run catalog_builder:build "${args[@]}"
       - name: Keep the report and the deletion list
         if: always()
         uses: actions/upload-artifact@v4
@@ -40,7 +57,7 @@ jobs:
           name: catalog-build
           path: |
             out/report.md
-            out/deletions.json
+            sources/pending-deletions.json
       - name: Report
         run: cat out/report.md >> "$GITHUB_STEP_SUMMARY"
       - name: Commit the index
@@ -52,8 +69,8 @@ jobs:
             exit 0
           fi
           git commit -m "build: каталог $(date -u +%Y-%m-%d)"
+          # Пока шла сборка, в main могли запушить. Бот трогает только index/
+          # и sources/, так что rebase чистый, если их не правили руками,
+          # а тогда отказ и нужен.
+          git pull --rebase origin main
           git push origin HEAD:main
-      - name: Delete files the index no longer uses
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: dart run catalog_builder:build --apply-deletions out/deletions.json
