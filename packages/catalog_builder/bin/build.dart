@@ -2,21 +2,28 @@
 //
 // Прогон каталога:
 //   dart run catalog_builder:build [--csv <путь или адрес>] [--limit <N>]
-//       [--dry-run] [--work <каталог>]
+//       [--deadline <минуты>] [--allow-mass-withdrawal] [--dry-run]
+//       [--work <каталог>]
 // Таблица переводов по умолчанию —
 // https://ebible.org/Scriptures/translations.csv. Читает `index/index.json`,
-// `sources/sources.lock.json`, `overrides.json` и `fonts/fonts.lock.json`
-// (нет файла — пусто), собирает модули через `runCatalogBuild`, выкладывает
-// их через `gh release` и пишет `index/index.json`,
-// `sources/sources.lock.json`, `out/report.md` и `out/deletions.json` —
-// файлы выпусков, на которые новый указатель больше не ссылается.
+// `sources/sources.lock.json`, `sources/pending-deletions.json`,
+// `overrides.json` и `fonts/fonts.lock.json` (нет файла — пусто). Сначала
+// удаляет файлы из `sources/pending-deletions.json`, записанные прошлым
+// прогоном, потом собирает модули через `runCatalogBuild`, выкладывает их
+// через `gh release` и пишет `index/index.json`,
+// `sources/sources.lock.json`, `sources/pending-deletions.json` — файлы
+// выпусков, на которые новый указатель больше не ссылается, их удалит
+// следующий прогон, — и `out/report.md`.
 // `--limit` — не больше N сборок; пустое значение — без предела.
-// `--dry-run` ничего не выкладывает и пишет те же четыре файла
-// в `out/dry-run/`. Скачанные архивы и собранные модули лежат в `--work`,
-// по умолчанию `out/work`; в настоящем прогоне архив удаляется после
-// сборки, модуль — после выкладки, `--dry-run` их оставляет.
+// `--deadline` — через столько минут от запуска новые переводы не берутся.
+// `--allow-mass-withdrawal` — отозвать модули, даже если их больше
+// предела массового отзыва. `--dry-run` ничего не выкладывает и не удаляет
+// и пишет те же четыре файла в `out/dry-run/`. Скачанные архивы
+// и собранные модули лежат в `--work`, по умолчанию `out/work`;
+// в настоящем прогоне архив удаляется после сборки, модуль — после
+// выкладки, `--dry-run` их оставляет.
 //
-// Удаление старых файлов, после того как новый указатель отправлен:
+// Удаление файлов из списка вручную:
 //   dart run catalog_builder:build --apply-deletions <deletions.json>
 //
 // Один модуль:

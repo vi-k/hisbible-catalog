@@ -65,6 +65,22 @@ final class PublishException implements Exception {
   String toString() => 'PublishException: $message';
 }
 
+/// `gh` упёрся в предел запросов GitHub API: повтор через секунды
+/// не поможет, прогон останавливается.
+final class RateLimitException extends PublishException {
+  /// Создаёт ошибку с текстом [message].
+  const RateLimitException(super.message);
+
+  @override
+  String toString() => 'RateLimitException: $message';
+}
+
+/// Говорит ли сообщение `gh` [message] о пределе запросов GitHub API:
+/// «API rate limit exceeded», «secondary rate limit» или HTTP 429.
+bool isRateLimit(String message) => _rateLimit.hasMatch(message);
+
+final _rateLimit = RegExp('rate limit|HTTP 429', caseSensitive: false);
+
 /// Запуск программы [executable] с аргументами [arguments];
 /// по умолчанию — [Process.run].
 typedef ProcessRunner = Future<ProcessResult> Function(
@@ -136,7 +152,7 @@ final class GhPublisher implements Publisher {
     final result = await _run('gh', arguments);
     // `gh` пишет «asset … not found in release …» или «release not found».
     if (result.exitCode != 0 && !'${result.stderr}'.contains('not found')) {
-      throw PublishException(_failure(arguments, result));
+      throw _exception(arguments, result);
     }
   }
 
@@ -164,7 +180,7 @@ final class GhPublisher implements Publisher {
       if ('${result.stderr}'.contains('release not found')) {
         return null;
       }
-      throw PublishException(_failure(arguments, result));
+      throw _exception(arguments, result);
     }
     _existing.add(release);
     try {
@@ -185,8 +201,20 @@ final class GhPublisher implements Publisher {
   Future<void> _gh(List<String> arguments) async {
     final result = await _run('gh', arguments);
     if (result.exitCode != 0) {
-      throw PublishException(_failure(arguments, result));
+      throw _exception(arguments, result);
     }
+  }
+
+  // Ошибка неудачной команды: о пределе запросов — [RateLimitException].
+  static PublishException _exception(
+    List<String> arguments,
+    ProcessResult result,
+  ) {
+    final message = _failure(arguments, result);
+
+    return isRateLimit('${result.stderr}')
+        ? RateLimitException(message)
+        : PublishException(message);
   }
 
   static String _failure(List<String> arguments, ProcessResult result) =>

@@ -67,4 +67,75 @@ void main() {
       throwsA(isA<FormatException>()),
     );
   });
+
+  group('required columns', () {
+    const header =
+        'languageCode,translationId,title,Redistributable,UpdateDate,'
+        'OTverses,NTverses,DCverses,textDirection,downloadable';
+    const row = 'eng,eng-a,A,True,2026-09-01,1,2,0,ltr,True';
+
+    test('a table with all of them parses', () {
+      expect(
+        parseTranslationsCsv('$header\n$row\n').single.translationId,
+        'eng-a',
+      );
+    });
+
+    test('a missing column fails the table', () {
+      final columns = header.split(',');
+      for (final missing in columns) {
+        final kept = [
+          for (var i = 0; i < columns.length; i++)
+            if (columns[i] != missing) i,
+        ];
+        final cells = row.split(',');
+        final csv =
+            '${[for (final i in kept) columns[i]].join(',')}\n'
+            '${[for (final i in kept) cells[i]].join(',')}\n';
+
+        expect(
+          () => parseTranslationsCsv(csv),
+          throwsA(
+            isA<FormatException>().having(
+              (e) => e.message,
+              'message',
+              contains(missing),
+            ),
+          ),
+          reason: missing,
+        );
+      }
+    });
+
+    test('a flag that is neither true nor false fails the table', () {
+      for (final (redistributable, downloadable) in [
+        ('Yes', 'True'),
+        ('True', '1'),
+        ('', 'True'),
+        ('True', ''),
+      ]) {
+        final csv =
+            '$header\n'
+            'eng,eng-a,A,$redistributable,2026-09-01,1,2,0,ltr,$downloadable\n';
+
+        expect(
+          () => parseTranslationsCsv(csv),
+          throwsA(
+            isA<FormatException>().having(
+              (e) => e.message,
+              'message',
+              contains('eng-a'),
+            ),
+          ),
+          reason: '$redistributable, $downloadable',
+        );
+      }
+      expect(
+        parseTranslationsCsv(
+          '$header\neng,eng-a,A,TRUE,2026-09-01,1,2,0,ltr,false\n',
+        ).single.downloadable,
+        isFalse,
+      );
+    });
+  });
 }

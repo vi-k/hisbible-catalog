@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:catalog_builder/src/catalog/publisher.dart';
 
-/// JSON списка файлов выпусков к удалению, `out/deletions.json`:
-/// `{"deletions": [{"release": …, "asset": …}]}` с отступом в два пробела
-/// и переводом строки в конце.
+/// JSON списка файлов выпусков к удалению,
+/// `sources/pending-deletions.json`: `{"deletions": [{"release": …,
+/// "asset": …}]}` с отступом в два пробела и переводом строки в конце.
 String deletionsToJson(List<ReleaseAsset> deletions) {
   final items = [
     for (final (:release, :asset) in deletions)

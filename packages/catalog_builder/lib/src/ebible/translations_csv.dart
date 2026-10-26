@@ -83,18 +83,29 @@ final class EbibleTranslation {
 /// Разбирает `translations.csv` eBible.org: строка заголовков, затем
 /// переводы.
 ///
-/// Столбцы ищутся по именам, лишние пропускаются, недостающие пусты.
-/// Понимает BOM в начале, поля в кавычках с запятыми, переводами строк
-/// и `""` внутри, концы строк `\n` и `\r\n`. Таблица без столбца
-/// `translationId` — [FormatException].
+/// Столбцы ищутся по именам, лишние пропускаются, недостающие
+/// необязательные пусты. Понимает BOM в начале, поля в кавычках с запятыми,
+/// переводами строк и `""` внутри, концы строк `\n` и `\r\n`.
+///
+/// Таблица без какого-нибудь из [requiredTranslationColumns] или строка,
+/// где `Redistributable` или `downloadable` не `true` и не `false` (регистр
+/// любой), — [FormatException]: eBible поменял таблицу, и сборка по ней
+/// отозвала бы переводы, которые никто не отзывал.
 List<EbibleTranslation> parseTranslationsCsv(String csv) {
   final rows = _csvRows(csv);
   if (rows.isEmpty) {
     throw const FormatException('Empty translations table');
   }
   final header = rows.first;
-  if (!header.contains('translationId')) {
-    throw FormatException('No translationId column in $header');
+  final missing = [
+    for (final name in requiredTranslationColumns)
+      if (!header.contains(name)) name,
+  ];
+  if (missing.isNotEmpty) {
+    throw FormatException(
+      'No ${missing.join(', ')} column${missing.length == 1 ? '' : 's'} '
+      'in the translations table: $header',
+    );
   }
   final columns = {for (var i = 0; i < header.length; i++) header[i]: i};
 
@@ -109,8 +120,30 @@ List<EbibleTranslation> parseTranslationsCsv(String csv) {
   ];
 }
 
+/// Столбцы `translations.csv`, без которых таблица не годится: по ним
+/// сборка выбирает переводы, узнаёт обновления и проверяет модули.
+const requiredTranslationColumns = [
+  'translationId',
+  'languageCode',
+  'title',
+  'Redistributable',
+  'downloadable',
+  'UpdateDate',
+  'OTverses',
+  'NTverses',
+  'DCverses',
+  'textDirection',
+];
+
 EbibleTranslation _translation(String Function(String) cell) {
-  bool flag(String name) => cell(name).toLowerCase() == 'true';
+  bool flag(String name) => switch (cell(name).toLowerCase()) {
+    'true' => true,
+    'false' => false,
+    final value => throw FormatException(
+      'translations table, ${cell('translationId')}: $name is "$value", '
+      'expected True or False',
+    ),
+  };
   int number(String name) => int.tryParse(cell(name)) ?? 0;
 
   return EbibleTranslation(

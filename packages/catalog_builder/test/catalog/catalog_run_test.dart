@@ -29,13 +29,18 @@ void main() {
     DateTime? now,
     Overrides overrides = const Overrides(),
     FontsLock fonts = FontsLock.empty,
+    List<ReleaseAsset>? pending,
     int? limit,
+    bool allowMassWithdrawal = false,
+    DateTime? deadline,
+    DateTime Function()? clock,
     bool keepFiles = false,
   }) => runCatalogBuild(
     pause: (duration) async => pauses.add(duration),
     translations: translations,
     previous: after?.index ?? CatalogIndex.empty(),
     lock: after?.lock ?? const SourcesLock({}),
+    pending: pending ?? after?.deletions ?? const [],
     overrides: overrides,
     fetcher: fetcher,
     publisher: publisher,
@@ -43,6 +48,9 @@ void main() {
     now: now ?? DateTime.utc(2026, 11),
     fonts: fonts,
     limit: limit,
+    allowMassWithdrawal: allowMassWithdrawal,
+    deadline: deadline,
+    clock: clock ?? () => DateTime.utc(2026, 11),
     keepFiles: keepFiles,
   );
 
@@ -172,8 +180,8 @@ void main() {
     expect(publisher.uploads, hasLength(uploaded));
     expect(publisher.deletes, isEmpty);
     expect(second.deletions, isEmpty);
-    expect(second.index.modules, first.index.modules);
-    expect(second.index.updated, '2026-12-01');
+    expect(second.index, first.index, reason: 'updated stays 2026-11-01');
+    expect(second.index.updated, '2026-11-01');
     expect(second.lock, first.lock);
     expect(second.report.unchanged, ['aaa', 'bbb']);
     expect(second.report.built, isEmpty);
@@ -188,6 +196,7 @@ void main() {
       now: DateTime.utc(2026, 12),
     );
 
+    expect(second.index.updated, '2026-12-01');
     final module = second.index.modules.first;
     expect(module.id, 'aaa');
     expect(module.version, '2026-10-15');
@@ -474,6 +483,218 @@ void main() {
       contains('Stopped early: ${uploadFailureLimit + 1} uploads failed'),
     );
   });
+
+  test('an unexpected error fails only its translation', () async {
+    final first = await run([offer('aaa'), offer('bbb')]);
+    fetcher.errors[_ebible('aaa')] = StateError('disk full');
+
+    final second = await run(
+      [offer('aaa', date: '2026-10-15'), offer('bbb'), offer('ccc')],
+      after: first,
+      now: DateTime.utc(2026, 12),
+    );
+
+    expect(second.report.failed['aaa'], [contains('disk full')]);
+    expect(second.report.built, ['ccc']);
+    expect(second.index.modules.map((m) => m.id), ['aaa', 'bbb', 'ccc']);
+    expect(second.index.modules.first, first.index.modules.first);
+    expect(second.lock.entries['aaa'], first.lock.entries['aaa']);
+  });
+
+  test('a failed release lookup is retried like an upload', () async {
+    publisher.assetCountFailures = 2;
+
+    final result = await run([offer('aaa')]);
+
+    expect(result.report.failed, isEmpty);
+    expect(result.index.modules.map((m) => m.id), ['aaa']);
+    expect(pauses, hasLength(2));
+
+    // Не отвечает и после повторов — не собран только этот перевод.
+    publisher.assetCountFailures = uploadRetries + 1;
+    final second = await run(
+      [offer('aaa'), offer('bbb')],
+      after: result,
+      now: DateTime.utc(2026, 12),
+    );
+    expect(second.report.failed.keys, ['bbb']);
+    expect(second.report.failed['bbb'], [contains('timeout')]);
+    expect(second.index.modules.map((m) => m.id), ['aaa']);
+    expect(second.lock.entries.keys, ['aaa']);
+  });
+
+  test('a rate limit stops the run at once', () async {
+    publisher.rateLimited = (asset) => asset == 'bbb-2026-09-01.hb';
+
+    final result = await run([offer('aaa'), offer('bbb'), offer('ccc')]);
+
+    expect(
+      publisher.attempts.where((a) => a == 'bbb-2026-09-01.hb'),
+      hasLength(1),
+      reason: 'no retries',
+    );
+    expect(result.report.built, ['aaa']);
+    expect(result.report.failed['bbb'], [contains('rate limit')]);
+    expect(result.report.waiting, ['ccc']);
+    expect(result.lock.entries.keys, ['aaa', 'bbb']);
+    expect(fetcher.calls, [_ebible('aaa'), _ebible('bbb')]);
+    expect(
+      result.report.toMarkdown(),
+      contains('**Stopped: the GitHub API rate limit is exhausted; the rest'),
+    );
+  });
+
+  test('the deadline stops taking new translations', () async {
+    var minute = 0;
+    final translations = [
+      for (final id in ['aaa', 'bbb', 'ccc']) offer(id),
+    ];
+
+    final result = await run(
+      translations,
+      deadline: DateTime.utc(2026, 11, 1, 0, 2),
+      clock: () => DateTime.utc(2026, 11, 1, 0, minute++),
+    );
+
+    expect(result.report.built, ['aaa', 'bbb']);
+    expect(result.report.waiting, ['ccc']);
+    expect(result.report.stopped, 'Stopped at the deadline');
+  });
+
+  test('bad ids and update dates are skipped and keep the old entry', () async {
+    final first = await run([offer('aaa'), offer('bbb')]);
+
+    final second = await run(
+      [
+        offer('aaa'),
+        _translation('bbb', date: '2026-9-1', ot: 3),
+        _translation('c/../d', date: '2026-09-01', ot: 3),
+        _translation('e f', date: '2026-09-01', ot: 3),
+        _translation('', date: '2026-09-01', ot: 3),
+      ],
+      after: first,
+      now: DateTime.utc(2026, 12),
+    );
+
+    expect(second.report.skipped, {
+      'bbb': contains('UpdateDate'),
+      'c/../d': contains('translationId'),
+      'e f': contains('translationId'),
+      '': contains('translationId'),
+    });
+    expect(second.index, first.index);
+    expect(second.lock, first.lock);
+    expect(second.report.withdrawn, isEmpty);
+    expect(second.deletions, isEmpty);
+    expect(fetcher.calls, hasLength(2), reason: 'only the first run fetched');
+    final text = second.report.toMarkdown();
+    expect(text, contains('- Skipped rows: 4\n'));
+    expect(text, contains('c/../d: translationId "c/../d"'));
+    expect(text, contains('(no translationId): '));
+  });
+
+  test('mass withdrawal is refused without the flag', () async {
+    final all = [
+      for (var i = 0; i < 30; i++) offer('t${'$i'.padLeft(2, '0')}'),
+    ];
+    final first = await run(all);
+
+    // Таблица сломалась: остались пять переводов из тридцати.
+    final second = await run(
+      all.take(5).toList(),
+      after: first,
+      now: DateTime.utc(2026, 12),
+    );
+
+    expect(second.index.modules, first.index.modules);
+    expect(second.index.withdrawn, isEmpty);
+    expect(second.lock, first.lock);
+    expect(second.deletions, isEmpty);
+    expect(second.report.withdrawn, isEmpty);
+    expect(second.report.withdrawalRefused, contains('25 modules'));
+    expect(
+      second.report.toMarkdown(),
+      contains(
+        '**Withdrawal refused: 25 modules would leave the catalog, '
+        'more than the limit of $massWithdrawalMinimum',
+      ),
+    );
+
+    // С ключом отзыв идёт.
+    final third = await run(
+      all.take(5).toList(),
+      after: first,
+      now: DateTime.utc(2026, 12),
+      allowMassWithdrawal: true,
+    );
+    expect(third.index.modules, hasLength(5));
+    expect(third.index.withdrawn, hasLength(25));
+    expect(third.deletions, hasLength(50));
+    expect(third.report.withdrawalRefused, isNull);
+
+    // До предела — без ключа.
+    final fourth = await run(
+      all.take(10).toList(),
+      after: first,
+      now: DateTime.utc(2026, 12),
+    );
+    expect(fourth.index.withdrawn, hasLength(20));
+  });
+
+  test(
+    'deletions wait for the next run and are applied at its start',
+    () async {
+      final first = await run([offer('aaa'), offer('bbb')]);
+      final second = await run(
+        [offer('aaa', date: '2026-10-15'), offer('bbb')],
+        after: first,
+        now: DateTime.utc(2026, 12),
+      );
+      expect(second.deletions, [
+        (release: 'sources-2026-11-01', asset: 'aaa-2026-09-01_usfm.zip'),
+        (release: 'build-2026-11-01', asset: 'aaa-2026-09-01.hb'),
+      ]);
+      expect(publisher.deletes, isEmpty);
+
+      // Следующий прогон: удаляет то, на что указатель и копии уже не
+      // ссылаются; файл, на который снова ссылаются, остаётся и из списка
+      // уходит; неудачное удаление ждёт ещё прогона.
+      publisher.brokenDeletes.add('build-2026-11-01/aaa-2026-09-01.hb');
+      final third = await run(
+        [offer('aaa', date: '2026-10-15'), offer('bbb')],
+        after: second,
+        pending: [
+          ...second.deletions,
+          (release: 'build-2026-11-01', asset: 'bbb-2026-09-01.hb'),
+          (release: 'sources-2026-11-01', asset: 'bbb-2026-09-01_usfm.zip'),
+        ],
+        now: DateTime.utc(2027),
+      );
+
+      expect(publisher.deletes, [
+        'sources-2026-11-01/aaa-2026-09-01_usfm.zip',
+        'build-2026-11-01/aaa-2026-09-01.hb',
+      ]);
+      expect(publisher.files('build-2026-11-01'), [
+        'aaa-2026-09-01.hb',
+        'bbb-2026-09-01.hb',
+      ]);
+      expect(publisher.files('sources-2026-11-01'), [
+        'bbb-2026-09-01_usfm.zip',
+      ]);
+      expect(third.deletions, [
+        (release: 'build-2026-11-01', asset: 'aaa-2026-09-01.hb'),
+      ]);
+      expect(third.report.deleted, [
+        'sources-2026-11-01/aaa-2026-09-01_usfm.zip',
+      ]);
+      expect(third.report.deletionProblems, [contains('aaa-2026-09-01.hb')]);
+      final text = third.report.toMarkdown();
+      expect(text, contains('- Release files deleted: 1\n'));
+      expect(text, contains('## Release files not deleted'));
+      expect(text, contains('## Release files to delete next run'));
+    },
+  );
 
   test('failed download keeps previous version', () async {
     final first = await run([offer('aaa')]);
@@ -762,6 +983,13 @@ final class FakePublisher implements Publisher {
   /// Удаления, которые не удаются: `<выпуск>/<файл>`.
   final brokenDeletes = <String>{};
 
+  /// Сколько раз ещё не ответит `assetCount`.
+  int assetCountFailures = 0;
+
+  /// Файлы, на выкладке которых GitHub отвечает, что предел запросов
+  /// исчерпан.
+  bool Function(String asset) rateLimited = (_) => false;
+
   /// Файлы выпуска [release] по алфавиту.
   List<String> files(String release) =>
       (releases[release]?.keys.toList() ?? <String>[])..sort();
@@ -774,6 +1002,9 @@ final class FakePublisher implements Publisher {
   }) async {
     final asset = p.basename(file.path);
     attempts.add(asset);
+    if (rateLimited(asset)) {
+      throw const RateLimitException('HTTP 403: API rate limit exceeded');
+    }
     final left = transient[asset] ?? 0;
     if (left > 0 || broken(asset)) {
       transient[asset] = left - 1;
@@ -803,8 +1034,14 @@ final class FakePublisher implements Publisher {
   }
 
   @override
-  Future<int> assetCount(String release) async =>
-      releases[release]?.length ?? 0;
+  Future<int> assetCount(String release) async {
+    if (assetCountFailures > 0) {
+      assetCountFailures--;
+      throw const PublishException('gh release view: exit 1: timeout');
+    }
+
+    return releases[release]?.length ?? 0;
+  }
 
   @override
   Future<Map<String, int>> assets(String release) async => {
@@ -830,9 +1067,15 @@ final class FakeFetcher implements Fetcher {
   /// Все запросы по порядку.
   final calls = <Uri>[];
 
+  /// Что бросает запрос по адресу вместо ответа.
+  final errors = <Uri, Error>{};
+
   @override
   Future<List<int>> get(Uri uri) async {
     calls.add(uri);
+    if (errors[uri] case final error?) {
+      throw error;
+    }
     final segments = uri.toString().startsWith(_release)
         ? uri.pathSegments.skip(4).toList()
         : const <String>[];

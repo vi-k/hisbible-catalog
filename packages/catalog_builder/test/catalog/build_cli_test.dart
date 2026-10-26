@@ -12,6 +12,10 @@ void main() {
       '--limit': '5',
     });
     expect(parseCliOptions(['--limit', '']), {'--limit': ''});
+    expect(parseCliOptions(['--deadline', '300', '--allow-mass-withdrawal']), {
+      '--deadline': '300',
+      '--allow-mass-withdrawal': '',
+    });
     expect(parseCliOptions(['--bogus', 'x']), isNull);
     expect(parseCliOptions(['--csv', 'a', '--csv', 'b']), isNull);
     expect(parseCliOptions(['--dry-run', '--dry-run']), isNull);
@@ -24,6 +28,10 @@ void main() {
       ['--csv', 'a', '--csv', 'b'],
       ['--limit', 'x'],
       ['--limit', '-1'],
+      ['--deadline', 'x'],
+      ['--deadline', '0'],
+      ['--deadline'],
+      ['--allow-mass-withdrawal', 'x'],
       ['--one', 'a.zip'],
       ['--out', 'a.hb'],
       ['--apply-deletions', 'd.json', '--dry-run'],

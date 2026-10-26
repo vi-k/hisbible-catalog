@@ -220,6 +220,47 @@ void main() {
     );
   });
 
+  test('a rate limit error is a RateLimitException', () async {
+    answers['release view build-2026-11-01'] = ProcessResult(
+      0,
+      1,
+      '',
+      'HTTP 403: API rate limit exceeded for installation ID 1. (https://…)',
+    );
+    answers['release upload build-2026-11-01'] = ProcessResult(
+      0,
+      1,
+      '',
+      'HTTP 403: You have exceeded a secondary rate limit.',
+    );
+    answers['release delete-asset build-2026-11-01'] = ProcessResult(
+      0,
+      1,
+      '',
+      'HTTP 429: Too Many Requests',
+    );
+    final publisher = GhPublisher(run: gh);
+
+    await expectLater(
+      publisher.assetCount('build-2026-11-01'),
+      throwsA(isA<RateLimitException>()),
+    );
+    answers['release view build-2026-11-01'] = notFound();
+    await expectLater(
+      publisher.upload('build-2026-11-01', File('/tmp/x.hb')),
+      throwsA(isA<RateLimitException>()),
+    );
+    await expectLater(
+      publisher.deleteAsset('build-2026-11-01', 'x.hb'),
+      throwsA(isA<RateLimitException>()),
+    );
+    expect(
+      isRateLimit('HTTP 403: Resource not accessible by integration'),
+      isFalse,
+    );
+    expect(isRateLimit('HTTP 401: Bad credentials'), isFalse);
+  });
+
   test('deleting a file that is already gone succeeds', () async {
     answers['release delete-asset build-2026-11-01'] = ProcessResult(
       0,

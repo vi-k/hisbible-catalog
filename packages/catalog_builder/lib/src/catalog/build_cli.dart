@@ -38,7 +38,8 @@ Uri? csvAddress(String csv) {
 const _usage =
     'usage:\n'
     '  dart run catalog_builder:build [--csv <path or url>] [--limit <N>] '
-    '[--dry-run] [--work <dir>]\n'
+    '[--deadline <minutes>] [--allow-mass-withdrawal] [--dry-run] '
+    '[--work <dir>]\n'
     '  dart run catalog_builder:build --one <zip> --csv <csv> '
     '[--out <file>]\n'
     '  dart run catalog_builder:build --apply-deletions <deletions.json>';
@@ -47,19 +48,24 @@ const _defaultCsv = 'https://ebible.org/Scriptures/translations.csv';
 
 final _datedId = RegExp(r'^(.+)-\d{4}-\d{2}-\d{2}$');
 
-/// Разбирает аргументы [args] сборки: ключи со значениями и флаг
-/// `--dry-run` (значение — пустая строка); незнакомый ключ, ключ без
-/// значения или повтор — `null`.
+/// Список удалений, которые ждут следующего прогона: пишется рядом
+/// с указателем и коммитится с ним.
+const pendingDeletionsPath = 'sources/pending-deletions.json';
+
+/// Разбирает аргументы [args] сборки: ключи со значениями и флаги
+/// `--dry-run` и `--allow-mass-withdrawal` (значение — пустая строка);
+/// незнакомый ключ, ключ без значения или повтор — `null`.
 Map<String, String>? parseCliOptions(List<String> args) {
   const valued = {
     '--one',
     '--csv',
     '--out',
     '--limit',
+    '--deadline',
     '--work',
     '--apply-deletions',
   };
-  const flags = {'--dry-run'};
+  const flags = {'--dry-run', '--allow-mass-withdrawal'};
   final options = <String, String>{};
   for (var i = 0; i < args.length; i++) {
     final key = args[i];
@@ -111,10 +117,19 @@ final class _Cli {
     if (limitText.isNotEmpty && (limit == null || limit < 0)) {
       return _badArguments();
     }
+    final deadlineText = options['--deadline'] ?? '';
+    final minutes = deadlineText.isEmpty ? null : int.tryParse(deadlineText);
+    if (deadlineText.isNotEmpty && (minutes == null || minutes <= 0)) {
+      return _badArguments();
+    }
 
     return _catalog(
       csv: options['--csv'] ?? _defaultCsv,
       limit: limit,
+      deadline: minutes == null
+          ? null
+          : DateTime.now().toUtc().add(Duration(minutes: minutes)),
+      allowMassWithdrawal: options.containsKey('--allow-mass-withdrawal'),
       dryRun: options.containsKey('--dry-run'),
       work: options['--work'] ?? p.join('out', 'work'),
     );
@@ -129,6 +144,8 @@ final class _Cli {
   Future<int> _catalog({
     required String csv,
     required int? limit,
+    required DateTime? deadline,
+    required bool allowMassWithdrawal,
     required bool dryRun,
     required String work,
   }) async {
@@ -149,11 +166,14 @@ final class _Cli {
         fonts:
             _readJson('fonts/fonts.lock.json', FontsLock.parse) ??
             FontsLock.empty,
+        pending: _readJson(pendingDeletionsPath, parseDeletions) ?? const [],
         fetcher: fetcher,
         publisher: publisher,
         work: Directory(work)..createSync(recursive: true),
         now: DateTime.now().toUtc(),
         limit: limit,
+        allowMassWithdrawal: allowMassWithdrawal,
+        deadline: deadline,
         keepFiles: dryRun,
       );
       final out = dryRun ? p.join('out', 'dry-run') : 'out';
@@ -165,7 +185,8 @@ final class _Cli {
             : p.join('sources', 'sources.lock.json'): result.lock
             .toJson(),
         p.join(out, 'report.md'): result.report.toMarkdown(),
-        p.join(out, 'deletions.json'): deletionsToJson(result.deletions),
+        dryRun ? p.join(out, 'pending-deletions.json') : pendingDeletionsPath:
+            deletionsToJson(result.deletions),
       };
       for (final MapEntry(:key, :value) in written.entries) {
         File(key)
@@ -178,16 +199,24 @@ final class _Cli {
         'built ${report.built.length}, unchanged ${report.unchanged.length}, '
         'withdrawn ${report.withdrawn.length}, failed ${report.failed.length}, '
         'waiting ${report.waiting.length}, '
-        'to delete ${result.deletions.length}',
+        'skipped ${report.skipped.length}, '
+        'deleted ${report.deleted.length}, '
+        'to delete next run ${result.deletions.length}',
       );
+      for (final line in [?report.stopped, ?report.withdrawalRefused]) {
+        _err.writeln(line);
+      }
       if (publisher is DryRunPublisher) {
+        for (final delete in publisher.deletes) {
+          _out.writeln('would delete $delete');
+        }
         for (final upload in publisher.uploads) {
           _out.writeln('would upload $upload');
         }
       }
 
       return 0;
-    } on Exception catch (e) {
+    } on Object catch (e) {
       _err.writeln('catalog build failed: $e');
 
       return 1;

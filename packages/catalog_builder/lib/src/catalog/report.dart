@@ -9,8 +9,12 @@ final class BuildReport {
     this.failed = const {},
     this.warnings = const {},
     this.waiting = const [],
+    this.skipped = const {},
     this.deletions = const [],
+    this.deleted = const [],
+    this.deletionProblems = const [],
     this.stopped,
+    this.withdrawalRefused,
   });
 
   /// Дата прогона, `YYYY-MM-DD`.
@@ -34,11 +38,23 @@ final class BuildReport {
   /// Id новых и обновлённых переводов, отложенных пределом `limit`.
   final List<String> waiting;
 
-  /// Файлы выпусков к удалению: `<выпуск>/<файл>`.
+  /// Пропущенные строки таблицы переводов: `translationId` → что не так.
+  final Map<String, String> skipped;
+
+  /// Файлы выпусков к удалению следующим прогоном: `<выпуск>/<файл>`.
   final List<String> deletions;
+
+  /// Файлы прошлого прогона, удалённые в начале этого: `<выпуск>/<файл>`.
+  final List<String> deleted;
+
+  /// Почему не удалились файлы прошлого прогона; они ждут следующего.
+  final List<String> deletionProblems;
 
   /// Почему прогон остановился раньше, или `null`, если дошёл до конца.
   final String? stopped;
+
+  /// Почему прогон никого не отозвал, или `null`.
+  final String? withdrawalRefused;
 
   /// Отчёт в Markdown.
   ///
@@ -53,11 +69,18 @@ final class BuildReport {
       ..writeln('- Withdrawn: ${withdrawn.length}')
       ..writeln('- Failed: ${failed.length}')
       ..writeln('- Waiting for the next run: ${waiting.length}')
+      ..writeln('- Skipped rows: ${skipped.length}')
+      ..writeln('- Release files deleted: ${deleted.length}')
       ..writeln('- Release files to delete: ${deletions.length}');
     if (stopped case final stopped?) {
       out
         ..writeln()
         ..writeln('**$stopped; the rest waits for the next run.**');
+    }
+    if (withdrawalRefused case final refused?) {
+      out
+        ..writeln()
+        ..writeln('**$refused.**');
     }
     void list(String title, Iterable<String> items) {
       if (items.isEmpty) {
@@ -92,12 +115,29 @@ final class BuildReport {
 
     list('Built', [for (final id in built) '`$id`']);
     sections('Failed', failed);
+    list('Skipped rows', [
+      for (final id in skipped.keys.toList()..sort())
+        _skippedLine(id, skipped[id]!),
+    ]);
     list('Withdrawn', [for (final id in withdrawn) '`$id`']);
     sections('Warnings', warnings);
-    list('Release files to delete', [for (final file in deletions) '`$file`']);
+    list('Release files deleted', [for (final file in deleted) '`$file`']);
+    list('Release files not deleted', [
+      for (final problem in deletionProblems) _escaped(problem),
+    ]);
+    list('Release files to delete next run', [
+      for (final file in deletions) '`$file`',
+    ]);
 
     return out.toString();
   }
+}
+
+// Строка пропущенной строки таблицы [id] с причиной [reason].
+String _skippedLine(String id, String reason) {
+  final name = id.isEmpty ? '(no translationId)' : _escaped(id);
+
+  return '$name: ${_escaped(reason)}';
 }
 
 // В причинах и предупреждениях бывают `\v`, `|strong=` и подобное: знаки
