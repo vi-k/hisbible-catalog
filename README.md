@@ -53,13 +53,19 @@ to force a rebuild. To rebuild one module:
 
 1. Delete the translation's entry from `sources/sources.lock.json`. Keep its
    entry in `index/index.json`.
-2. Run the build: push the change to `main` and start the `build` workflow, or
-   run `dart run catalog_builder:build` locally. A dry run first shows the
-   files the run would upload.
+2. Run the build. Either push the change to `main` and start the `build`
+   workflow, which commits and pushes `index/` and `sources/` itself and then
+   applies the deletions. Or run `dart run catalog_builder:build` locally,
+   commit and push `index/` and `sources/`, and only then run
+   `dart run catalog_builder:build --apply-deletions out/deletions.json`. A dry
+   run first shows the files the run would upload.
 3. The run downloads the archive from eBible.org again, uploads it to
    `sources-<date>`, writes a new lock entry, and rebuilds the module into
-   `build-<date>`. The old module file goes to `out/deletions.json` and is
-   deleted by `--apply-deletions`.
+   `build-<date>`. If the old module file is in another release, it goes to
+   `out/deletions.json` and is deleted by `--apply-deletions`. If the module
+   was last built the same day, the release and file name are the same: the
+   upload overwrites the file (`--clobber`), the URL stays, and nothing goes to
+   `out/deletions.json`.
 4. The old source copy is not in `out/deletions.json`, because the run no
    longer knows it. If its release and file name differ from the new lock
    entry, delete it by hand, with the `release` and `asset` of the deleted
@@ -68,6 +74,10 @@ to force a rebuild. To rebuild one module:
    ```
    gh release delete-asset <release> <asset> --repo vi-k/hisbible-catalog --yes
    ```
+
+The rebuilt module keeps its `version`, the `UpdateDate`, and the app offers an
+update only when `version` changes. So the new file reaches only new downloads;
+people who installed the module keep the old file.
 
 Do not delete the index entry instead: the module is then rebuilt from the
 saved source copy, but its old file is not listed for deletion and stays in its
