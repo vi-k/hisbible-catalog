@@ -42,8 +42,9 @@ dart run catalog_builder:build --apply-deletions <deletions.json>
 - If `translations.csv` lacks a column the builder reads, or `Redistributable`
   or `downloadable` is neither `True` nor `False`, the run fails before it
   changes anything. A row whose `translationId` is not letters, digits, `_` and
-  `-`, or whose `UpdateDate` is not `YYYY-MM-DD`, is skipped and listed in the
-  report; the module built from it earlier stays as it is.
+  `-`, or whose `UpdateDate` is not a real `YYYY-MM-DD` date (not
+  `2026-02-30`), is skipped and listed in the report; the module built from it
+  earlier stays as it is.
 - A run withdraws at most 20 modules, or 5% of the catalog if that is more. If
   more translations disappear from `translations.csv`, the run withdraws none
   of them, deletes nothing of theirs, and says so in the report. It still
@@ -91,7 +92,11 @@ the bare date.
 Rebuilds come first in the run, before new and updated translations, and count
 toward `--limit`. An id that the run does not take (not in `translations.csv`,
 not redistributable, excluded or skipped) is listed under "Failed" in the
-report.
+report. The ids are not remembered between runs: a rebuild that is left out by
+`--limit`, the deadline or the rate limit, or that fails, must be requested
+again. Such a run writes its files as usual, names the ids in the report, and
+exits with code 3; the `build` workflow commits and pushes `index/` and
+`sources/` and then fails, naming them.
 
 ## License
 

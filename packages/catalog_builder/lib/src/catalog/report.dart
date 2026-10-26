@@ -15,6 +15,7 @@ final class BuildReport {
     this.deletionProblems = const [],
     this.stopped,
     this.withdrawalRefused,
+    this.rebuildMissed = const [],
   });
 
   /// Дата прогона, `YYYY-MM-DD`.
@@ -56,6 +57,17 @@ final class BuildReport {
   /// Почему прогон никого не отозвал, или `null`.
   final String? withdrawalRefused;
 
+  /// Id из `--rebuild`, которые прогон не собрал: не взял, сборка
+  /// не прошла или ждёт следующего прогона.
+  final List<String> rebuildMissed;
+
+  /// Что сказать о [rebuildMissed], или `null`, если пересобраны все.
+  String? get rebuildProblem => rebuildMissed.isEmpty
+      ? null
+      : 'Rebuild not done: ${rebuildMissed.join(', ')}. Ids given to '
+            '--rebuild are not remembered: request them again (in the '
+            'workflow, the rebuild input)';
+
   /// Отчёт в Markdown.
   ///
   /// Переводы без изменений и отложенные даны только числом: их бывает
@@ -77,10 +89,10 @@ final class BuildReport {
         ..writeln()
         ..writeln('**$stopped; the rest waits for the next run.**');
     }
-    if (withdrawalRefused case final refused?) {
+    for (final problem in [?withdrawalRefused, ?rebuildProblem]) {
       out
         ..writeln()
-        ..writeln('**$refused.**');
+        ..writeln('**$problem.**');
     }
     void list(String title, Iterable<String> items) {
       if (items.isEmpty) {

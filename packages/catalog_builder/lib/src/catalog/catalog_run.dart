@@ -85,7 +85,8 @@ final class CatalogRun {
 /// 2. Берутся переводы с `Redistributable` и `downloadable`, кроме
 ///    `exclude` [overrides], по `translationId`. Строка, чей `translationId`
 ///    не подходит под [translationIdPattern] или `UpdateDate` — под
-///    [updateDatePattern], пропускается и попадает в
+///    [updateDatePattern] или не настоящая дата (`2026-02-30`,
+///    [moduleVersionDate]), пропускается и попадает в
 ///    [BuildReport.skipped]; прежние запись и копия такого перевода
 ///    остаются как есть.
 /// 3. Перевод, чья версия в [previous] (её дата, [moduleVersionDate])
@@ -112,12 +113,13 @@ final class CatalogRun {
 ///    [BuildReport.withdrawalRefused] говорит почему.
 ///
 /// Сначала идут id из [rebuild], потом новые и обновлённые, потом те,
-/// чья копия в [lock] уже
-/// того же `UpdateDate`, а сборка в прошлый раз не прошла: вечно
-/// несобираемые не съедают [limit]. [limit] — не больше стольких сборок
-/// за прогон; остальные ждут следующего и названы в
-/// [BuildReport.waiting]. В выпуске не больше [releaseFileLimit] файлов:
-/// дальше `build-<дата>-2`, `-3`…
+/// чья копия в [lock] уже того же `UpdateDate`, а сборка в прошлый раз
+/// не прошла: вечно несобираемые не съедают [limit]. Id из [rebuild],
+/// которые прогон так и не собрал (не взял, сборка не прошла или ждёт
+/// следующего прогона), названы в [BuildReport.rebuildMissed]. [limit] —
+/// не больше стольких сборок за прогон; остальные ждут следующего
+/// и названы в [BuildReport.waiting]. В выпуске не больше
+/// [releaseFileLimit] файлов: дальше `build-<дата>-2`, `-3`…
 ///
 /// Неудачная выкладка повторяется до [uploadRetries] раз с паузой [pause]
 /// 2, 4, 8 секунд. Не вышло — перевод не собран, причина в отчёте,
@@ -350,6 +352,10 @@ Future<CatalogRun> runCatalogBuild({
       deletionProblems: cleanup.problems,
       stopped: stopped,
       withdrawalRefused: withdrawalRefused,
+      rebuildMissed: [
+        for (final id in rebuild.toList()..sort())
+          if (!built.contains(id)) id,
+      ],
     ),
     deletions: List.unmodifiable(deletions),
   );

@@ -19,8 +19,9 @@ import 'package:path/path.dart' as p;
 ///
 /// Режимы и ключи описаны в `bin/build.dart`. Возвращает код выхода:
 /// 0 — готово, 1 — не собрано или не всё удалено,
-/// [withdrawalRefusedExitCode] — прогон записал свои файлы, но отказался
-/// от массового отзыва, 64 — неверные аргументы.
+/// [redRunExitCode] — прогон записал свои файлы, но должен покраснеть
+/// (отказ от массового отзыва, несобранный `--rebuild`), 64 — неверные
+/// аргументы.
 Future<int> runBuildCli(
   List<String> args, {
   StringSink? out,
@@ -38,14 +39,18 @@ Uri? csvAddress(String csv) {
 }
 
 /// Код выхода прогона, который записал указатель, список исходников
-/// и отчёт, но отказался от массового отзыва: сборка `build` коммитит
-/// записанное и только потом падает.
-const int withdrawalRefusedExitCode = 3;
+/// и отчёт, но должен покраснеть: отказался от массового отзыва или
+/// не собрал id из `--rebuild`. Сборка `build` коммитит записанное
+/// и только потом падает с причинами из отчёта.
+const int redRunExitCode = 3;
 
 /// Код выхода прогона каталога, который дошёл до отчёта [report]: 0 или
-/// [withdrawalRefusedExitCode], если прогон отказался от массового отзыва.
+/// [redRunExitCode], если прогон отказался от массового отзыва или
+/// не собрал id из `--rebuild`.
 int catalogExitCode(BuildReport report) =>
-    report.withdrawalRefused == null ? 0 : withdrawalRefusedExitCode;
+    report.withdrawalRefused == null && report.rebuildMissed.isEmpty
+    ? 0
+    : redRunExitCode;
 
 const _usage =
     'usage:\n'
@@ -237,7 +242,11 @@ final class _Cli {
         'deleted ${report.deleted.length}, '
         'to delete next run ${result.deletions.length}',
       );
-      for (final line in [?report.stopped, ?report.withdrawalRefused]) {
+      for (final line in [
+        ?report.stopped,
+        ?report.withdrawalRefused,
+        ?report.rebuildProblem,
+      ]) {
         _err.writeln(line);
       }
       if (publisher is DryRunPublisher) {

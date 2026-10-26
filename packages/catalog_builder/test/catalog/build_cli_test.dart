@@ -42,7 +42,7 @@ void main() {
     expect(parseCliOptions(['--rebuild', 'a b']), isNull);
   });
 
-  test('a refused mass withdrawal has its own exit code', () {
+  test('a refused withdrawal or a missed rebuild makes the run red', () {
     expect(catalogExitCode(const BuildReport(date: '2026-12-01')), 0);
     expect(
       catalogExitCode(
@@ -51,9 +51,15 @@ void main() {
           withdrawalRefused: 'Withdrawal refused: 25 modules',
         ),
       ),
-      withdrawalRefusedExitCode,
+      redRunExitCode,
     );
-    expect(withdrawalRefusedExitCode, isNot(anyOf(0, 1, 64)));
+    expect(
+      catalogExitCode(
+        const BuildReport(date: '2026-12-01', rebuildMissed: ['aaa']),
+      ),
+      redRunExitCode,
+    );
+    expect(redRunExitCode, isNot(anyOf(0, 1, 64)));
   });
 
   test('bad arguments exit with 64 and the usage', () async {

@@ -46,10 +46,10 @@ jobs:
       # в sources/pending-deletions.json, потом собирает и записывает туда
       # файлы, на которые его указатель больше не ссылается.
       #
-      # Код 3: сборка отказалась от массового отзыва, но указатель, список
-      # исходников и отчёт записала, и все модули в них остались. Такой
-      # прогон коммитится как обычно, а падает последний шаг, «Refuse the
-      # mass withdrawal».
+      # Код 3: указатель, список исходников и отчёт записаны, но прогон
+      # должен покраснеть: сборка отказалась от массового отзыва (все
+      # модули остались) или не собрала id из rebuild. Такой прогон
+      # коммитится как обычно, а падает последний шаг, «Fail the run».
       - name: Build the catalog
         id: build
         env:
@@ -69,7 +69,7 @@ jobs:
           status=0
           dart run catalog_builder:build "${args[@]}" || status=$?
           if [ "$status" -eq 3 ]; then
-            echo 'withdrawal_refused=true' >> "$GITHUB_OUTPUT"
+            echo 'red=true' >> "$GITHUB_OUTPUT"
           elif [ "$status" -ne 0 ]; then
             exit "$status"
           fi
@@ -97,9 +97,20 @@ jobs:
           # а тогда отказ и нужен.
           git pull --rebase origin main
           git push origin HEAD:main
-      - name: Refuse the mass withdrawal
-        if: steps.build.outputs.withdrawal_refused == 'true'
+      # Причины — жирные строки отчёта. Шаг идёт и тогда, когда коммит
+      # или пуш не удался.
+      - name: Fail the run
+        if: always() && steps.build.outputs.red == 'true'
         run: |
-          reason=$(grep -m 1 -o 'Withdrawal refused: [^*]*' out/report.md || true)
-          echo "::error title=Mass withdrawal refused::${reason:-Withdrawal refused, see the report.} The index and the lock are committed with all modules kept; the report is in the summary and the artifact. In this workflow the key is the allow_mass_withdrawal input."
+          grep -o -e 'Withdrawal refused: [^*]*' -e 'Rebuild not done: [^*]*' \
+            out/report.md > reasons.txt || true
+          if [ ! -s reasons.txt ]; then
+            echo 'The build asked to fail the run; see the report.' > reasons.txt
+          fi
+          while IFS= read -r reason; do
+            echo "::error title=Catalog build needs attention::$reason"
+          done < reasons.txt
+          echo 'Index and lock are committed unless the commit step failed.'
+          echo 'The report is in the summary and the artifact.'
+          echo 'Workflow inputs: allow_mass_withdrawal, rebuild.'
           exit 1

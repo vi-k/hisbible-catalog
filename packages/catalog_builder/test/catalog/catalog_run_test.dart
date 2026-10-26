@@ -255,6 +255,8 @@ void main() {
     ]);
     expect(second.report.built, ['aaa']);
     expect(second.report.unchanged, ['bbb']);
+    expect(second.report.rebuildMissed, isEmpty);
+    expect(second.report.toMarkdown(), isNot(contains('Rebuild not done')));
 
     // Ещё раз в тот же день — следующая правка, прежняя идёт к удалению.
     final third = await run(
@@ -324,6 +326,41 @@ void main() {
       'ccc': [contains('cannot rebuild ccc')],
       'zzz': [contains('cannot rebuild zzz')],
     });
+    expect(second.report.rebuildMissed, ['ccc', 'zzz']);
+    expect(
+      second.report.toMarkdown(),
+      contains('**Rebuild not done: ccc, zzz. Ids given to --rebuild'),
+    );
+  });
+
+  test('a rebuild that waits or fails is missed', () async {
+    final first = await run([offer('aaa'), offer('bbb')]);
+    publisher.releases['sources-2026-11-01']!['bbb-2026-09-01_usfm.zip'] = [
+      1,
+      2,
+      3,
+    ];
+
+    final second = await run(
+      [offer('aaa'), offer('bbb')],
+      after: first,
+      rebuild: {'aaa', 'bbb'},
+      now: DateTime.utc(2026, 12),
+    );
+    expect(second.report.built, ['aaa']);
+    expect(second.report.failed['bbb'], [contains('sha256')]);
+    expect(second.report.rebuildMissed, ['bbb']);
+
+    final third = await run(
+      [offer('aaa'), offer('bbb')],
+      after: second,
+      rebuild: {'aaa', 'bbb'},
+      limit: 1,
+      now: DateTime.utc(2026, 12),
+    );
+    expect(third.report.built, ['aaa']);
+    expect(third.report.waiting, ['bbb']);
+    expect(third.report.rebuildMissed, ['bbb']);
   });
 
   test('a lost source copy rebuilds with the same version', () async {
