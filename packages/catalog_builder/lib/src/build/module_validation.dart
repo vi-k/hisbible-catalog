@@ -5,8 +5,9 @@ import 'package:hisbible_format/hisbible_format.dart';
 ///
 /// Причины, по которым модуль не годен:
 /// - файл не открывается через [BibleModule.open] или глава не читается;
-/// - главы книги идут не подряд с 1 или в главе нет стиха: отрывок книги,
-///   начатый не с первой главы или с пропуском глав, тоже не годен;
+/// - в главе нет стиха. Отрывок книги — начатый не с первой главы или
+///   с пропуском глав — годен (решение владельца 2026-10-26): потерянный
+///   при разборе текст ловит сверка числа стихов;
 /// - в тексте стиха осталась разметка USFM: `\` перед латинской буквой или
 ///   `|strong=`;
 /// - число стихов Ветхого, Нового Завета или неканонических книг
@@ -43,15 +44,8 @@ List<String> _check(BibleModule bible, EbibleTranslation translation) {
   final leftovers = <String>[];
   var leftoverCount = 0;
   for (final book in bible.books) {
-    final chapters = book.chapters;
-    for (var i = 0; i < chapters.length; i++) {
-      if (chapters[i] != i + 1) {
-        reasons.add('${book.code}: chapter ${i + 1} has no verses');
-        break;
-      }
-    }
     final info = BookCatalog.byNumber(book.number);
-    for (final chapter in chapters) {
+    for (final chapter in book.chapters) {
       final verses = bible.chapter(book.number, chapter);
       if (verses.isEmpty) {
         reasons.add('${book.code} $chapter: no verses');

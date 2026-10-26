@@ -436,15 +436,32 @@ void main() {
     ]);
   });
 
-  test('fails validation on a gap between chapters', () {
-    final path = p.join(dir.path, 'gap.hb');
+  test('a book portion with a gap or a late start passes', () {
+    final path = p.join(dir.path, 'portion.hb');
     writeBibleFixture(
       path,
-      books: [const FixtureBook(10, 'Gen')],
-      verses: {(10, 1, 1): 'One', (10, 3, 1): 'Three'},
+      books: [const FixtureBook(10, 'Gen'), const FixtureBook(230, 'Ps')],
+      verses: {
+        (10, 1, 1): 'One',
+        (10, 3, 1): 'Three',
+        (230, 23, 1): 'The Lord is my shepherd',
+      },
     );
 
-    expect(validateModule(path, _translation(ot: 2)), [contains('GEN')]);
+    expect(validateModule(path, _translation(ot: 3)), isEmpty);
+  });
+
+  test('a book portion that lost verses still fails', () {
+    final path = p.join(dir.path, 'lost.hb');
+    writeBibleFixture(
+      path,
+      books: [const FixtureBook(230, 'Ps')],
+      verses: {(230, 23, 1): 'The Lord is my shepherd'},
+    );
+
+    expect(validateModule(path, _translation(ot: 6)), [
+      contains('Old Testament: 1 verses, OTverses 6'),
+    ]);
   });
 
   test('fails validation on a file that is not a module', () {
