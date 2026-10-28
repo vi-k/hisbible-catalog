@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show HttpDate, HttpException;
 
 import 'package:catalog_builder/src/build/module_build.dart';
 import 'package:http/http.dart' as http;
@@ -9,6 +10,27 @@ abstract interface class Fetcher {
   ///
   /// Файл не получен — исключение, например [FetchException].
   Future<List<int>> get(Uri uri);
+}
+
+/// Файл с заголовком `Last-Modified` ответа.
+final class FetchedFile {
+  /// Создаёт файл из [bytes]; [lastModified] — `Last-Modified` ответа
+  /// (UTC) или `null`, если сервер его не прислал.
+  const FetchedFile(this.bytes, {this.lastModified});
+
+  /// Байты файла.
+  final List<int> bytes;
+
+  /// Когда файл менялся по словам сервера; `null` — заголовка нет.
+  final DateTime? lastModified;
+}
+
+/// [Fetcher], который отдаёт ещё и заголовки ответа.
+abstract interface class HeaderFetcher implements Fetcher {
+  /// Файл по адресу [uri] с его `Last-Modified`.
+  ///
+  /// Файл не получен — исключение, например [FetchException].
+  Future<FetchedFile> getFile(Uri uri);
 }
 
 /// Файл по адресу не получен: ответ сервера не 200.
@@ -27,7 +49,7 @@ final class FetchException implements Exception {
 }
 
 /// [Fetcher] по HTTP.
-final class HttpFetcher implements Fetcher {
+final class HttpFetcher implements HeaderFetcher {
   /// Создаёт загрузчик; [client] — свой клиент HTTP, по умолчанию новый.
   /// Запрос вместе с телом ответа дольше [timeout] —
   /// [TimeoutException].
@@ -48,7 +70,10 @@ final class HttpFetcher implements Fetcher {
       '(+https://github.com/vi-k/hisbible-catalog)';
 
   @override
-  Future<List<int>> get(Uri uri) async {
+  Future<List<int>> get(Uri uri) async => (await getFile(uri)).bytes;
+
+  @override
+  Future<FetchedFile> getFile(Uri uri) async {
     // `get` читает и тело ответа, так что предел покрывает весь файл.
     final response = await _client
         .get(uri, headers: const {'User-Agent': userAgent})
@@ -57,7 +82,18 @@ final class HttpFetcher implements Fetcher {
       throw FetchException(uri, response.statusCode);
     }
 
-    return response.bodyBytes;
+    // Нечитаемая дата — то же, что отсутствующая.
+    final header = response.headers['last-modified'];
+    DateTime? lastModified;
+    if (header != null) {
+      try {
+        lastModified = HttpDate.parse(header).toUtc();
+      } on HttpException {
+        lastModified = null;
+      }
+    }
+
+    return FetchedFile(response.bodyBytes, lastModified: lastModified);
   }
 
   /// Закрывает клиент HTTP.

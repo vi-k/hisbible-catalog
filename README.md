@@ -110,6 +110,24 @@ again. Such a run writes its files as usual, names the ids in the report, and
 exits with code 3; the `build` workflow commits and pushes `index/` and
 `sources/` and then fails, naming them.
 
+## Built-in cross references
+
+The app ships one cross-reference module of its own, built from
+[OpenBible.info](https://www.openbible.info/labs/cross-references/). It is not
+part of the catalog and is not published: run
+`dart run catalog_builder:build --openbible <out.hb>` and take the file. The
+command downloads `https://a.openbible.info/data/cross-references.zip`, reads
+`cross_references.txt` from the archive in memory, drops links with negative
+votes, links to themselves and places outside the English numbering (`eng`),
+and writes a `crossrefs` module, `numbering` `eng`, `license` `CC-BY-4.0`. Its
+`version` is the date of the archive's `Last-Modified` header.
+
+The first run writes the archive's sha256 and `Last-Modified` date to
+`sources/openbible.lock.json`. A later run with another archive stops with an
+error and leaves the lock and the module as they were; check the new data and
+run again with `--accept-new-source` to take it. The same archive keeps the
+version from the lock.
+
 ## License
 
 The code is under the MIT License (see `LICENSE`). Third-party notices are in
@@ -122,3 +140,7 @@ The releases of this repository also republish files of others:
   (OFL-1.1), which each font file carries;
 - the `sources-<date>` pre-releases hold the USFM archives of eBible.org as
   they were downloaded, unchanged, under the terms of each translation.
+
+The built-in cross-reference module (see "Built-in cross references") is made
+from OpenBible.info data under CC BY 4.0; the module carries the attribution in
+its `copyright`.

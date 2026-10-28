@@ -16,6 +16,8 @@ export 'src/catalog/sources_lock.dart';
 export 'src/ebible/license.dart';
 export 'src/ebible/scripts.dart';
 export 'src/ebible/translations_csv.dart';
+export 'src/openbible/openbible_build.dart';
+export 'src/openbible/osis_books.dart';
 export 'src/usfm/usfm_book.dart';
 export 'src/usfm/usfm_parser.dart';
 export 'src/usfm/xt_links.dart';

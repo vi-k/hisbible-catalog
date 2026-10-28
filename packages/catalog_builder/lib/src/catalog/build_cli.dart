@@ -12,6 +12,7 @@ import 'package:catalog_builder/src/catalog/publisher.dart';
 import 'package:catalog_builder/src/catalog/report.dart';
 import 'package:catalog_builder/src/catalog/sources_lock.dart';
 import 'package:catalog_builder/src/ebible/translations_csv.dart';
+import 'package:catalog_builder/src/openbible/openbible_build.dart';
 import 'package:catalog_builder/src/text_helpers.dart';
 import 'package:hisbible_format/hisbible_format.dart';
 import 'package:path/path.dart' as p;
@@ -62,7 +63,9 @@ const _usage =
     '[--allow-mass-withdrawal] [--dry-run] [--work <dir>]\n'
     '  dart run catalog_builder:build --one <zip> --csv <csv> '
     '[--out <file>]\n'
-    '  dart run catalog_builder:build --apply-deletions <deletions.json>';
+    '  dart run catalog_builder:build --apply-deletions <deletions.json>\n'
+    '  dart run catalog_builder:build --openbible <out.hb> '
+    '[--accept-new-source]';
 
 const _defaultCsv = 'https://ebible.org/Scriptures/translations.csv';
 
@@ -77,7 +80,7 @@ const pendingDeletionsPath = 'sources/pending-deletions.json';
 typedef CliOptions = ({Map<String, String> options, List<String> rebuild});
 
 /// Разбирает аргументы [args] сборки: ключи со значениями, флаги
-/// `--dry-run` и `--allow-mass-withdrawal` (значение —
+/// `--dry-run`, `--allow-mass-withdrawal` и `--accept-new-source` (значение —
 /// пустая строка) и повторяемый `--rebuild <id>`; незнакомый ключ, ключ
 /// без значения, повтор другого ключа, id `--rebuild` не по
 /// [translationIdPattern] или `--rebuild-before` не датой `YYYY-MM-DD` —
@@ -92,8 +95,9 @@ CliOptions? parseCliOptions(List<String> args) {
     '--work',
     '--rebuild-before',
     '--apply-deletions',
+    '--openbible',
   };
-  const flags = {'--dry-run', '--allow-mass-withdrawal'};
+  const flags = {'--dry-run', '--allow-mass-withdrawal', '--accept-new-source'};
   final options = <String, String>{};
   final rebuild = <String>[];
   for (var i = 0; i < args.length; i++) {
@@ -141,6 +145,19 @@ final class _Cli {
     if (rebuild.isNotEmpty &&
         (options.containsKey('--one') ||
             options.containsKey('--apply-deletions'))) {
+      return _badArguments();
+    }
+    final openBible = options['--openbible'];
+    if (openBible != null) {
+      return rebuild.isEmpty &&
+              options.keys.every(
+                (key) =>
+                    const {'--openbible', '--accept-new-source'}.contains(key),
+              )
+          ? _openBible(openBible, options.containsKey('--accept-new-source'))
+          : _badArguments();
+    }
+    if (options.containsKey('--accept-new-source')) {
       return _badArguments();
     }
     if (options.containsKey('--one')) {
@@ -193,6 +210,22 @@ final class _Cli {
       dryRun: options.containsKey('--dry-run'),
       work: options['--work'] ?? p.join('out', 'work'),
     );
+  }
+
+  // Встроенный модуль ссылок OpenBible.info в [outPath].
+  Future<int> _openBible(String outPath, bool acceptNewSource) async {
+    final fetcher = HttpFetcher();
+    try {
+      return await runOpenBible(
+        outPath,
+        fetcher: fetcher,
+        acceptNewSource: acceptNewSource,
+        out: _out,
+        err: _err,
+      );
+    } finally {
+      fetcher.close();
+    }
   }
 
   int _badArguments() {

@@ -107,6 +107,9 @@ void main() {
       ['--rebuild-before', 'tomorrow'],
       ['--one', 'a.zip', '--csv', 'a.csv', '--rebuild-before', '2026-10-29'],
       ['--apply-deletions', 'd.json', '--rebuild-before', '2026-10-29'],
+      ['--accept-new-source'],
+      ['--openbible', 'o.hb', '--dry-run'],
+      ['--openbible', 'o.hb', '--rebuild', 'aaa'],
     ]) {
       final err = StringBuffer();
 

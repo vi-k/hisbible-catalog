@@ -44,6 +44,14 @@
 // Без `--out` модуль `<translationId>-<UpdateDate>.hb` пишется рядом
 // с архивом.
 //
+// Встроенный модуль перекрёстных ссылок OpenBible.info:
+//   dart run catalog_builder:build --openbible <out.hb> [--accept-new-source]
+// Качает https://a.openbible.info/data/cross-references.zip, сверяет его
+// sha256 с `sources/openbible.lock.json` (первый прогон пишет файл; другой
+// архив — ошибка, принять его — `--accept-new-source`), берёт из архива
+// `cross_references.txt` и пишет модуль ссылок в `<out.hb>`. Версия модуля —
+// дата `Last-Modified` архива. Ничего не выкладывает.
+//
 // Код выхода: 0 — готово, 1 — не собрано или не всё удалено, 3 — файлы
 // прогона записаны, но массовый отзыв отклонён или `--rebuild`
 // не собран, 64 — неверные аргументы.
