@@ -1,11 +1,13 @@
 import 'package:hisbible_format/src/markup/markup_node.dart';
 import 'package:hisbible_format/src/markup/markup_writer.dart';
+import 'package:hisbible_format/src/refs/ref_range.dart';
 
 /// Разбирает разметку модуля в дерево узлов.
 ///
 /// Читатель терпим: незнакомый тег выбрасывается, текст остаётся;
 /// незакрытый тег закрывается в конце, лишний закрывающий пропускается;
-/// `<f>` без числового `id` выбрасывается; `i` вне 0..4 прижимается к краю.
+/// `<f>` без числового `id` выбрасывается; `<x>` без годного `r` оставляет
+/// только свой текст; `i` вне 0..4 прижимается к краю.
 /// Любой текст разбирается без ошибок.
 List<MarkupNode> parseMarkup(String text) => _Parser(text).parse();
 
@@ -27,9 +29,18 @@ final _styleByTag = {
 
 /// Открытый тег со своими детьми.
 class _Frame {
-  _Frame(this.tag, {this.style, this.strong = const [], this.morph});
+  _Frame(
+    this.tag, {
+    this.style,
+    this.strong = const [],
+    this.morph,
+    this.target,
+  });
 
   final String tag;
+
+  /// Значение `r` у `<x>`.
+  final String? target;
   final MarkupStyle? style;
   final List<String> strong;
   final String? morph;
@@ -120,6 +131,8 @@ class _Parser {
           ),
           selfClosing,
         );
+      case 'x':
+        _open(_Frame(name, target: attributes['r']), selfClosing);
       case final tag when _styleByTag.containsKey(tag):
         _open(_Frame(tag, style: _styleByTag[tag]), selfClosing);
       // Неизвестный тег: сам тег пропадает, текст остаётся.
@@ -151,7 +164,15 @@ class _Parser {
       return;
     }
     final style = frame.style;
-    if (style != null) {
+    if (frame.tag == 'x') {
+      // Без годного `r` тег пропадает, дети встают на его место.
+      final range = RefRange.parse(frame.target ?? '');
+      if (range == null) {
+        frame.children.forEach(_add);
+      } else {
+        _add(CrossrefLink(range, frame.children));
+      }
+    } else if (style != null) {
       _add(StyledSpan(style, frame.children));
     } else {
       _add(

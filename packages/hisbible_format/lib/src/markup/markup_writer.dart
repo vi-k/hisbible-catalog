@@ -42,6 +42,14 @@ void _write(List<MarkupNode> nodes, StringBuffer out) {
         out.write('>');
         _write(children, out);
         out.write('</w>');
+      case CrossrefLink(:final target, :final children):
+        if (target == null) {
+          _write(children, out);
+        } else {
+          out.write('<x r="${_escapeAttribute(target.encode())}">');
+          _write(children, out);
+          out.write('</x>');
+        }
       case FootnoteRef(:final id, :final caller):
         out.write('<f id="$id" c="${_escapeAttribute(caller)}"/>');
       case LineBreak(:final indent):

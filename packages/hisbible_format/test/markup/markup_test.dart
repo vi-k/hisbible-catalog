@@ -107,4 +107,26 @@ void main() {
     expect(plainText(parseMarkup('a<l/><l/>b')), 'a b');
     expect(plainText(const []), '');
   });
+
+  test('x tag reads and writes back', () {
+    const text = 'См. <x r="MAT.1.1">Мф 1:1</x>.';
+    final nodes = parseMarkup(text);
+    expect(
+      nodes[1],
+      const CrossrefLink(RefRange(VerseRef(470, 1, 1)), [TextRun('Мф 1:1')]),
+    );
+    expect(writeMarkup(nodes), text);
+    expect(plainText(nodes), 'См. Мф 1:1.');
+  });
+
+  test('x without a good r keeps only its text', () {
+    expect(parseMarkup('<x r="bad">Мф</x>'), [const TextRun('Мф')]);
+    expect(parseMarkup('<x>Мф</x>'), [const TextRun('Мф')]);
+    expect(
+      writeMarkup([
+        const CrossrefLink(null, [TextRun('Мф')]),
+      ]),
+      'Мф',
+    );
+  });
 }

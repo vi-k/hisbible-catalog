@@ -27,6 +27,7 @@ export 'src/module/schema.dart'
         maxVerseNumber;
 export 'src/module_type.dart';
 export 'src/problems.dart';
+export 'src/refs/ref_range.dart';
 export 'src/refs/verse_ref.dart';
 export 'src/versification/book_schemes.dart';
 export 'src/versification/versification.dart';

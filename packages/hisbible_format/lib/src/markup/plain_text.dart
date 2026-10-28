@@ -25,7 +25,9 @@ String plainText(List<MarkupNode> nodes) {
           pendingBreak = false;
           out.write(text);
           last = text[text.length - 1];
-        case StyledSpan(:final children) || TaggedWord(:final children):
+        case StyledSpan(:final children) ||
+            TaggedWord(:final children) ||
+            CrossrefLink(:final children):
           write(children);
         case LineBreak() || ParagraphBreak():
           pendingBreak = true;

@@ -489,7 +489,9 @@ void _collectNotes(List<MarkupNode> nodes, Set<int> ids) {
     switch (node) {
       case FootnoteRef(:final id):
         ids.add(id);
-      case StyledSpan(:final children) || TaggedWord(:final children):
+      case StyledSpan(:final children) ||
+          TaggedWord(:final children) ||
+          CrossrefLink(:final children):
         _collectNotes(children, ids);
       case TextRun() || LineBreak() || ParagraphBreak():
         break;
@@ -512,6 +514,10 @@ List<MarkupNode> _shiftNotes(List<MarkupNode> nodes, int offset) {
         ),
         StyledSpan(:final style, :final children) => StyledSpan(
           style,
+          _shiftNotes(children, offset),
+        ),
+        CrossrefLink(:final target, :final children) => CrossrefLink(
+          target,
           _shiftNotes(children, offset),
         ),
         TaggedWord(:final children, :final strong, :final morph) => TaggedWord(

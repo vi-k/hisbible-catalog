@@ -2,6 +2,8 @@
 // живёт в package:meta, а его нет в списке пакетов проекта.
 // ignore_for_file: avoid_equals_and_hash_code_on_mutable_classes
 
+import 'package:hisbible_format/src/refs/ref_range.dart';
+
 /// Узел разобранной разметки стиха.
 ///
 /// Узлы равны по содержимому: так их удобно сравнивать в тестах.
@@ -106,6 +108,32 @@ final class TaggedWord extends MarkupNode {
 
   @override
   String toString() => 'TaggedWord($children, $strong, $morph)';
+}
+
+/// Ссылка на место в Писании (`<x r>`); внутри — видимый текст ссылки.
+final class CrossrefLink extends MarkupNode {
+  /// Создаёт ссылку на [target] с содержимым [children].
+  ///
+  /// Без места ([target] равен `null`) в файл записывается один текст.
+  const CrossrefLink(this.target, this.children);
+
+  /// Куда ведёт ссылка, в нумерации модуля; `null` — места нет.
+  final RefRange? target;
+
+  /// Видимый текст ссылки по порядку.
+  final List<MarkupNode> children;
+
+  @override
+  bool operator ==(Object other) =>
+      other is CrossrefLink &&
+      other.target == target &&
+      _sameNodes(other.children, children);
+
+  @override
+  int get hashCode => Object.hash(target, Object.hashAll(children));
+
+  @override
+  String toString() => 'CrossrefLink($target, $children)';
 }
 
 /// Знак сноски; текст сноски лежит в модуле отдельно.

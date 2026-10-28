@@ -208,12 +208,13 @@ tags. Everything outside tags is text as is; whitespace is significant.
 | `<h>…</h>` | heading inside the text |
 | `<w s="H7225 H853" m="HNcfsa">…</w>` | a word with Strong numbers (`s`, space separated) and morphology (`m`); both attributes are optional |
 | `<f id="12" c="a"/>` | footnote reference: `id` of a `footnotes` row, `c` the mark |
+| `<x r="MAT.1.1">…</x>` | link to a place, `r` in the form of `ref:` without the prefix, in the numbering of this module |
 
 Entities are `&amp;`, `&lt;`, `&gt;`, and `&quot;`. Style tags may nest.
 
 Readers are tolerant: an unknown tag is dropped and its text kept; an unclosed
 tag is closed at the end; an extra closing tag is skipped; `<f>` without a
-numeric `id` is dropped; an indent outside 0..4 is clamped. A reader that does
+numeric `id` is dropped; `<x>` without a readable `r` keeps its text; an indent outside 0..4 is clamped. A reader that does
 not use Strong numbers shows a `<w>` word as its text.
 
 ## Links in commentaries

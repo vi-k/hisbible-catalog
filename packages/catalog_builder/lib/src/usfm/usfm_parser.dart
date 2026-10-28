@@ -470,6 +470,10 @@ List<MarkupNode> _renumber(
         style,
         _renumber(children, refs),
       ),
+      CrossrefLink(:final target, :final children) => CrossrefLink(
+        target,
+        _renumber(children, refs),
+      ),
       TaggedWord(:final children, :final strong, :final morph) => TaggedWord(
         _renumber(children, refs),
         strong: strong,
@@ -505,6 +509,16 @@ List<MarkupNode> _renumber(
           out.removeAt(i);
         } else {
           out[i] = StyledSpan(style, inner.nodes);
+        }
+        if (inner.done) {
+          return (nodes: out, done: true);
+        }
+      case CrossrefLink(:final target, :final children):
+        final inner = _trimEnd(children);
+        if (inner.nodes.isEmpty) {
+          out.removeAt(i);
+        } else {
+          out[i] = CrossrefLink(target, inner.nodes);
         }
         if (inner.done) {
           return (nodes: out, done: true);
