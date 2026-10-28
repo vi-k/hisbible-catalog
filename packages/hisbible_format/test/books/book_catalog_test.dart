@@ -11,7 +11,31 @@ void main() {
     expect(BookCatalog.byNumber(810), isNull);
     expect(BookCatalog.bySilCode('2ES')!.number, 468);
     expect(BookCatalog.bySilCode('1ES')!.number, 165);
-    expect(BookCatalog.byNumber(230)!.color, 0x66ff99);
+  });
+
+  test('a color per group of books; the Gospels are red', () {
+    int color(int number) => BookCatalog.byNumber(number)!.color;
+    // Группа — один цвет: Быт и Втор, Нав и 3Езд, Иов и Сир, Ис и Дан,
+    // Ос и Мал, Мф и Ин, Рим и Евр, Иак и Иуд.
+    for (final (a, b) in [
+      (10, 50),
+      (60, 468),
+      (220, 280),
+      (290, 340),
+      (350, 460),
+      (470, 500),
+      (520, 650),
+      (660, 720),
+    ]) {
+      expect(color(a), color(b), reason: '$a и $b');
+    }
+    expect(color(470), 0xff6b6b);
+    final groups = {
+      for (final number in [10, 60, 220, 290, 350, 470, 510, 520, 660, 730])
+        color(number),
+    };
+    expect(groups, hasLength(10));
+    expect(color(780), color(520), reason: 'Лаод — с посланиями Павла');
   });
 
   test('catalog numbers and SIL codes are unique', () {
