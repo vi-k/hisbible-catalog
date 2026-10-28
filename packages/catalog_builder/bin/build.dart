@@ -2,8 +2,8 @@
 //
 // Прогон каталога:
 //   dart run catalog_builder:build [--csv <путь или адрес>] [--limit <N>]
-//       [--deadline <минуты>] [--rebuild <id>]... [--allow-mass-withdrawal]
-//       [--dry-run] [--work <каталог>]
+//       [--deadline <минуты>] [--rebuild <id>]... [--rebuild-all]
+//       [--allow-mass-withdrawal] [--dry-run] [--work <каталог>]
 // Таблица переводов по умолчанию —
 // https://ebible.org/Scriptures/translations.csv. Читает `index/index.json`,
 // `sources/sources.lock.json`, `sources/pending-deletions.json`,
@@ -19,7 +19,8 @@
 // `--rebuild <id>` (можно повторять) — пересобрать модуль перевода, даже
 // если его `UpdateDate` не изменился, и выпустить следующей правкой
 // версии: `<дата>.1`, `<дата>.2`…; исходник — своя копия из
-// `sources/sources.lock.json`. `--allow-mass-withdrawal` — отозвать
+// `sources/sources.lock.json`. `--rebuild-all` — то же для всех взятых
+// переводов. `--allow-mass-withdrawal` — отозвать
 // модули, даже если их больше предела массового отзыва. Прогон, который
 // отказался от отзыва или не собрал id из `--rebuild`, пишет свои файлы
 // как обычно и выходит с кодом 3. `--dry-run` ничего не выкладывает

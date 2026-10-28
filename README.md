@@ -19,7 +19,7 @@ files, and writes `index/index.json` and `sources/sources.lock.json`. The
 Run the commands from the repository root after `dart pub get`:
 
 ```
-dart run catalog_builder:build [--csv <path or url>] [--limit <N>] [--deadline <minutes>] [--rebuild <id>]... [--allow-mass-withdrawal] [--dry-run] [--work <dir>]
+dart run catalog_builder:build [--csv <path or url>] [--limit <N>] [--deadline <minutes>] [--rebuild <id>]... [--rebuild-all] [--allow-mass-withdrawal] [--dry-run] [--work <dir>]
 dart run catalog_builder:build --one <zip> --csv <csv> [--out <file>]
 dart run catalog_builder:build --apply-deletions <deletions.json>
 ```
@@ -77,7 +77,12 @@ A module is rebuilt by itself only when its translation gets a new `UpdateDate`
 on eBible.org. To rebuild a module whose `UpdateDate` is the same, for example
 after a change to `overrides.json` or to the builder, pass its translation id
 to `--rebuild`; repeat the key for several modules. In the `build` workflow,
-put the ids in the `rebuild` input, separated by spaces or commas.
+put the ids in the `rebuild` input, separated by spaces or commas. To rebuild
+every module the run takes, for example after a change to how the builder
+writes modules, pass `--rebuild-all`; in the workflow, tick `rebuild_all`. Each
+module then goes out as its next revision, as with `--rebuild`, so the whole
+catalog is offered to the app as updates, and a run with a `--limit` or a
+deadline will not reach all of them.
 
 A rebuilt module is published as the next revision of its version: `2025-03-04`
 becomes `2025-03-04.1`, then `2025-03-04.2` (see "Versions" in `FORMAT.md`).

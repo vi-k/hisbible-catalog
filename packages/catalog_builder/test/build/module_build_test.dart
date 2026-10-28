@@ -271,6 +271,44 @@ void main() {
     ]);
   });
 
+  test('xt places become links to the books of the module', () {
+    final outcome = build(
+      _translation(ot: 56, nt: 112),
+      zip({
+        'GEN.usfm': _usfm(
+          'GEN',
+          [31, 25],
+          fields: '\\toc3 Gen\n',
+          texts: {
+            (1, 1):
+                r'In\x - \xo 1:1 \xt Jn 3:16; Gen 1:5; Jn 3:99; Rev 1:1\xt*\x*',
+            (1, 2): r'Two\x - \xo 1:2 \xt see|link-href="JHN 1:1"\xt*\x*',
+            (1, 3): r'Three\x - \xo 1:3 \xt Gen 1:1-2:4\xt*\x*',
+          },
+        ),
+        'JHN.usfm': _usfm('JHN', [51, 25, 36], fields: '\\toc3 Jn\n'),
+      }),
+    );
+
+    final module = built(outcome);
+    expect((module.xtLinked, module.xtByHref, module.xtUnresolved), (3, 1, 0));
+    final bible = BibleModule.open(out());
+    addTearDown(bible.close);
+    expect(
+      [for (final f in bible.footnotes(10, 1)) f.text],
+      [
+        [
+          '<x r="JHN.3.16">Jn 3:16</x>',
+          '<x r="GEN.1.5">Gen 1:5</x>',
+          'Jn 3:99',
+          'Rev 1:1',
+        ].join('; '),
+        '<x r="JHN.1.1">see</x>',
+        '<x r="GEN.1.1-GEN.2.4">Gen 1:1-2:4</x>',
+      ],
+    );
+  });
+
   test('a repeated verse keeps the first copy', () {
     final outcome = build(
       _translation(ot: 2),

@@ -42,6 +42,15 @@ void main() {
     expect(parseCliOptions(['--rebuild', 'a b']), isNull);
   });
 
+  test('--rebuild-all is a flag', () {
+    expect(parseCliOptions(['--rebuild-all', '--dry-run'])?.options, {
+      '--rebuild-all': '',
+      '--dry-run': '',
+    });
+    expect(parseCliOptions(['--rebuild-all', '--rebuild-all']), isNull);
+    expect(parseCliOptions(['--rebuild-all', 'x']), isNull);
+  });
+
   test('a refused withdrawal or a missed rebuild makes the run red', () {
     expect(catalogExitCode(const BuildReport(date: '2026-12-01')), 0);
     expect(
@@ -78,6 +87,8 @@ void main() {
       ['--rebuild', 'a/b'],
       ['--one', 'a.zip', '--csv', 'a.csv', '--rebuild', 'aaa'],
       ['--apply-deletions', 'd.json', '--rebuild', 'aaa'],
+      ['--one', 'a.zip', '--csv', 'a.csv', '--rebuild-all'],
+      ['--apply-deletions', 'd.json', '--rebuild-all'],
     ]) {
       final err = StringBuffer();
 

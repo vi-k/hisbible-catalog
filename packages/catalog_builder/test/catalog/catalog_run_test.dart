@@ -32,6 +32,7 @@ void main() {
     List<ReleaseAsset>? pending,
     int? limit,
     Set<String> rebuild = const {},
+    bool rebuildAll = false,
     bool allowMassWithdrawal = false,
     DateTime? deadline,
     DateTime Function()? clock,
@@ -50,6 +51,7 @@ void main() {
     fonts: fonts,
     limit: limit,
     rebuild: rebuild,
+    rebuildAll: rebuildAll,
     allowMassWithdrawal: allowMassWithdrawal,
     deadline: deadline,
     clock: clock ?? () => DateTime.utc(2026, 11),
@@ -292,6 +294,60 @@ void main() {
     expect(
       fifth.index.modules.first.url,
       '$_release/build-2027-02-01/aaa-2026-12-10.hb',
+    );
+  });
+
+  test('a rebuild-all key rebuilds every taken translation', () async {
+    final first = await run([offer('aaa'), offer('bbb'), offer('ccc')]);
+
+    final second = await run(
+      [offer('aaa'), offer('bbb')],
+      after: first,
+      rebuildAll: true,
+      now: DateTime.utc(2026, 12),
+    );
+
+    expect(second.report.built, ['aaa', 'bbb']);
+    expect(second.report.rebuildMissed, isEmpty);
+    expect(
+      [for (final m in second.index.modules) (m.id, m.version)],
+      [('aaa', '2026-09-01.1'), ('bbb', '2026-09-01.1')],
+    );
+    expect(second.report.withdrawn, ['ccc'], reason: 'not taken, not rebuilt');
+
+    // Ключ идёт вместе с `--rebuild`, без повторов.
+    final third = await run(
+      [offer('aaa'), offer('bbb')],
+      after: second,
+      rebuild: {'aaa'},
+      rebuildAll: true,
+      now: DateTime.utc(2026, 12),
+    );
+    expect(third.report.built, ['aaa', 'bbb']);
+    expect(third.index.modules.first.version, '2026-09-01.2');
+  });
+
+  test('the report counts cross reference links of built modules', () async {
+    final result = await run([offer('aaa')]);
+
+    expect(
+      result.report.toMarkdown(),
+      contains('- Cross reference links: 0 (0 by link-href), unresolved 0\n'),
+    );
+    const report = BuildReport(
+      date: '2026-12-01',
+      built: ['aaa'],
+      xtLinked: 90,
+      xtByHref: 40,
+      xtUnresolved: 10,
+    );
+    expect(
+      report.toMarkdown(),
+      contains('- Cross reference links: 90 (40 by link-href), unresolved 10'),
+    );
+    expect(
+      const BuildReport(date: '2026-12-01').toMarkdown(),
+      isNot(contains('Cross reference')),
     );
   });
 

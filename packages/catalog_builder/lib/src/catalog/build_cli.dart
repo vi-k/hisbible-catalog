@@ -55,8 +55,8 @@ int catalogExitCode(BuildReport report) =>
 const _usage =
     'usage:\n'
     '  dart run catalog_builder:build [--csv <path or url>] [--limit <N>] '
-    '[--deadline <minutes>] [--rebuild <id>]... [--allow-mass-withdrawal] '
-    '[--dry-run] [--work <dir>]\n'
+    '[--deadline <minutes>] [--rebuild <id>]... [--rebuild-all] '
+    '[--allow-mass-withdrawal] [--dry-run] [--work <dir>]\n'
     '  dart run catalog_builder:build --one <zip> --csv <csv> '
     '[--out <file>]\n'
     '  dart run catalog_builder:build --apply-deletions <deletions.json>';
@@ -74,10 +74,10 @@ const pendingDeletionsPath = 'sources/pending-deletions.json';
 typedef CliOptions = ({Map<String, String> options, List<String> rebuild});
 
 /// Разбирает аргументы [args] сборки: ключи со значениями, флаги
-/// `--dry-run` и `--allow-mass-withdrawal` (значение — пустая строка)
-/// и повторяемый `--rebuild <id>`; незнакомый ключ, ключ без значения,
-/// повтор другого ключа или id `--rebuild` не по [translationIdPattern] —
-/// `null`.
+/// `--dry-run`, `--rebuild-all` и `--allow-mass-withdrawal` (значение —
+/// пустая строка) и повторяемый `--rebuild <id>`; незнакомый ключ, ключ
+/// без значения, повтор другого ключа или id `--rebuild` не по
+/// [translationIdPattern] — `null`.
 CliOptions? parseCliOptions(List<String> args) {
   const valued = {
     '--one',
@@ -88,7 +88,7 @@ CliOptions? parseCliOptions(List<String> args) {
     '--work',
     '--apply-deletions',
   };
-  const flags = {'--dry-run', '--allow-mass-withdrawal'};
+  const flags = {'--dry-run', '--rebuild-all', '--allow-mass-withdrawal'};
   final options = <String, String>{};
   final rebuild = <String>[];
   for (var i = 0; i < args.length; i++) {
@@ -166,6 +166,7 @@ final class _Cli {
           ? null
           : DateTime.now().toUtc().add(Duration(minutes: minutes)),
       rebuild: rebuild.toSet(),
+      rebuildAll: options.containsKey('--rebuild-all'),
       allowMassWithdrawal: options.containsKey('--allow-mass-withdrawal'),
       dryRun: options.containsKey('--dry-run'),
       work: options['--work'] ?? p.join('out', 'work'),
@@ -183,6 +184,7 @@ final class _Cli {
     required int? limit,
     required DateTime? deadline,
     required Set<String> rebuild,
+    required bool rebuildAll,
     required bool allowMassWithdrawal,
     required bool dryRun,
     required String work,
@@ -211,6 +213,7 @@ final class _Cli {
         now: DateTime.now().toUtc(),
         limit: limit,
         rebuild: rebuild,
+        rebuildAll: rebuildAll,
         allowMassWithdrawal: allowMassWithdrawal,
         deadline: deadline,
         keepFiles: dryRun,
@@ -350,6 +353,11 @@ final class _Cli {
           ..writeln('size $size')
           ..writeln('sha256 $sha256')
           ..writeln('books OT ${books.ot}, NT ${books.nt}, DC ${books.dc}')
+          ..writeln(
+            'cross reference links ${outcome.xtLinked} '
+            '(${outcome.xtByHref} by link-href), '
+            'unresolved ${outcome.xtUnresolved}',
+          )
           ..writeln('warnings ${outcome.warnings.length}');
         for (final warning in outcome.warnings) {
           _out.writeln('  $warning');

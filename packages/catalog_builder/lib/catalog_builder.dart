@@ -18,3 +18,4 @@ export 'src/ebible/scripts.dart';
 export 'src/ebible/translations_csv.dart';
 export 'src/usfm/usfm_book.dart';
 export 'src/usfm/usfm_parser.dart';
+export 'src/usfm/xt_links.dart';

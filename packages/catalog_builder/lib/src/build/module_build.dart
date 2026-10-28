@@ -10,11 +10,12 @@ import 'package:catalog_builder/src/ebible/translations_csv.dart';
 import 'package:catalog_builder/src/text_helpers.dart';
 import 'package:catalog_builder/src/usfm/usfm_book.dart';
 import 'package:catalog_builder/src/usfm/usfm_parser.dart';
+import 'package:catalog_builder/src/usfm/xt_links.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:hisbible_format/hisbible_format.dart';
 
 /// Версия сборки в ключе `generator`; равна версии пакета в `pubspec.yaml`.
-const builderVersion = '0.1.0';
+const builderVersion = '0.2.0';
 
 /// Итог сборки одного модуля.
 sealed class BuildOutcome {
@@ -31,6 +32,9 @@ final class Built extends BuildOutcome {
     required this.sha256,
     required this.books,
     required this.warnings,
+    this.xtLinked = 0,
+    this.xtByHref = 0,
+    this.xtUnresolved = 0,
   });
 
   /// Описание модуля, записанное в файл.
@@ -51,6 +55,15 @@ final class Built extends BuildOutcome {
   /// Что сборка пропустила или выбросила: книги вне справочника,
   /// выброшенные куски текста, незнакомые маркеры.
   final List<String> warnings;
+
+  /// Сколько `\xt` стали ссылками `<x r>`, в том числе по `link-href`.
+  final int xtLinked;
+
+  /// Сколько из них — по `link-href`.
+  final int xtByHref;
+
+  /// Сколько `\xt` остались текстом: места из них не разобрались.
+  final int xtUnresolved;
 }
 
 /// Модуль не собран; файла модуля нет.
@@ -134,9 +147,10 @@ BuildOutcome buildModule(
 
   final partPath = '$outPath.part';
   final part = File(partPath);
+  final XtStats xt;
   try {
     part.parent.createSync(recursive: true);
-    _write(
+    xt = _write(
       partPath,
       meta,
       books,
@@ -172,6 +186,9 @@ BuildOutcome buildModule(
     sha256: crypto.sha256.convert(bytes).toString(),
     books: _bookCounts(books),
     warnings: warnings,
+    xtLinked: xt.linked,
+    xtByHref: xt.byHref,
+    xtUnresolved: xt.unresolved,
   );
 }
 
@@ -302,8 +319,9 @@ String _shortName(_Book book, String language) {
 }
 
 // Пишет модуль [path]; повторные стихи и стихи с номерами вне границ
-// формата пропускаются и попадают в [warnings].
-void _write(
+// формата пропускаются и попадают в [warnings]. Возвращает счётчики
+// ссылок из `\xt`.
+XtStats _write(
   String path,
   ModuleMeta meta,
   List<_Book> books,
@@ -323,6 +341,36 @@ void _write(
         skipped[book.number]!.outOfRange,
       ),
   }, russianFlag: russian);
+  final names = RefBooks.of([
+    for (final book in books)
+      (
+        number: book.number,
+        shortName: _shortName(book, language),
+        longName: _longName(book),
+        toc2: book.usfm.toc2,
+        toc3: book.usfm.toc3,
+      ),
+  ]);
+  // Последние стихи глав по схеме каждой книги модуля.
+  final lastVerses = {
+    for (final book in books)
+      book.number: Versification.standard.lastVerses(
+        schemes.of(book.number),
+        book.number,
+      ),
+  };
+  bool exists(RefRange place) {
+    for (final ref in [place.start, ?place.end]) {
+      final last = lastVerses[ref.book]?[ref.chapter];
+      if (last == null || ref.verse > last) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  final xt = XtStats();
   final writer = ModuleWriter.create(path, meta);
   try {
     var noteOffset = 0;
@@ -331,11 +379,7 @@ void _write(
       writer.addBook(
         number: book.number,
         shortName: _shortName(book, language),
-        longName:
-            _filled(usfm.toc2) ??
-            _filled(usfm.header) ??
-            _filled(usfm.toc1) ??
-            book.info.enLong,
+        longName: _longName(book),
         title: _filled(usfm.toc1),
         scheme: schemes.of(book.number),
       );
@@ -346,6 +390,9 @@ void _write(
         skipped[book.number]!,
         noteOffset,
         warnings,
+        names: names,
+        exists: exists,
+        xt: xt,
       );
       var lastNote = 0;
       for (final note in usfm.notes) {
@@ -358,19 +405,33 @@ void _write(
     writer.abort();
     rethrow;
   }
+
+  return xt;
 }
+
+// Полное название книги: `\toc2`, потом `\h`, `\toc1` и справочник.
+String _longName(_Book book) =>
+    _filled(book.usfm.toc2) ??
+    _filled(book.usfm.header) ??
+    _filled(book.usfm.toc1) ??
+    book.info.enLong;
 
 // Пишет стихи, заголовки и сноски книги; последний из слитых стихов —
 // из [ends], номера сносок сдвинуты на [offset]. Стихи из [skipped]
-// пропускаются вместе со своими заголовками и сносками.
+// пропускаются вместе со своими заголовками и сносками. Места из `\xt`
+// сносок разбираются по названиям [names] и проверяются [exists];
+// счётчики идут в [xt].
 void _writeText(
   ModuleWriter writer,
   _Book book,
   Map<UsfmVerse, int?> ends,
   _Skipped skipped,
   int offset,
-  List<String> warnings,
-) {
+  List<String> warnings, {
+  required RefBooks names,
+  required bool Function(RefRange place) exists,
+  required XtStats xt,
+}) {
   final _Book(:number, :usfm) = book;
   for (final verse in usfm.verses) {
     final place = '${usfm.code} ${verse.chapter}:${verse.verse}';
@@ -421,7 +482,19 @@ void _writeText(
       note.verse,
       note.kind,
       note.caller,
-      writeMarkup(_shiftNotes(note.nodes, offset)),
+      writeMarkup(
+        _shiftNotes(
+          resolveXtLinks(
+            note.nodes,
+            names,
+            book: number,
+            chapter: note.chapter,
+            exists: exists,
+            stats: xt,
+          ),
+          offset,
+        ),
+      ),
     );
   }
 }

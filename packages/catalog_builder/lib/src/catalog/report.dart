@@ -16,6 +16,9 @@ final class BuildReport {
     this.stopped,
     this.withdrawalRefused,
     this.rebuildMissed = const [],
+    this.xtLinked = 0,
+    this.xtByHref = 0,
+    this.xtUnresolved = 0,
   });
 
   /// Дата прогона, `YYYY-MM-DD`.
@@ -61,6 +64,16 @@ final class BuildReport {
   /// не прошла или ждёт следующего прогона.
   final List<String> rebuildMissed;
 
+  /// Сколько `\xt` собранных за прогон модулей стали ссылками, в том числе
+  /// по `link-href`.
+  final int xtLinked;
+
+  /// Сколько из них — по `link-href`.
+  final int xtByHref;
+
+  /// Сколько `\xt` остались текстом.
+  final int xtUnresolved;
+
   /// Что сказать о [rebuildMissed], или `null`, если пересобраны все.
   String? get rebuildProblem => rebuildMissed.isEmpty
       ? null
@@ -84,6 +97,12 @@ final class BuildReport {
       ..writeln('- Skipped rows: ${skipped.length}')
       ..writeln('- Release files deleted: ${deleted.length}')
       ..writeln('- Release files to delete: ${deletions.length}');
+    if (built.isNotEmpty) {
+      out.writeln(
+        '- Cross reference links: $xtLinked ($xtByHref by link-href), '
+        'unresolved $xtUnresolved',
+      );
+    }
     if (stopped case final stopped?) {
       out
         ..writeln()

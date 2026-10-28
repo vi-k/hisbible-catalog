@@ -201,7 +201,7 @@ final _numbered = RegExp(r'^(pi|q|qm|li|s|ms|mt|mte)(\d*)$');
 // ---------------------------------------------------------------------------
 // Сборка разметки одного стиха, заголовка, сноски или поля.
 
-enum _FrameKind { root, style, plain, word, drop }
+enum _FrameKind { root, style, plain, word, xref, drop }
 
 // Открытый знаковый маркер со своим содержимым.
 final class _Frame {
@@ -417,6 +417,17 @@ final class _Content {
         if (children.isNotEmpty) {
           parent.add(StyledSpan(frame.style!, children));
         }
+      case _FrameKind.xref:
+        // Место из `link-href` или `null`: тогда ссылку разберёт
+        // `resolveXtLinks` по тексту.
+        if (children.isNotEmpty) {
+          parent.add(
+            CrossrefLink(
+              _linkHref(frame.attributes?.toString() ?? ''),
+              children,
+            ),
+          );
+        }
       case _FrameKind.word:
         final (:strong, :morph) = _wordAttributes(
           frame.attributes?.toString() ?? '',
@@ -455,6 +466,34 @@ final _strongZeros = RegExp(r'^([A-Za-z]+)0+(?=\d)');
     }
   }
   return (strong: strong, morph: morph);
+}
+
+// `GEN 1:1`, `GEN 1:1-3`, `GEN 1:1-2:3`.
+final _hrefPlace = RegExp(
+  r'^([A-Za-z0-9]{3})\s+(\d+):(\d+)(?:-(?:(\d+):)?(\d+))?$',
+);
+
+// Место из атрибута `link-href` в [attributes] или `null`, если атрибута
+// нет или его значение не читается.
+RefRange? _linkHref(String attributes) {
+  for (final match in _attributePattern.allMatches(attributes)) {
+    if (match[1] != 'link-href') {
+      continue;
+    }
+    final place = _hrefPlace.firstMatch(match[2]!.trim());
+    if (place == null) {
+      return null;
+    }
+    final code = place[1]!.toUpperCase();
+    final start = '$code.${place[2]}.${place[3]}';
+    final end = place[5] == null
+        ? ''
+        : '-$code.${place[4] ?? place[2]}.${place[5]}';
+
+    return RefRange.parse('$start$end');
+  }
+
+  return null;
 }
 
 // Меняет знаки сносок по [refs] (по старому номеру), заходя внутрь стилей
@@ -818,6 +857,8 @@ final class _Parser {
             name,
             style: MarkupStyle.emphasis,
           );
+        case 'xt':
+          note.content.open(_FrameKind.xref, name);
         default:
           note.content.open(_FrameKind.plain, name);
       }

@@ -15,6 +15,11 @@ on:
           commas
         required: false
         default: ''
+      rebuild_all:
+        description: Rebuild every module as a new revision
+        required: false
+        type: boolean
+        default: false
       allow_mass_withdrawal:
         description: Withdraw modules even beyond the mass withdrawal limit
         required: false
@@ -56,6 +61,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           LIMIT: ${{ inputs.limit }}
           REBUILD: ${{ inputs.rebuild }}
+          REBUILD_ALL: ${{ inputs.rebuild_all }}
           ALLOW_MASS_WITHDRAWAL: ${{ inputs.allow_mass_withdrawal }}
         run: |
           args=(--limit "$LIMIT" --deadline 300)
@@ -63,6 +69,9 @@ jobs:
           for id in "${ids[@]}"; do
             args+=(--rebuild "$id")
           done
+          if [ "$REBUILD_ALL" = true ]; then
+            args+=(--rebuild-all)
+          fi
           if [ "$ALLOW_MASS_WITHDRAWAL" = true ]; then
             args+=(--allow-mass-withdrawal)
           fi
@@ -112,5 +121,5 @@ jobs:
           done < reasons.txt
           echo 'Index and lock are committed unless the commit step failed.'
           echo 'The report is in the summary and the artifact.'
-          echo 'Workflow inputs: allow_mass_withdrawal, rebuild.'
+          echo 'Workflow inputs: allow_mass_withdrawal, rebuild, rebuild_all.'
           exit 1

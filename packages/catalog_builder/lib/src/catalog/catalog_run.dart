@@ -101,7 +101,8 @@ final class CatalogRun {
 ///    прежняя запись остаётся, причина в отчёте. Версия модуля — сам
 ///    `UpdateDate`; если в [previous] уже версия той же даты, она
 ///    остаётся, а для id из [rebuild] становится следующей правкой:
-///    `<дата>` → `<дата>.1` → `<дата>.2`. Файл модуля —
+///    `<дата>` → `<дата>.1` → `<дата>.2`. [rebuildAll] делает так со всеми
+///    взятыми переводами, как будто каждый назван в [rebuild]. Файл модуля —
 ///    `<id>-<версия>.hb`. Id из [rebuild], который прогон не взял,
 ///    попадает в [BuildReport.failed].
 /// 5. Был в [previous], а сейчас не взят — уходит в `withdrawn` с датой
@@ -150,6 +151,7 @@ Future<CatalogRun> runCatalogBuild({
   List<ReleaseAsset> pending = const [],
   int? limit,
   Set<String> rebuild = const {},
+  bool rebuildAll = false,
   bool allowMassWithdrawal = false,
   DateTime? deadline,
   DateTime Function() clock = _utcNow,
@@ -184,6 +186,8 @@ Future<CatalogRun> runCatalogBuild({
     for (final id in skipped.keys)
       if (!taken.containsKey(id)) id,
   };
+  // `rebuildAll` — все взятые переводы, как если бы каждый был назван.
+  final rebuilding = rebuildAll ? {...rebuild, ...taken.keys} : rebuild;
   final run = _Run(
     fetcher: fetcher,
     publisher: publisher,
@@ -213,7 +217,7 @@ Future<CatalogRun> runCatalogBuild({
     final copied = run.entries[id]?.updateDate == t.updateDate;
     final current =
         old != null && moduleVersionDate(old.version) == t.updateDate;
-    if (rebuild.contains(id)) {
+    if (rebuilding.contains(id)) {
       requested.add(t);
     } else if (current && copied) {
       modules[id] = old;
@@ -222,7 +226,7 @@ Future<CatalogRun> runCatalogBuild({
       (copied ? retries : fresh).add(t);
     }
   }
-  for (final id in rebuild.toList()..sort()) {
+  for (final id in rebuilding.toList()..sort()) {
     if (!taken.containsKey(id)) {
       failed[id] = [
         'cannot rebuild $id: the run did not take it from translations.csv',
@@ -256,7 +260,7 @@ Future<CatalogRun> runCatalogBuild({
     try {
       outcome = await run.build(
         t,
-        _versionOf(t, old, rebuild: rebuild.contains(id)),
+        _versionOf(t, old, rebuild: rebuilding.contains(id)),
       );
     } on Object catch (e) {
       // Ошибка, которой сборка не ждала, валит только этот перевод.
@@ -352,8 +356,11 @@ Future<CatalogRun> runCatalogBuild({
       deletionProblems: cleanup.problems,
       stopped: stopped,
       withdrawalRefused: withdrawalRefused,
+      xtLinked: run.xtLinked,
+      xtByHref: run.xtByHref,
+      xtUnresolved: run.xtUnresolved,
       rebuildMissed: [
-        for (final id in rebuild.toList()..sort())
+        for (final id in rebuilding.toList()..sort())
           if (!built.contains(id)) id,
       ],
     ),
@@ -495,6 +502,11 @@ final class _Run {
   // Сколько файлов не выложилось и после повторов.
   int uploadFailures = 0;
 
+  // Ссылки из `\xt` в модулях, которые прогон собрал и выложил.
+  int xtLinked = 0;
+  int xtByHref = 0;
+  int xtUnresolved = 0;
+
   // GitHub ответил, что предел запросов исчерпан.
   bool rateLimited = false;
 
@@ -593,9 +605,14 @@ final class _Run {
         final (:url, :problem, release: _) = await _upload(_builds, file);
         _remove(file);
 
-        return url == null
-            ? (null, [problem])
-            : (_entry(t, outcome, url, version), outcome.warnings);
+        if (url == null) {
+          return (null, [problem]);
+        }
+        xtLinked += outcome.xtLinked;
+        xtByHref += outcome.xtByHref;
+        xtUnresolved += outcome.xtUnresolved;
+
+        return (_entry(t, outcome, url, version), outcome.warnings);
     }
   }
 
