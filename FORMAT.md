@@ -214,8 +214,9 @@ Entities are `&amp;`, `&lt;`, `&gt;`, and `&quot;`. Style tags may nest.
 
 Readers are tolerant: an unknown tag is dropped and its text kept; an unclosed
 tag is closed at the end; an extra closing tag is skipped; `<f>` without a
-numeric `id` is dropped; `<x>` without a readable `r` keeps its text; an indent outside 0..4 is clamped. A reader that does
-not use Strong numbers shows a `<w>` word as its text.
+numeric `id` is dropped; `<x>` without a readable `r` keeps its text; an indent
+outside 0..4 is clamped. A reader that does not use Strong numbers shows a
+`<w>` word as its text.
 
 ## Links in commentaries
 
