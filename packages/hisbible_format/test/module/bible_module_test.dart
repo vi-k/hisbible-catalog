@@ -52,7 +52,6 @@ void main() {
         shortName: 'Ps',
         longName: 'Psalms',
         scheme: VerseScheme.eng,
-        color: 0x66ff99,
       )
       ..addVerse(10, 1, 1, 'In the beginning')
       ..addVerse(10, 1, 2, genesisVerse2)
@@ -79,14 +78,12 @@ void main() {
     expect(genesis.shortName, 'Gen');
     expect(genesis.longName, 'Genesis');
     expect(genesis.title, 'The First Book of Moses');
-    expect(genesis.color, isNull);
     expect(genesis.chapters, [1]);
     expect(genesis.kind, BookKind.canonical);
     expect(genesis.scheme, VerseScheme.eng);
     final psalms = module.book(230)!;
     expect(psalms.code, 'PSA');
     expect(psalms.title, isNull);
-    expect(psalms.color, 0x66ff99);
     expect(psalms.chapters, [3]);
     expect(psalms.scheme, VerseScheme.eng);
     expect(module.book(470), isNull);
@@ -119,6 +116,24 @@ void main() {
     final plain = BibleModule.open(plainPath);
     addTearDown(plain.close);
     expect(plain.hasParagraphMarks, isFalse);
+  });
+
+  test('a written book has a null color', () {
+    writeSample(path);
+
+    final db = sqlite3.open(path);
+    final colors = [
+      for (final row in db.select('SELECT color FROM books')) row['color'],
+    ];
+    expect(colors, [null, null]);
+
+    // Файл со старым цветом открывается, книги на месте.
+    db
+      ..execute('UPDATE books SET color = 0xccccff')
+      ..close();
+    final module = BibleModule.open(path);
+    addTearDown(module.close);
+    expect([for (final b in module.books) b.code], ['GEN', 'PSA']);
   });
 
   test('stamps format', () {

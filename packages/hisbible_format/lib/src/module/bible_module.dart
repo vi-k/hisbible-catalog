@@ -20,7 +20,6 @@ final class ModuleBook {
     required this.shortName,
     required this.longName,
     required this.title,
-    required this.color,
     required this.chapters,
     required this.kind,
     required this.scheme,
@@ -40,9 +39,6 @@ final class ModuleBook {
 
   /// Полное заглавие книги; `null`, если его нет.
   final String? title;
-
-  /// Цвет `0xRRGGBB`; `null` — цвет справочника.
-  final int? color;
 
   /// Номера глав со стихами по возрастанию.
   final List<int> chapters;
@@ -411,7 +407,7 @@ final class BibleModule {
     Map<int, Map<int, int>> lastVerses,
   ) => [
     for (final row in db.select(
-      'SELECT code, short_name, long_name, title, color, scheme FROM books '
+      'SELECT code, short_name, long_name, title, scheme FROM books '
       'ORDER BY position',
     ))
       if (_book(row, codes, lastVerses) case final ModuleBook book) book,
@@ -430,7 +426,6 @@ final class BibleModule {
     }
     final info = BookCatalog.byNumber(number);
     final shortName = _text(row.columnAt(1)) ?? code;
-    final color = row.columnAt(4);
 
     return ModuleBook(
       number: number,
@@ -438,14 +433,13 @@ final class BibleModule {
       shortName: shortName,
       longName: _text(row.columnAt(2)) ?? shortName,
       title: _text(row.columnAt(3)),
-      color: color is int ? color : null,
       chapters: chapters.keys.toList()..sort(),
       kind: info == null
           ? BookKind.outsideTable
           : info.deuterocanonical
           ? BookKind.deuterocanonical
           : BookKind.canonical,
-      scheme: schemeOfValue(row.columnAt(5)) ?? VerseScheme.eng,
+      scheme: schemeOfValue(row.columnAt(4)) ?? VerseScheme.eng,
     );
   }
 

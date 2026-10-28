@@ -11,7 +11,7 @@ import 'package:hisbible_format/hisbible_format.dart';
 /// Книга для [writeBibleFixture].
 final class FixtureBook {
   /// Создаёт книгу; [longName] по умолчанию равен [shortName].
-  const FixtureBook(this.number, this.shortName, {this.longName, this.color});
+  const FixtureBook(this.number, this.shortName, {this.longName});
 
   /// Номер книги справочника.
   final int number;
@@ -21,9 +21,6 @@ final class FixtureBook {
 
   /// Полное название; `null` — как короткое.
   final String? longName;
-
-  /// Цвет `0xRRGGBB`; `null` — цвет справочника.
-  final int? color;
 }
 
 /// Описание модуля, которое [writeBibleFixture] берёт по умолчанию.
@@ -72,7 +69,6 @@ void writeBibleFixture(
         shortName: book.shortName,
         longName: book.longName ?? book.shortName,
         scheme: schemes[book.number] ?? detected.of(book.number),
-        color: book.color,
       );
     }
     for (final MapEntry(key: (book, chapter, verse), :value)

@@ -37,7 +37,7 @@ CREATE TABLE books (
   long_name TEXT NOT NULL,       -- "Genesis", "Бытие"
   title TEXT,                    -- full title (\toc1)
   scheme TEXT NOT NULL,          -- eng | org | rso | rsc
-  color INTEGER                  -- 0xRRGGBB; NULL: the reader's default color
+  color INTEGER                  -- deprecated: writers leave NULL, readers ignore it
 );
 CREATE TABLE verses (
   book TEXT NOT NULL, chapter INTEGER NOT NULL, verse INTEGER NOT NULL,
@@ -111,8 +111,10 @@ Notes:
   `verse_end` it is one verse. A reader finds comments by the chapter where
   they start. A cross reference goes from `verse` (to `verse_end`) of `book` to
   the place `to_*`, with the same rule for the end; a larger `votes` means a
-  more fitting reference. A commentary or cross reference module has at least
-  one record with a book code the reader knows.
+  more fitting reference. `chapter` 0 is an article on the whole book, `verse`
+  0 an article on the whole chapter; a range may start there. A commentary or
+  cross reference module has at least one record with a book code the reader
+  knows.
 - A footnote kind is `note` or `crossref`. `caller` is the footnote mark as the
   source gives it; an empty string means no mark.
 

@@ -65,14 +65,13 @@ final class ModuleWriter {
 
   /// Добавляет книгу [number]; порядок книг — порядок вызовов.
   ///
-  /// [color] — `0xRRGGBB`, `null` — цвет справочника.
+  /// Цвет книги в файл не пишется: столбец `color` остаётся пустым.
   void addBook({
     required int number,
     required String shortName,
     required String longName,
     String? title,
     required VerseScheme scheme,
-    int? color,
   }) {
     _checkType(ModuleType.bible);
     _bookPosition++;
@@ -83,7 +82,7 @@ final class ModuleWriter {
       longName,
       title,
       scheme.name,
-      color,
+      null,
     ]);
   }
 
