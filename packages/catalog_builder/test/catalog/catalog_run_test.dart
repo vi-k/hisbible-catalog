@@ -420,6 +420,25 @@ void main() {
     );
   });
 
+  test(
+    'rebuild-before after the run date is refused before building',
+    () async {
+      final first = await run([offer('aaa')]);
+      final uploaded = publisher.uploads.length;
+
+      await expectLater(
+        run(
+          [offer('aaa')],
+          after: first,
+          rebuildBefore: '2026-12-02',
+          now: DateTime.utc(2026, 12),
+        ),
+        throwsArgumentError,
+      );
+      expect(publisher.uploads, hasLength(uploaded));
+    },
+  );
+
   test('a rebuild goes ahead of the limit and new translations', () async {
     final first = await run([offer('bbb')]);
 

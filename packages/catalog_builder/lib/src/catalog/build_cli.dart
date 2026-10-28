@@ -12,6 +12,7 @@ import 'package:catalog_builder/src/catalog/publisher.dart';
 import 'package:catalog_builder/src/catalog/report.dart';
 import 'package:catalog_builder/src/catalog/sources_lock.dart';
 import 'package:catalog_builder/src/ebible/translations_csv.dart';
+import 'package:catalog_builder/src/text_helpers.dart';
 import 'package:hisbible_format/hisbible_format.dart';
 import 'package:path/path.dart' as p;
 
@@ -166,6 +167,17 @@ final class _Cli {
     final deadlineText = options['--deadline'] ?? '';
     final minutes = deadlineText.isEmpty ? null : int.tryParse(deadlineText);
     if (deadlineText.isNotEmpty && (minutes == null || minutes <= 0)) {
+      return _badArguments();
+    }
+
+    final before = options['--rebuild-before'];
+    final today = isoDate(DateTime.now().toUtc());
+    if (before != null && before.compareTo(today) > 0) {
+      _err.writeln(
+        '--rebuild-before $before is after today ($today): the rebuild '
+        'would never finish',
+      );
+
       return _badArguments();
     }
 

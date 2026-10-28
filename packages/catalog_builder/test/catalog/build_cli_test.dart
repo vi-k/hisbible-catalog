@@ -81,6 +81,13 @@ void main() {
     expect(redRunExitCode, isNot(anyOf(0, 1, 64)));
   });
 
+  test('a --rebuild-before date after today exits with 64', () async {
+    final err = StringBuffer();
+
+    expect(await runBuildCli(['--rebuild-before', '2999-01-01'], err: err), 64);
+    expect(err.toString(), allOf(contains('after today'), contains('usage:')));
+  });
+
   test('bad arguments exit with 64 and the usage', () async {
     for (final args in [
       ['--bogus'],

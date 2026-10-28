@@ -205,7 +205,7 @@ final _chapterVerse = RegExp(
   '$_letterPart)?',
   unicode: true,
 );
-final _wordAfter = RegExp(r'\s+\p{L}', unicode: true);
+final _wordAfter = RegExp(r'\s+\p{Lu}', unicode: true);
 final _verseOnly = RegExp(
   r'(\d{1,4})(?![\d:])'
   '$_letterPart'
@@ -357,8 +357,9 @@ _Place? _verseInChapter(
     return null;
   }
   final match = _verseOnly.matchAsPrefix(text, at);
-  // Номер, за которым идёт слово, — начало названия книги (`2 Kings`),
-  // а не стих.
+  // Номер, за которым идёт слово с большой буквы, — начало названия книги
+  // (`2 Kings`, `1 Кор`), а не стих; слово с маленькой (`и 20`, `см.`) стиху
+  // не мешает.
   if (match == null || _wordAfter.matchAsPrefix(text, match.end) != null) {
     return null;
   }

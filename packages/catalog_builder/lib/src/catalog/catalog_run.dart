@@ -159,6 +159,15 @@ Future<CatalogRun> runCatalogBuild({
   Future<void> Function(Duration) pause = _sleep,
 }) async {
   final date = isoDate(now);
+  if (rebuildBefore != null && rebuildBefore.compareTo(date) > 0) {
+    // Пересобранный модуль получает выпуск `build-<сегодня>`: если дата
+    // позже, он всё ещё «раньше» и каждый прогон пересобирал бы его снова.
+    throw ArgumentError.value(
+      rebuildBefore,
+      'rebuildBefore',
+      'is after the run date $date; the rebuild would never finish',
+    );
+  }
   final cleanup = await _applyPending(pending, previous, lock, publisher);
   final fontSection = await publishFonts(
     fonts,

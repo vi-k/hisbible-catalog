@@ -177,6 +177,26 @@ void main() {
     );
   });
 
+  test('a comma verse before a lowercase word is still a verse', () {
+    // `18` и `5` — стихи; ` и 20` и ` см.` остаются текстом, а `20` после
+    // «и» не список, так что текстом остаётся и он.
+    expect(
+      writeMarkup(resolve('Ин 3:16, 18 и 20')),
+      '<x r="JHN.3.16">Ин 3:16</x>, <x r="JHN.3.18">18</x> и 20',
+    );
+    expect(
+      writeMarkup(resolve('Мф 5:3, 5 см.')),
+      '<x r="MAT.5.3">Мф 5:3</x>, <x r="MAT.5.5">5</x> см.',
+    );
+  });
+
+  test('a comma verse before a book name is not a verse', () {
+    expect(
+      writeMarkup(resolve('Мф 1:1, 2 Кор 3:4')),
+      '<x r="MAT.1.1">Мф 1:1</x>, 2 Кор 3:4',
+    );
+  });
+
   test('a comma verse before a word is the start of a book name', () {
     final names = RefBooks({'1 Kings': 110, '2 Kings': 120});
     expect(
