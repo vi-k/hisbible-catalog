@@ -56,7 +56,8 @@ final class Built extends BuildOutcome {
   /// выброшенные куски текста, незнакомые маркеры.
   final List<String> warnings;
 
-  /// Сколько `\xt` стали ссылками `<x r>`, в том числе по `link-href`.
+  /// Сколько `\xt` (элементов, не ссылок) стали ссылками `<x r>`, в том
+  /// числе по `link-href`; частично разобранный `\xt` считается разобранным.
   final int xtLinked;
 
   /// Сколько из них — по `link-href`.

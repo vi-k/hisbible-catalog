@@ -474,13 +474,18 @@ final _hrefPlace = RegExp(
 );
 
 // Место из атрибута `link-href` в [attributes] или `null`, если атрибута
-// нет или его значение не читается.
+// нет или его значение не читается. Значение без ключа (`|GEN 1:1`) в USFM 3 —
+// атрибут по умолчанию, то есть тоже `link-href`.
 RefRange? _linkHref(String attributes) {
-  for (final match in _attributePattern.allMatches(attributes)) {
-    if (match[1] != 'link-href') {
-      continue;
-    }
-    final place = _hrefPlace.firstMatch(match[2]!.trim());
+  final pairs = _attributePattern.allMatches(attributes).toList();
+  final values = pairs.isEmpty && !attributes.contains('=')
+      ? [attributes.trim()]
+      : [
+          for (final match in pairs)
+            if (match[1] == 'link-href') match[2]!.trim(),
+        ];
+  for (final value in values) {
+    final place = _hrefPlace.firstMatch(value);
     if (place == null) {
       return null;
     }

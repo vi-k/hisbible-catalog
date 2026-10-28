@@ -81,6 +81,17 @@ void main() {
     );
   });
 
+  test('a bare value after the bar is the default link-href', () {
+    final book = parseUsfm(
+      r'\id MAT'
+      '\n'
+      r'\c 1'
+      '\n'
+      r'\v 1 Текст\x - \xo 1:1 \xt Быт 1:1|GEN 1:1\xt*\x*',
+    );
+    expect(writeMarkup(book.notes.single.nodes), '<x r="GEN.1.1">Быт 1:1</x>');
+  });
+
   test('an xt without link-href waits for the text parser', () {
     final book = parseUsfm(
       r'\id MAT'
@@ -150,8 +161,34 @@ void main() {
     expect(writeMarkup(out), '<x r="MAT.1.1">Мф 1:1</x>; Ин 3:99; Быт 1:1');
   });
 
-  test('a range that ends before it starts stays text', () {
-    expect(writeMarkup(resolve('Мф 1:5-3')), '<x r="MAT.1.5">Мф 1:5</x>-3');
+  test('a range that ends before it starts stays text as a whole', () {
+    expect(
+      writeMarkup(resolve('Мф 1:5-3; Ин 3:16')),
+      'Мф 1:5-3; <x r="JHN.3.16">Ин 3:16</x>',
+    );
+  });
+
+  test('a range end outside the scheme makes the whole place text', () {
+    expect(
+      writeMarkup(
+        resolve('Мф 1:5-9', exists: (place) => (place.end?.verse ?? 0) < 9),
+      ),
+      'Мф 1:5-9',
+    );
+  });
+
+  test('a comma verse before a word is the start of a book name', () {
+    final names = RefBooks({'1 Kings': 110, '2 Kings': 120});
+    expect(
+      writeMarkup(resolve('1 Kings 17:1, 2 Kings 2:1', names: names)),
+      '<x r="1KI.17.1">1 Kings 17:1</x>, <x r="2KI.2.1">2 Kings 2:1</x>',
+    );
+    // Название второй книги неизвестно: `2` не стих первой.
+    final one = RefBooks({'1 Kings': 110});
+    expect(
+      writeMarkup(resolve('1 Kings 17:1, 2 Kings 2:1', names: one)),
+      '<x r="1KI.17.1">1 Kings 17:1</x>, 2 Kings 2:1',
+    );
   });
 
   test('a verse list takes its book and chapter from the last place', () {

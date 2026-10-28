@@ -16,6 +16,9 @@ final class BuildReport {
     this.stopped,
     this.withdrawalRefused,
     this.rebuildMissed = const [],
+    this.rebuildBefore,
+    this.agedRebuilt = 0,
+    this.agedLeft = 0,
     this.xtLinked = 0,
     this.xtByHref = 0,
     this.xtUnresolved = 0,
@@ -64,8 +67,19 @@ final class BuildReport {
   /// не прошла или ждёт следующего прогона.
   final List<String> rebuildMissed;
 
-  /// Сколько `\xt` собранных за прогон модулей стали ссылками, в том числе
-  /// по `link-href`.
+  /// Дата ключа `--rebuild-before` или `null`, если ключа не было.
+  final String? rebuildBefore;
+
+  /// Сколько модулей прогон пересобрал по `--rebuild-before`.
+  final int agedRebuilt;
+
+  /// Сколько модулей по `--rebuild-before` осталось: не дошли или не
+  /// собрались. Прогон с тем же ключом продолжит с них.
+  final int agedLeft;
+
+  /// Сколько `\xt` (элементов, не ссылок) собранных за прогон модулей стали
+  /// ссылками, в том числе по `link-href`; частично разобранный `\xt`
+  /// считается разобранным.
   final int xtLinked;
 
   /// Сколько из них — по `link-href`.
@@ -97,6 +111,11 @@ final class BuildReport {
       ..writeln('- Skipped rows: ${skipped.length}')
       ..writeln('- Release files deleted: ${deleted.length}')
       ..writeln('- Release files to delete: ${deletions.length}');
+    if (rebuildBefore case final date?) {
+      out.writeln(
+        '- Rebuild before $date: $agedRebuilt rebuilt, $agedLeft left',
+      );
+    }
     if (built.isNotEmpty) {
       out.writeln(
         '- Cross reference links: $xtLinked ($xtByHref by link-href), '

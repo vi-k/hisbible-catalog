@@ -101,8 +101,8 @@ final class CatalogRun {
 ///    прежняя запись остаётся, причина в отчёте. Версия модуля — сам
 ///    `UpdateDate`; если в [previous] уже версия той же даты, она
 ///    остаётся, а для id из [rebuild] становится следующей правкой:
-///    `<дата>` → `<дата>.1` → `<дата>.2`. [rebuildAll] делает так со всеми
-///    взятыми переводами, как будто каждый назван в [rebuild]. Файл модуля —
+///    `<дата>` → `<дата>.1` → `<дата>.2`. [rebuildBefore] делает так
+///    с переводами, чей модуль в [previous] собран до этой даты. Файл модуля —
 ///    `<id>-<версия>.hb`. Id из [rebuild], который прогон не взял,
 ///    попадает в [BuildReport.failed].
 /// 5. Был в [previous], а сейчас не взят — уходит в `withdrawn` с датой
@@ -151,7 +151,7 @@ Future<CatalogRun> runCatalogBuild({
   List<ReleaseAsset> pending = const [],
   int? limit,
   Set<String> rebuild = const {},
-  bool rebuildAll = false,
+  String? rebuildBefore,
   bool allowMassWithdrawal = false,
   DateTime? deadline,
   DateTime Function() clock = _utcNow,
@@ -186,8 +186,6 @@ Future<CatalogRun> runCatalogBuild({
     for (final id in skipped.keys)
       if (!taken.containsKey(id)) id,
   };
-  // `rebuildAll` — все взятые переводы, как если бы каждый был назван.
-  final rebuilding = rebuildAll ? {...rebuild, ...taken.keys} : rebuild;
   final run = _Run(
     fetcher: fetcher,
     publisher: publisher,
@@ -211,14 +209,22 @@ Future<CatalogRun> runCatalogBuild({
   final requested = <EbibleTranslation>[];
   final fresh = <EbibleTranslation>[];
   final retries = <EbibleTranslation>[];
+  // Взятые переводы, чей модуль собран до `rebuildBefore`: идут последними,
+  // ждут своей очереди без ошибки и не попадают в `rebuildMissed`.
+  final aged = <EbibleTranslation>[];
   for (final id in taken.keys.toList()..sort()) {
     final t = taken[id]!;
     final old = before[id];
     final copied = run.entries[id]?.updateDate == t.updateDate;
     final current =
         old != null && moduleVersionDate(old.version) == t.updateDate;
-    if (rebuilding.contains(id)) {
+    if (rebuild.contains(id)) {
       requested.add(t);
+    } else if (current &&
+        copied &&
+        rebuildBefore != null &&
+        _builtBefore(old.url, rebuildBefore)) {
+      aged.add(t);
     } else if (current && copied) {
       modules[id] = old;
       unchanged.add(id);
@@ -226,7 +232,7 @@ Future<CatalogRun> runCatalogBuild({
       (copied ? retries : fresh).add(t);
     }
   }
-  for (final id in rebuilding.toList()..sort()) {
+  for (final id in rebuild.toList()..sort()) {
     if (!taken.containsKey(id)) {
       failed[id] = [
         'cannot rebuild $id: the run did not take it from translations.csv',
@@ -240,7 +246,9 @@ Future<CatalogRun> runCatalogBuild({
   }
   var attempts = 0;
   String? stopped;
-  for (final t in [...requested, ...fresh, ...retries]) {
+  final agedIds = {for (final t in aged) t.translationId};
+  var agedRebuilt = 0;
+  for (final t in [...requested, ...fresh, ...retries, ...aged]) {
     final id = t.translationId;
     final old = before[id];
     stopped ??=
@@ -252,7 +260,9 @@ Future<CatalogRun> runCatalogBuild({
       if (old != null) {
         modules[id] = old;
       }
-      waiting.add(id);
+      if (!agedIds.contains(id)) {
+        waiting.add(id);
+      }
       continue;
     }
     attempts++;
@@ -260,7 +270,11 @@ Future<CatalogRun> runCatalogBuild({
     try {
       outcome = await run.build(
         t,
-        _versionOf(t, old, rebuild: rebuilding.contains(id)),
+        _versionOf(
+          t,
+          old,
+          rebuild: rebuild.contains(id) || agedIds.contains(id),
+        ),
       );
     } on Object catch (e) {
       // Ошибка, которой сборка не ждала, валит только этот перевод.
@@ -270,6 +284,9 @@ Future<CatalogRun> runCatalogBuild({
       case (final IndexModule module, final List<String> moduleWarnings):
         modules[id] = module;
         built.add(id);
+        if (agedIds.contains(id)) {
+          agedRebuilt++;
+        }
         if (moduleWarnings.isNotEmpty) {
           warnings[id] = moduleWarnings;
         }
@@ -356,16 +373,31 @@ Future<CatalogRun> runCatalogBuild({
       deletionProblems: cleanup.problems,
       stopped: stopped,
       withdrawalRefused: withdrawalRefused,
+      rebuildBefore: rebuildBefore,
+      agedRebuilt: agedRebuilt,
+      agedLeft: aged.length - agedRebuilt,
       xtLinked: run.xtLinked,
       xtByHref: run.xtByHref,
       xtUnresolved: run.xtUnresolved,
       rebuildMissed: [
-        for (final id in rebuilding.toList()..sort())
+        for (final id in rebuild.toList()..sort())
           if (!built.contains(id)) id,
       ],
     ),
     deletions: List.unmodifiable(deletions),
   );
+}
+
+final _buildRelease = RegExp(r'^build-(\d{4}-\d{2}-\d{2})(?:-\d+)?$');
+
+// Модуль по адресу [url] собран раньше даты [cutoff] (`YYYY-MM-DD`): дата —
+// в имени выпуска `build-<дата>` или `build-<дата>-<часть>`. Адрес, из
+// которого дату не прочесть, — собран «раньше».
+bool _builtBefore(String url, String cutoff) {
+  final release = releaseAssetOf(url)?.release;
+  final date = release == null ? null : _buildRelease.firstMatch(release)?[1];
+
+  return date == null || date.compareTo(cutoff) < 0;
 }
 
 // Версия, с которой выйдет модуль перевода [t] при прежней записи [old]:

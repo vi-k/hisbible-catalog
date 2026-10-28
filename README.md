@@ -19,7 +19,7 @@ files, and writes `index/index.json` and `sources/sources.lock.json`. The
 Run the commands from the repository root after `dart pub get`:
 
 ```
-dart run catalog_builder:build [--csv <path or url>] [--limit <N>] [--deadline <minutes>] [--rebuild <id>]... [--rebuild-all] [--allow-mass-withdrawal] [--dry-run] [--work <dir>]
+dart run catalog_builder:build [--csv <path or url>] [--limit <N>] [--deadline <minutes>] [--rebuild <id>]... [--rebuild-before <YYYY-MM-DD>] [--allow-mass-withdrawal] [--dry-run] [--work <dir>]
 dart run catalog_builder:build --one <zip> --csv <csv> [--out <file>]
 dart run catalog_builder:build --apply-deletions <deletions.json>
 ```
@@ -78,11 +78,18 @@ on eBible.org. To rebuild a module whose `UpdateDate` is the same, for example
 after a change to `overrides.json` or to the builder, pass its translation id
 to `--rebuild`; repeat the key for several modules. In the `build` workflow,
 put the ids in the `rebuild` input, separated by spaces or commas. To rebuild
-every module the run takes, for example after a change to how the builder
-writes modules, pass `--rebuild-all`; in the workflow, tick `rebuild_all`. Each
-module then goes out as its next revision, as with `--rebuild`, so the whole
-catalog is offered to the app as updates, and a run with a `--limit` or a
-deadline will not reach all of them.
+many modules, for example after a change to how the builder writes modules,
+pass `--rebuild-before <YYYY-MM-DD>`; in the workflow, fill `rebuild_before`.
+The run rebuilds, as `--rebuild` does, the modules the run takes whose current
+file was built before that date (the date is in the release name `build-<date>`
+of the file address; an address that cannot be read counts as older). They come
+after explicit `--rebuild` ids and new or updated translations, and count
+toward `--limit` and the deadline. A rebuilt module lands in the release of the
+current run, so it is no longer before the date: when the run does not reach
+all of them, run again with the same date and it continues where it stopped,
+without rebuilding a module twice. Modules not reached are not an error: the
+run exits normally, and the report says how many were rebuilt and how many are
+left (a module that fails to build stays in "Failed" and in "left").
 
 A rebuilt module is published as the next revision of its version: `2025-03-04`
 becomes `2025-03-04.1`, then `2025-03-04.2` (see "Versions" in `FORMAT.md`).

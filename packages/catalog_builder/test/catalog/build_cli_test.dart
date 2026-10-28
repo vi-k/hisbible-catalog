@@ -42,13 +42,23 @@ void main() {
     expect(parseCliOptions(['--rebuild', 'a b']), isNull);
   });
 
-  test('--rebuild-all is a flag', () {
-    expect(parseCliOptions(['--rebuild-all', '--dry-run'])?.options, {
-      '--rebuild-all': '',
-      '--dry-run': '',
+  test('--rebuild-before takes a real date', () {
+    expect(parseCliOptions(['--rebuild-before', '2026-10-29'])?.options, {
+      '--rebuild-before': '2026-10-29',
     });
-    expect(parseCliOptions(['--rebuild-all', '--rebuild-all']), isNull);
-    expect(parseCliOptions(['--rebuild-all', 'x']), isNull);
+    for (final bad in ['', 'x', '2026-10', '2026-02-30', '29.10.2026']) {
+      expect(parseCliOptions(['--rebuild-before', bad]), isNull, reason: bad);
+    }
+    expect(parseCliOptions(['--rebuild-before']), isNull, reason: 'no value');
+    expect(
+      parseCliOptions([
+        '--rebuild-before',
+        '2026-10-29',
+        '--rebuild-before',
+        '2026-10-30',
+      ]),
+      isNull,
+    );
   });
 
   test('a refused withdrawal or a missed rebuild makes the run red', () {
@@ -87,8 +97,9 @@ void main() {
       ['--rebuild', 'a/b'],
       ['--one', 'a.zip', '--csv', 'a.csv', '--rebuild', 'aaa'],
       ['--apply-deletions', 'd.json', '--rebuild', 'aaa'],
-      ['--one', 'a.zip', '--csv', 'a.csv', '--rebuild-all'],
-      ['--apply-deletions', 'd.json', '--rebuild-all'],
+      ['--rebuild-before', 'tomorrow'],
+      ['--one', 'a.zip', '--csv', 'a.csv', '--rebuild-before', '2026-10-29'],
+      ['--apply-deletions', 'd.json', '--rebuild-before', '2026-10-29'],
     ]) {
       final err = StringBuffer();
 

@@ -32,7 +32,7 @@ void main() {
     List<ReleaseAsset>? pending,
     int? limit,
     Set<String> rebuild = const {},
-    bool rebuildAll = false,
+    String? rebuildBefore,
     bool allowMassWithdrawal = false,
     DateTime? deadline,
     DateTime Function()? clock,
@@ -51,7 +51,7 @@ void main() {
     fonts: fonts,
     limit: limit,
     rebuild: rebuild,
-    rebuildAll: rebuildAll,
+    rebuildBefore: rebuildBefore,
     allowMassWithdrawal: allowMassWithdrawal,
     deadline: deadline,
     clock: clock ?? () => DateTime.utc(2026, 11),
@@ -297,34 +297,103 @@ void main() {
     );
   });
 
-  test('a rebuild-all key rebuilds every taken translation', () async {
-    final first = await run([offer('aaa'), offer('bbb'), offer('ccc')]);
+  test('rebuild-before resumes with the next run and never re-bumps', () async {
+    List<EbibleTranslation> all() => [offer('aaa'), offer('bbb'), offer('ccc')];
+    final first = await run(all());
 
     final second = await run(
-      [offer('aaa'), offer('bbb')],
+      all(),
       after: first,
-      rebuildAll: true,
+      rebuildBefore: '2026-12-01',
+      limit: 2,
       now: DateTime.utc(2026, 12),
     );
-
     expect(second.report.built, ['aaa', 'bbb']);
+    expect(second.report.waiting, isEmpty, reason: 'not a new translation');
     expect(second.report.rebuildMissed, isEmpty);
+    expect(catalogExitCode(second.report), 0);
     expect(
       [for (final m in second.index.modules) (m.id, m.version)],
-      [('aaa', '2026-09-01.1'), ('bbb', '2026-09-01.1')],
+      [('aaa', '2026-09-01.1'), ('bbb', '2026-09-01.1'), ('ccc', '2026-09-01')],
     );
-    expect(second.report.withdrawn, ['ccc'], reason: 'not taken, not rebuilt');
+    expect(
+      second.report.toMarkdown(),
+      contains('- Rebuild before 2026-12-01: 2 rebuilt, 1 left\n'),
+    );
 
-    // Ключ идёт вместе с `--rebuild`, без повторов.
+    // Тот же ключ: сделанные собраны не раньше даты и не трогаются.
     final third = await run(
-      [offer('aaa'), offer('bbb')],
+      all(),
       after: second,
-      rebuild: {'aaa'},
-      rebuildAll: true,
+      rebuildBefore: '2026-12-01',
+      now: DateTime.utc(2026, 12, 2),
+    );
+    expect(third.report.built, ['ccc']);
+    expect(
+      [for (final m in third.index.modules) (m.id, m.version)],
+      [
+        ('aaa', '2026-09-01.1'),
+        ('bbb', '2026-09-01.1'),
+        ('ccc', '2026-09-01.1'),
+      ],
+    );
+    expect(third.report.unchanged, ['aaa', 'bbb']);
+    expect(
+      third.report.toMarkdown(),
+      contains('- Rebuild before 2026-12-01: 1 rebuilt, 0 left\n'),
+    );
+  });
+
+  test('rebuild-before goes after explicit ids and new translations', () async {
+    final first = await run([offer('aaa'), offer('bbb')]);
+
+    final second = await run(
+      [offer('aaa'), offer('bbb'), offer('ccc')],
+      after: first,
+      rebuild: {'bbb'},
+      rebuildBefore: '2026-12-01',
+      limit: 2,
       now: DateTime.utc(2026, 12),
     );
-    expect(third.report.built, ['aaa', 'bbb']);
-    expect(third.index.modules.first.version, '2026-09-01.2');
+    expect(second.report.built, ['bbb', 'ccc']);
+    expect(second.report.toMarkdown(), contains('0 rebuilt, 1 left'));
+  });
+
+  test(
+    'a candidate that fails to build keeps its entry and stays left',
+    () async {
+      final first = await run([offer('aaa'), offer('bbb')]);
+      publisher.releases['sources-2026-11-01']!['aaa-2026-09-01_usfm.zip'] = [
+        1,
+      ];
+
+      final second = await run(
+        [offer('aaa'), offer('bbb')],
+        after: first,
+        rebuildBefore: '2026-12-01',
+        now: DateTime.utc(2026, 12),
+      );
+      expect(second.report.built, ['bbb']);
+      expect(second.report.failed['aaa'], [contains('sha256')]);
+      expect(second.report.rebuildMissed, isEmpty);
+      expect(catalogExitCode(second.report), 0);
+      expect(second.index.modules.first, first.index.modules.first);
+      expect(second.report.toMarkdown(), contains('1 rebuilt, 1 left'));
+    },
+  );
+
+  test('an entry built on or after the date is untouched', () async {
+    final first = await run([offer('aaa')]);
+
+    final second = await run(
+      [offer('aaa')],
+      after: first,
+      rebuildBefore: '2026-11-01',
+      now: DateTime.utc(2026, 12),
+    );
+    expect(second.report.built, isEmpty);
+    expect(second.report.unchanged, ['aaa']);
+    expect(second.index, first.index);
   });
 
   test('the report counts cross reference links of built modules', () async {

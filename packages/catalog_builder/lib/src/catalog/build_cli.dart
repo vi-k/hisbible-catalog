@@ -12,6 +12,7 @@ import 'package:catalog_builder/src/catalog/publisher.dart';
 import 'package:catalog_builder/src/catalog/report.dart';
 import 'package:catalog_builder/src/catalog/sources_lock.dart';
 import 'package:catalog_builder/src/ebible/translations_csv.dart';
+import 'package:hisbible_format/hisbible_format.dart';
 import 'package:path/path.dart' as p;
 
 /// Команда `dart run catalog_builder:build` с аргументами [args]; вывод —
@@ -55,7 +56,8 @@ int catalogExitCode(BuildReport report) =>
 const _usage =
     'usage:\n'
     '  dart run catalog_builder:build [--csv <path or url>] [--limit <N>] '
-    '[--deadline <minutes>] [--rebuild <id>]... [--rebuild-all] '
+    '[--deadline <minutes>] [--rebuild <id>]... '
+    '[--rebuild-before <YYYY-MM-DD>] '
     '[--allow-mass-withdrawal] [--dry-run] [--work <dir>]\n'
     '  dart run catalog_builder:build --one <zip> --csv <csv> '
     '[--out <file>]\n'
@@ -74,10 +76,11 @@ const pendingDeletionsPath = 'sources/pending-deletions.json';
 typedef CliOptions = ({Map<String, String> options, List<String> rebuild});
 
 /// Разбирает аргументы [args] сборки: ключи со значениями, флаги
-/// `--dry-run`, `--rebuild-all` и `--allow-mass-withdrawal` (значение —
+/// `--dry-run` и `--allow-mass-withdrawal` (значение —
 /// пустая строка) и повторяемый `--rebuild <id>`; незнакомый ключ, ключ
-/// без значения, повтор другого ключа или id `--rebuild` не по
-/// [translationIdPattern] — `null`.
+/// без значения, повтор другого ключа, id `--rebuild` не по
+/// [translationIdPattern] или `--rebuild-before` не датой `YYYY-MM-DD` —
+/// `null`.
 CliOptions? parseCliOptions(List<String> args) {
   const valued = {
     '--one',
@@ -86,9 +89,10 @@ CliOptions? parseCliOptions(List<String> args) {
     '--limit',
     '--deadline',
     '--work',
+    '--rebuild-before',
     '--apply-deletions',
   };
-  const flags = {'--dry-run', '--rebuild-all', '--allow-mass-withdrawal'};
+  const flags = {'--dry-run', '--allow-mass-withdrawal'};
   final options = <String, String>{};
   final rebuild = <String>[];
   for (var i = 0; i < args.length; i++) {
@@ -105,7 +109,13 @@ CliOptions? parseCliOptions(List<String> args) {
     } else if (flags.contains(key)) {
       options[key] = '';
     } else if (valued.contains(key) && i + 1 < args.length) {
-      options[key] = args[++i];
+      final value = args[++i];
+      if (key == '--rebuild-before' &&
+          (!updateDatePattern.hasMatch(value) ||
+              moduleVersionDate(value) == null)) {
+        return null;
+      }
+      options[key] = value;
     } else {
       return null;
     }
@@ -166,7 +176,7 @@ final class _Cli {
           ? null
           : DateTime.now().toUtc().add(Duration(minutes: minutes)),
       rebuild: rebuild.toSet(),
-      rebuildAll: options.containsKey('--rebuild-all'),
+      rebuildBefore: options['--rebuild-before'],
       allowMassWithdrawal: options.containsKey('--allow-mass-withdrawal'),
       dryRun: options.containsKey('--dry-run'),
       work: options['--work'] ?? p.join('out', 'work'),
@@ -184,7 +194,7 @@ final class _Cli {
     required int? limit,
     required DateTime? deadline,
     required Set<String> rebuild,
-    required bool rebuildAll,
+    required String? rebuildBefore,
     required bool allowMassWithdrawal,
     required bool dryRun,
     required String work,
@@ -213,7 +223,7 @@ final class _Cli {
         now: DateTime.now().toUtc(),
         limit: limit,
         rebuild: rebuild,
-        rebuildAll: rebuildAll,
+        rebuildBefore: rebuildBefore,
         allowMassWithdrawal: allowMassWithdrawal,
         deadline: deadline,
         keepFiles: dryRun,
@@ -245,6 +255,12 @@ final class _Cli {
         'deleted ${report.deleted.length}, '
         'to delete next run ${result.deletions.length}',
       );
+      if (report.rebuildBefore case final date? when report.agedLeft > 0) {
+        _out.writeln(
+          'rebuild before $date: ${report.agedLeft} left; run again with '
+          'the same --rebuild-before to continue',
+        );
+      }
       for (final line in [
         ?report.stopped,
         ?report.withdrawalRefused,

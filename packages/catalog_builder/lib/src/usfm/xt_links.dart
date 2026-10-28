@@ -205,17 +205,7 @@ final _chapterVerse = RegExp(
   '$_letterPart)?',
   unicode: true,
 );
-// Начало места без конца промежутка: докуда доходит одно начало.
-final _startOnly = RegExp(
-  r'(\d{1,4}):(\d{1,4})(?!\d)'
-  '$_letterPart',
-  unicode: true,
-);
-final _startVerse = RegExp(
-  r'(\d{1,4})(?![\d:])'
-  '$_letterPart',
-  unicode: true,
-);
+final _wordAfter = RegExp(r'\s+\p{L}', unicode: true);
 final _verseOnly = RegExp(
   r'(\d{1,4})(?![\d:])'
   '$_letterPart'
@@ -351,7 +341,6 @@ _Place? _withoutBook(
     (chapter, verse),
     (endChapter, endVerse),
     end: match.end,
-    startEnd: _startOnly.matchAsPrefix(text, at)!.end,
     exists: exists,
   );
 }
@@ -368,7 +357,9 @@ _Place? _verseInChapter(
     return null;
   }
   final match = _verseOnly.matchAsPrefix(text, at);
-  if (match == null) {
+  // Номер, за которым идёт слово, — начало названия книги (`2 Kings`),
+  // а не стих.
+  if (match == null || _wordAfter.matchAsPrefix(text, match.end) != null) {
     return null;
   }
 
@@ -377,20 +368,17 @@ _Place? _verseInChapter(
     (chapter, int.parse(match[1]!)),
     (chapter, match[2] == null ? null : int.parse(match[2]!)),
     end: match.end,
-    startEnd: _startVerse.matchAsPrefix(text, at)!.end,
     exists: exists,
   );
 }
 
 // Собирает место и проверяет границы и [exists]; `null` — не годится.
-// Конец раньше начала или за границами формата отбрасывается: остаётся
-// начало до [startEnd], а конец — текстом.
+// Конец раньше начала или за границами формата — место не годится целиком.
 _Place? _place(
   int book,
   (int, int) start,
   (int, int?) last, {
   required int end,
-  required int startEnd,
   required bool Function(RefRange place)? exists,
 }) {
   bool inBounds(int chapter, int verse) =>
@@ -404,14 +392,13 @@ _Place? _place(
   }
   final (endChapter, endVerse) = last;
   VerseRef? endRef;
-  var placeEnd = end;
   if (endVerse != null) {
-    if (inBounds(endChapter, endVerse) &&
-        (endChapter > chapter || (endChapter == chapter && endVerse > verse))) {
-      endRef = VerseRef(book, endChapter, endVerse);
-    } else {
-      placeEnd = startEnd;
+    if (!inBounds(endChapter, endVerse) ||
+        endChapter < chapter ||
+        (endChapter == chapter && endVerse <= verse)) {
+      return null;
     }
+    endRef = VerseRef(book, endChapter, endVerse);
   }
   final range = RefRange(VerseRef(book, chapter, verse), endRef);
   if (exists != null && !exists(range)) {
@@ -420,7 +407,7 @@ _Place? _place(
 
   return (
     range: range,
-    end: placeEnd,
+    end: end,
     book: book,
     chapter: endRef?.chapter ?? chapter,
   );
