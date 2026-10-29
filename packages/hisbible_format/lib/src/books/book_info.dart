@@ -42,6 +42,7 @@ final class BookInfo {
   const BookInfo({
     required this.number,
     required this.color,
+    required this.lightColor,
     required this.section,
     required this.deuterocanonical,
     required this.ruShort,
@@ -54,10 +55,15 @@ final class BookInfo {
   /// Номер книги справочника.
   final int number;
 
-  /// Цвет книги в виде `0xRRGGBB` — один на группу книг: Пятикнижие,
-  /// исторические, учительные, большие и малые пророки, Евангелия (красный),
-  /// Деяния, послания Павла, соборные, Откровение.
+  /// Цвет книги на тёмной бумаге в виде `0xRRGGBB` — один на группу книг:
+  /// Пятикнижие, исторические, учительные, большие и малые пророки, Евангелия
+  /// (красный), Деяния, послания Павла, соборные, Откровение.
   final int color;
+
+  /// Цвет книги на светлой бумаге в виде `0xRRGGBB` — тот же оттенок группы,
+  /// что у [color], но у всех групп одна светлота: ни одна группа не темнее
+  /// и не светлее соседних.
+  final int lightColor;
 
   /// Раздел, в который входит книга.
   final BookSection section;

@@ -15,6 +15,7 @@ void main() {
 
   test('a color per group of books; the Gospels are red', () {
     int color(int number) => BookCatalog.byNumber(number)!.color;
+    int light(int number) => BookCatalog.byNumber(number)!.lightColor;
     // Группа — один цвет: Быт и Втор, Нав и 3Езд, Иов и Сир, Ис и Дан,
     // Ос и Мал, Мф и Ин, Рим и Евр, Иак и Иуд.
     for (final (a, b) in [
@@ -28,14 +29,15 @@ void main() {
       (660, 720),
     ]) {
       expect(color(a), color(b), reason: '$a и $b');
+      expect(light(a), light(b), reason: '$a и $b');
     }
-    expect(color(470), 0xff6b6b);
-    final groups = {
-      for (final number in [10, 60, 220, 290, 350, 470, 510, 520, 660, 730])
-        color(number),
-    };
-    expect(groups, hasLength(10));
+    expect(color(470), 0xff5a4f);
+    expect(light(470), 0xed1202);
+    const firsts = [10, 60, 220, 290, 350, 470, 510, 520, 660, 730];
+    expect({for (final number in firsts) color(number)}, hasLength(10));
+    expect({for (final number in firsts) light(number)}, hasLength(10));
     expect(color(780), color(520), reason: 'Лаод — с посланиями Павла');
+    expect(light(780), light(520), reason: 'Лаод — с посланиями Павла');
   });
 
   test('catalog numbers and SIL codes are unique', () {

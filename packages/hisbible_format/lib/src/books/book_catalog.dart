@@ -144,7 +144,8 @@ abstract final class BookCatalog {
   static const List<BookInfo> _books = [
     BookInfo(
       number: 10,
-      color: 0x5db4f0,
+      color: 0x6fc0fc,
+      lightColor: 0x0276e5,
       section: BookSection.pentateuch,
       deuterocanonical: false,
       ruShort: 'Быт',
@@ -155,7 +156,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 20,
-      color: 0x5db4f0,
+      color: 0x6fc0fc,
+      lightColor: 0x0276e5,
       section: BookSection.pentateuch,
       deuterocanonical: false,
       ruShort: 'Исх',
@@ -166,7 +168,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 30,
-      color: 0x5db4f0,
+      color: 0x6fc0fc,
+      lightColor: 0x0276e5,
       section: BookSection.pentateuch,
       deuterocanonical: false,
       ruShort: 'Лев',
@@ -177,7 +180,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 40,
-      color: 0x5db4f0,
+      color: 0x6fc0fc,
+      lightColor: 0x0276e5,
       section: BookSection.pentateuch,
       deuterocanonical: false,
       ruShort: 'Чис',
@@ -188,7 +192,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 50,
-      color: 0x5db4f0,
+      color: 0x6fc0fc,
+      lightColor: 0x0276e5,
       section: BookSection.pentateuch,
       deuterocanonical: false,
       ruShort: 'Втор',
@@ -199,7 +204,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 60,
-      color: 0xe0a85a,
+      color: 0xc67f1a,
+      lightColor: 0xb16314,
       section: BookSection.historical,
       deuterocanonical: false,
       ruShort: 'Нав',
@@ -210,7 +216,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 70,
-      color: 0xe0a85a,
+      color: 0xc67f1a,
+      lightColor: 0xb16314,
       section: BookSection.historical,
       deuterocanonical: false,
       ruShort: 'Суд',
@@ -221,7 +228,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 80,
-      color: 0xe0a85a,
+      color: 0xc67f1a,
+      lightColor: 0xb16314,
       section: BookSection.historical,
       deuterocanonical: false,
       ruShort: 'Руфь',
@@ -232,7 +240,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 90,
-      color: 0xe0a85a,
+      color: 0xc67f1a,
+      lightColor: 0xb16314,
       section: BookSection.historical,
       deuterocanonical: false,
       ruShort: '1Цар',
@@ -243,7 +252,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 100,
-      color: 0xe0a85a,
+      color: 0xc67f1a,
+      lightColor: 0xb16314,
       section: BookSection.historical,
       deuterocanonical: false,
       ruShort: '2Цар',
@@ -254,7 +264,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 110,
-      color: 0xe0a85a,
+      color: 0xc67f1a,
+      lightColor: 0xb16314,
       section: BookSection.historical,
       deuterocanonical: false,
       ruShort: '3Цар',
@@ -265,7 +276,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 120,
-      color: 0xe0a85a,
+      color: 0xc67f1a,
+      lightColor: 0xb16314,
       section: BookSection.historical,
       deuterocanonical: false,
       ruShort: '4Цар',
@@ -276,7 +288,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 130,
-      color: 0xe0a85a,
+      color: 0xc67f1a,
+      lightColor: 0xb16314,
       section: BookSection.historical,
       deuterocanonical: false,
       ruShort: '1Пар',
@@ -287,7 +300,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 140,
-      color: 0xe0a85a,
+      color: 0xc67f1a,
+      lightColor: 0xb16314,
       section: BookSection.historical,
       deuterocanonical: false,
       ruShort: '2Пар',
@@ -298,7 +312,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 145,
-      color: 0xe0a85a,
+      color: 0xc67f1a,
+      lightColor: 0xb16314,
       section: BookSection.historical,
       deuterocanonical: true,
       ruShort: 'Мол',
@@ -309,7 +324,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 150,
-      color: 0xe0a85a,
+      color: 0xc67f1a,
+      lightColor: 0xb16314,
       section: BookSection.historical,
       deuterocanonical: false,
       ruShort: 'Ездр',
@@ -320,7 +336,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 160,
-      color: 0xe0a85a,
+      color: 0xc67f1a,
+      lightColor: 0xb16314,
       section: BookSection.historical,
       deuterocanonical: false,
       ruShort: 'Неем',
@@ -331,7 +348,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 165,
-      color: 0xe0a85a,
+      color: 0xc67f1a,
+      lightColor: 0xb16314,
       section: BookSection.historical,
       deuterocanonical: true,
       ruShort: '2Езд',
@@ -342,7 +360,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 170,
-      color: 0xe0a85a,
+      color: 0xc67f1a,
+      lightColor: 0xb16314,
       section: BookSection.historical,
       deuterocanonical: true,
       ruShort: 'Тов',
@@ -353,7 +372,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 180,
-      color: 0xe0a85a,
+      color: 0xc67f1a,
+      lightColor: 0xb16314,
       section: BookSection.historical,
       deuterocanonical: true,
       ruShort: 'Иудф',
@@ -364,7 +384,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 190,
-      color: 0xe0a85a,
+      color: 0xc67f1a,
+      lightColor: 0xb16314,
       section: BookSection.historical,
       deuterocanonical: false,
       ruShort: 'Есф',
@@ -375,7 +396,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 192,
-      color: 0xe0a85a,
+      color: 0xc67f1a,
+      lightColor: 0xb16314,
       section: BookSection.historical,
       deuterocanonical: true,
       ruShort: 'ДопЕсф',
@@ -385,7 +407,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 220,
-      color: 0x6ccb7a,
+      color: 0x15c62c,
+      lightColor: 0x138a01,
       section: BookSection.poetic,
       deuterocanonical: false,
       ruShort: 'Иов',
@@ -396,7 +419,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 230,
-      color: 0x6ccb7a,
+      color: 0x15c62c,
+      lightColor: 0x138a01,
       section: BookSection.poetic,
       deuterocanonical: false,
       ruShort: 'Пс',
@@ -407,7 +431,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 240,
-      color: 0x6ccb7a,
+      color: 0x15c62c,
+      lightColor: 0x138a01,
       section: BookSection.poetic,
       deuterocanonical: false,
       ruShort: 'Прит',
@@ -418,7 +443,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 250,
-      color: 0x6ccb7a,
+      color: 0x15c62c,
+      lightColor: 0x138a01,
       section: BookSection.poetic,
       deuterocanonical: false,
       ruShort: 'Еккл',
@@ -429,7 +455,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 260,
-      color: 0x6ccb7a,
+      color: 0x15c62c,
+      lightColor: 0x138a01,
       section: BookSection.poetic,
       deuterocanonical: false,
       ruShort: 'Песн',
@@ -440,7 +467,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 270,
-      color: 0x6ccb7a,
+      color: 0x15c62c,
+      lightColor: 0x138a01,
       section: BookSection.poetic,
       deuterocanonical: true,
       ruShort: 'Прем',
@@ -451,7 +479,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 280,
-      color: 0x6ccb7a,
+      color: 0x15c62c,
+      lightColor: 0x138a01,
       section: BookSection.poetic,
       deuterocanonical: true,
       ruShort: 'Сир',
@@ -462,7 +491,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 290,
-      color: 0xb98af0,
+      color: 0x8386e5,
+      lightColor: 0x8753fe,
       section: BookSection.prophets,
       deuterocanonical: false,
       ruShort: 'Ис',
@@ -473,7 +503,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 300,
-      color: 0xb98af0,
+      color: 0x8386e5,
+      lightColor: 0x8753fe,
       section: BookSection.prophets,
       deuterocanonical: false,
       ruShort: 'Иер',
@@ -484,7 +515,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 305,
-      color: 0xb98af0,
+      color: 0x8386e5,
+      lightColor: 0x8753fe,
       section: BookSection.prophets,
       deuterocanonical: true,
       ruShort: 'МолАз',
@@ -494,7 +526,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 310,
-      color: 0xb98af0,
+      color: 0x8386e5,
+      lightColor: 0x8753fe,
       section: BookSection.prophets,
       deuterocanonical: false,
       ruShort: 'Плач',
@@ -505,7 +538,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 315,
-      color: 0xb98af0,
+      color: 0x8386e5,
+      lightColor: 0x8753fe,
       section: BookSection.prophets,
       deuterocanonical: true,
       ruShort: 'Посл',
@@ -516,7 +550,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 320,
-      color: 0xb98af0,
+      color: 0x8386e5,
+      lightColor: 0x8753fe,
       section: BookSection.prophets,
       deuterocanonical: true,
       ruShort: 'Вар',
@@ -527,7 +562,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 323,
-      color: 0xb98af0,
+      color: 0x8386e5,
+      lightColor: 0x8753fe,
       section: BookSection.prophets,
       deuterocanonical: true,
       ruShort: 'ПесТр',
@@ -538,7 +574,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 325,
-      color: 0xb98af0,
+      color: 0x8386e5,
+      lightColor: 0x8753fe,
       section: BookSection.prophets,
       deuterocanonical: true,
       ruShort: 'Сус',
@@ -549,7 +586,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 330,
-      color: 0xb98af0,
+      color: 0x8386e5,
+      lightColor: 0x8753fe,
       section: BookSection.prophets,
       deuterocanonical: false,
       ruShort: 'Иез',
@@ -560,7 +598,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 340,
-      color: 0xb98af0,
+      color: 0x8386e5,
+      lightColor: 0x8753fe,
       section: BookSection.prophets,
       deuterocanonical: false,
       ruShort: 'Дан',
@@ -571,7 +610,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 345,
-      color: 0xb98af0,
+      color: 0x8386e5,
+      lightColor: 0x8753fe,
       section: BookSection.prophets,
       deuterocanonical: true,
       ruShort: 'Вил',
@@ -582,7 +622,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 350,
-      color: 0x4fc9be,
+      color: 0x3698a6,
+      lightColor: 0x03829a,
       section: BookSection.prophets,
       deuterocanonical: false,
       ruShort: 'Ос',
@@ -593,7 +634,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 360,
-      color: 0x4fc9be,
+      color: 0x3698a6,
+      lightColor: 0x03829a,
       section: BookSection.prophets,
       deuterocanonical: false,
       ruShort: 'Иоил',
@@ -604,7 +646,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 370,
-      color: 0x4fc9be,
+      color: 0x3698a6,
+      lightColor: 0x03829a,
       section: BookSection.prophets,
       deuterocanonical: false,
       ruShort: 'Ам',
@@ -615,7 +658,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 380,
-      color: 0x4fc9be,
+      color: 0x3698a6,
+      lightColor: 0x03829a,
       section: BookSection.prophets,
       deuterocanonical: false,
       ruShort: 'Авд',
@@ -626,7 +670,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 390,
-      color: 0x4fc9be,
+      color: 0x3698a6,
+      lightColor: 0x03829a,
       section: BookSection.prophets,
       deuterocanonical: false,
       ruShort: 'Ион',
@@ -637,7 +682,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 400,
-      color: 0x4fc9be,
+      color: 0x3698a6,
+      lightColor: 0x03829a,
       section: BookSection.prophets,
       deuterocanonical: false,
       ruShort: 'Мих',
@@ -648,7 +694,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 410,
-      color: 0x4fc9be,
+      color: 0x3698a6,
+      lightColor: 0x03829a,
       section: BookSection.prophets,
       deuterocanonical: false,
       ruShort: 'Наум',
@@ -659,7 +706,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 420,
-      color: 0x4fc9be,
+      color: 0x3698a6,
+      lightColor: 0x03829a,
       section: BookSection.prophets,
       deuterocanonical: false,
       ruShort: 'Авв',
@@ -670,7 +718,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 430,
-      color: 0x4fc9be,
+      color: 0x3698a6,
+      lightColor: 0x03829a,
       section: BookSection.prophets,
       deuterocanonical: false,
       ruShort: 'Соф',
@@ -681,7 +730,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 440,
-      color: 0x4fc9be,
+      color: 0x3698a6,
+      lightColor: 0x03829a,
       section: BookSection.prophets,
       deuterocanonical: false,
       ruShort: 'Агг',
@@ -692,7 +742,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 450,
-      color: 0x4fc9be,
+      color: 0x3698a6,
+      lightColor: 0x03829a,
       section: BookSection.prophets,
       deuterocanonical: false,
       ruShort: 'Зах',
@@ -703,7 +754,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 460,
-      color: 0x4fc9be,
+      color: 0x3698a6,
+      lightColor: 0x03829a,
       section: BookSection.prophets,
       deuterocanonical: false,
       ruShort: 'Мал',
@@ -714,7 +766,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 462,
-      color: 0xe0a85a,
+      color: 0xc67f1a,
+      lightColor: 0xb16314,
       section: BookSection.historical,
       deuterocanonical: true,
       ruShort: '1Мак',
@@ -725,7 +778,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 464,
-      color: 0xe0a85a,
+      color: 0xc67f1a,
+      lightColor: 0xb16314,
       section: BookSection.historical,
       deuterocanonical: true,
       ruShort: '2Мак',
@@ -736,7 +790,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 466,
-      color: 0xe0a85a,
+      color: 0xc67f1a,
+      lightColor: 0xb16314,
       section: BookSection.historical,
       deuterocanonical: true,
       ruShort: '3Мак',
@@ -747,7 +802,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 467,
-      color: 0xe0a85a,
+      color: 0xc67f1a,
+      lightColor: 0xb16314,
       section: BookSection.historical,
       deuterocanonical: true,
       ruShort: '4Ма',
@@ -758,7 +814,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 468,
-      color: 0xe0a85a,
+      color: 0xc67f1a,
+      lightColor: 0xb16314,
       section: BookSection.historical,
       deuterocanonical: true,
       ruShort: '3Езд',
@@ -769,7 +826,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 470,
-      color: 0xff6b6b,
+      color: 0xff5a4f,
+      lightColor: 0xed1202,
       section: BookSection.gospels,
       deuterocanonical: false,
       ruShort: 'Мат',
@@ -780,7 +838,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 480,
-      color: 0xff6b6b,
+      color: 0xff5a4f,
+      lightColor: 0xed1202,
       section: BookSection.gospels,
       deuterocanonical: false,
       ruShort: 'Мар',
@@ -791,7 +850,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 490,
-      color: 0xff6b6b,
+      color: 0xff5a4f,
+      lightColor: 0xed1202,
       section: BookSection.gospels,
       deuterocanonical: false,
       ruShort: 'Лук',
@@ -802,7 +862,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 500,
-      color: 0xff6b6b,
+      color: 0xff5a4f,
+      lightColor: 0xed1202,
       section: BookSection.gospels,
       deuterocanonical: false,
       ruShort: 'Ин',
@@ -813,7 +874,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 510,
-      color: 0xff9f45,
+      color: 0xffeb2f,
+      lightColor: 0x817903,
       section: BookSection.acts,
       deuterocanonical: false,
       ruShort: 'Деян',
@@ -824,7 +886,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 520,
-      color: 0x8a90f5,
+      color: 0x4be8d5,
+      lightColor: 0x10876f,
       section: BookSection.epistles,
       deuterocanonical: false,
       ruShort: 'Рим',
@@ -835,7 +898,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 530,
-      color: 0x8a90f5,
+      color: 0x4be8d5,
+      lightColor: 0x10876f,
       section: BookSection.epistles,
       deuterocanonical: false,
       ruShort: '1Кор',
@@ -846,7 +910,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 540,
-      color: 0x8a90f5,
+      color: 0x4be8d5,
+      lightColor: 0x10876f,
       section: BookSection.epistles,
       deuterocanonical: false,
       ruShort: '2Кор',
@@ -857,7 +922,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 550,
-      color: 0x8a90f5,
+      color: 0x4be8d5,
+      lightColor: 0x10876f,
       section: BookSection.epistles,
       deuterocanonical: false,
       ruShort: 'Гал',
@@ -868,7 +934,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 560,
-      color: 0x8a90f5,
+      color: 0x4be8d5,
+      lightColor: 0x10876f,
       section: BookSection.epistles,
       deuterocanonical: false,
       ruShort: 'Еф',
@@ -879,7 +946,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 570,
-      color: 0x8a90f5,
+      color: 0x4be8d5,
+      lightColor: 0x10876f,
       section: BookSection.epistles,
       deuterocanonical: false,
       ruShort: 'Флп',
@@ -890,7 +958,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 580,
-      color: 0x8a90f5,
+      color: 0x4be8d5,
+      lightColor: 0x10876f,
       section: BookSection.epistles,
       deuterocanonical: false,
       ruShort: 'Кол',
@@ -901,7 +970,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 590,
-      color: 0x8a90f5,
+      color: 0x4be8d5,
+      lightColor: 0x10876f,
       section: BookSection.epistles,
       deuterocanonical: false,
       ruShort: '1Фес',
@@ -912,7 +982,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 600,
-      color: 0x8a90f5,
+      color: 0x4be8d5,
+      lightColor: 0x10876f,
       section: BookSection.epistles,
       deuterocanonical: false,
       ruShort: '2Фес',
@@ -923,7 +994,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 610,
-      color: 0x8a90f5,
+      color: 0x4be8d5,
+      lightColor: 0x10876f,
       section: BookSection.epistles,
       deuterocanonical: false,
       ruShort: '1Тим',
@@ -934,7 +1006,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 620,
-      color: 0x8a90f5,
+      color: 0x4be8d5,
+      lightColor: 0x10876f,
       section: BookSection.epistles,
       deuterocanonical: false,
       ruShort: '2Тим',
@@ -945,7 +1018,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 630,
-      color: 0x8a90f5,
+      color: 0x4be8d5,
+      lightColor: 0x10876f,
       section: BookSection.epistles,
       deuterocanonical: false,
       ruShort: 'Тит',
@@ -956,7 +1030,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 640,
-      color: 0x8a90f5,
+      color: 0x4be8d5,
+      lightColor: 0x10876f,
       section: BookSection.epistles,
       deuterocanonical: false,
       ruShort: 'Флм',
@@ -967,7 +1042,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 650,
-      color: 0x8a90f5,
+      color: 0x4be8d5,
+      lightColor: 0x10876f,
       section: BookSection.epistles,
       deuterocanonical: false,
       ruShort: 'Евр',
@@ -978,7 +1054,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 660,
-      color: 0xbcc25a,
+      color: 0xde8da9,
+      lightColor: 0xc64e64,
       section: BookSection.epistles,
       deuterocanonical: false,
       ruShort: 'Иак',
@@ -989,7 +1066,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 670,
-      color: 0xbcc25a,
+      color: 0xde8da9,
+      lightColor: 0xc64e64,
       section: BookSection.epistles,
       deuterocanonical: false,
       ruShort: '1Пет',
@@ -1000,7 +1078,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 680,
-      color: 0xbcc25a,
+      color: 0xde8da9,
+      lightColor: 0xc64e64,
       section: BookSection.epistles,
       deuterocanonical: false,
       ruShort: '2Пет',
@@ -1011,7 +1090,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 690,
-      color: 0xbcc25a,
+      color: 0xde8da9,
+      lightColor: 0xc64e64,
       section: BookSection.epistles,
       deuterocanonical: false,
       ruShort: '1Ин',
@@ -1022,7 +1102,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 700,
-      color: 0xbcc25a,
+      color: 0xde8da9,
+      lightColor: 0xc64e64,
       section: BookSection.epistles,
       deuterocanonical: false,
       ruShort: '2Ин',
@@ -1033,7 +1114,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 710,
-      color: 0xbcc25a,
+      color: 0xde8da9,
+      lightColor: 0xc64e64,
       section: BookSection.epistles,
       deuterocanonical: false,
       ruShort: '3Ин',
@@ -1044,7 +1126,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 720,
-      color: 0xbcc25a,
+      color: 0xde8da9,
+      lightColor: 0xc64e64,
       section: BookSection.epistles,
       deuterocanonical: false,
       ruShort: 'Иуд',
@@ -1055,7 +1138,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 730,
-      color: 0xe070c0,
+      color: 0xf363fe,
+      lightColor: 0xda0eb1,
       section: BookSection.revelation,
       deuterocanonical: false,
       ruShort: 'Откр',
@@ -1066,7 +1150,8 @@ abstract final class BookCatalog {
     ),
     BookInfo(
       number: 780,
-      color: 0x8a90f5,
+      color: 0x4be8d5,
+      lightColor: 0x10876f,
       section: BookSection.epistles,
       deuterocanonical: true,
       ruShort: 'Лаод',
