@@ -128,6 +128,38 @@ error and leaves the lock and the module as they were; check the new data and
 run again with `--accept-new-source` to take it. The same archive keeps the
 version from the lock.
 
+## Commentaries from CrossWire
+
+Two public-domain commentaries of the
+[CrossWire SWORD](https://www.crosswire.org/sword/) library can be built into
+`commentaries` modules: `Clarke` (Adam Clarke) and `KD` (Keil and Delitzsch).
+They are not part of the catalog and are not published: run
+`dart run catalog_builder:build --crosswire <module> <out.hb>` and take the
+file. The command downloads
+`https://www.crosswire.org/ftpmirror/pub/sword/packages/rawzip/<module>.zip`
+and reads the module's `.conf` and its zCom or zCom4 files from the archive in
+memory. The module must be OSIS, UTF-8, ZIP-compressed, in the KJV
+versification and `Public Domain`; anything else stops with an error and
+writes nothing. The module gets `numbering` `eng`, `license` `PD`, `source`
+`crosswire:<module>`, and its `version` is the `SwordVersionDate` of the
+`.conf`.
+
+OSIS markup becomes HTML, and references become links. The record of verse 1
+often begins with an introduction to the book or the chapter; it is split off
+into a book article (chapter 1) or a chapter article: in `Clarke` the comment
+on the verse begins at the bold label "Verse 1", in `KD` at a paragraph opened
+by a reference to verse 1. In `KD` a record often sits on the last verse of
+the passage it explains, and the passage is named by the single reference of
+its first paragraph; when that reference is in the same chapter and covers the
+record's verses, the comment takes its range. The command prints how many
+comments, articles and links it wrote.
+
+The first run of each module writes its archive's URL, sha256, version and
+date to `sources/crosswire.lock.json`; the entries of other modules stay as
+they are. A later run with another archive stops with an error and leaves the
+lock and the module as they were; check the new data and run again with
+`--accept-new-source` to take it.
+
 ## License
 
 The code is under the MIT License (see `LICENSE`). Third-party notices are in
