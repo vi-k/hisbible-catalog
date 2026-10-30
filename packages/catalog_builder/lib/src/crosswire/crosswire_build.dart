@@ -29,11 +29,44 @@ const Map<String, ArticleMarker> crosswireModules = {
 /// Адрес архива модуля CrossWire [module].
 Uri crosswireUrl(String module) => Uri.parse('$crosswireUrlBase$module.zip');
 
+/// Id модуля CrossWire [module] в каталоге: `crosswire-<модуль строчными>`,
+/// чтобы не совпасть с `translationId` eBible.
+String crosswireCatalogId(String module) => 'crosswire-${module.toLowerCase()}';
+
+/// Название языка модулей CrossWire (`language` `en`) для указателя.
+const crosswireLanguageName = 'English';
+
+/// Запись модуля в `sources/crosswire.lock.json`: архив, с которого
+/// собирается модуль.
+final class CrossWireSource {
+  /// Создаёт запись.
+  const CrossWireSource({
+    required this.url,
+    required this.sha256,
+    required this.version,
+    required this.fetched,
+  });
+
+  /// Адрес архива.
+  final String url;
+
+  /// SHA-256 архива.
+  final String sha256;
+
+  /// `SwordVersionDate` архива.
+  final String version;
+
+  /// Когда архив принят, `YYYY-MM-DD`.
+  final String fetched;
+}
+
 /// Итог сборки модуля толкований CrossWire.
 final class CrossWireOutcome {
   /// Создаёт итог.
   const CrossWireOutcome({
     required this.version,
+    required this.meta,
+    required this.books,
     required this.records,
     required this.comments,
     required this.bookArticles,
@@ -48,8 +81,15 @@ final class CrossWireOutcome {
     required this.notes,
   });
 
-  /// Версия модуля: `SwordVersionDate` из `.conf`.
+  /// `SwordVersionDate` из `.conf`.
   final String version;
+
+  /// `meta` записанного модуля.
+  final ModuleMeta meta;
+
+  /// Книги Ветхого и Нового Заветов и второканонические, у которых есть
+  /// толкования или статьи.
+  final ({int ot, int nt, int dc}) books;
 
   /// Записей zCom (диапазон — одна запись).
   final int records;
@@ -94,12 +134,15 @@ final class CrossWireOutcome {
 /// Из архива берутся `mods.d/*.conf` модуля и файлы его `DataPath`.
 /// Модуль — zCom или zCom4 с разметкой OSIS, версификацией KJV и лицензией
 /// `Public Domain`; иное — [FormatException], файл при этом не трогается.
-/// В `meta` — версия `SwordVersionDate` и дата [now].
+/// В `meta` — версия [version] (нет — `SwordVersionDate`) и дата [now];
+/// с [catalogId] — ещё каталог `hisbible` и этот id в нём.
 CrossWireOutcome buildCrossWire(
   List<int> zip,
   String module,
   String outPath, {
   required DateTime now,
+  String? version,
+  String? catalogId,
 }) {
   final marker = crosswireModules[module];
   if (marker == null) {
@@ -126,10 +169,12 @@ CrossWireOutcome buildCrossWire(
       throw FormatException('$module: $key is $value, not $expected');
     }
   }
-  final version = conf['SwordVersionDate'] ?? '';
-  if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(version) ||
-      moduleVersionDate(version) == null) {
-    throw FormatException('$module: SwordVersionDate "$version" is not a date');
+  final swordVersion = conf['SwordVersionDate'] ?? '';
+  if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(swordVersion) ||
+      moduleVersionDate(swordVersion) == null) {
+    throw FormatException(
+      '$module: SwordVersionDate "$swordVersion" is not a date',
+    );
   }
   final name = conf['Description'];
   if (name == null || name.isEmpty) {
@@ -168,8 +213,10 @@ CrossWireOutcome buildCrossWire(
     description: _firstParagraph(conf['About']),
     source: 'crosswire:$module',
     sourceUrl: conf['TextSource'],
-    version: version,
+    version: version ?? swordVersion,
     created: isoDate(now),
+    catalog: catalogId == null ? null : 'hisbible',
+    catalogId: catalogId,
     numbering: VerseScheme.eng.name,
     generator: 'catalog_builder $builderVersion',
   );
@@ -180,6 +227,7 @@ CrossWireOutcome buildCrossWire(
   var links = 0;
   var unresolved = 0;
   var notes = 0;
+  final books = <int>{};
   final partPath = '$outPath.part';
   final part = File(partPath);
   part.parent.createSync(recursive: true);
@@ -194,6 +242,7 @@ CrossWireOutcome buildCrossWire(
         empty++;
         continue;
       }
+      books.add(piece.book);
       switch (piece.kind) {
         case CommentPartKind.comment:
           comments++;
@@ -222,7 +271,9 @@ CrossWireOutcome buildCrossWire(
   }
 
   return CrossWireOutcome(
-    version: version,
+    version: swordVersion,
+    meta: meta,
+    books: _bookCounts(books),
     records: records.length,
     comments: comments,
     bookArticles: bookArticles,
@@ -270,8 +321,8 @@ Future<int> runCrossWire(
   try {
     final lockFile = File(lockPath);
     final lock = lockFile.existsSync()
-        ? _parseLock(lockFile.readAsStringSync())
-        : <String, _LockEntry>{};
+        ? parseCrossWireLock(lockFile.readAsStringSync())
+        : <String, CrossWireSource>{};
     final locked = lock[module];
     final url = crosswireUrl(module);
     final file = await fetcher.getFile(url);
@@ -287,7 +338,7 @@ Future<int> runCrossWire(
     }
     final outcome = buildCrossWire(file.bytes, module, outPath, now: time);
     final size = File(outPath).lengthSync();
-    lock[module] = _LockEntry(
+    lock[module] = CrossWireSource(
       url: url.toString(),
       sha256: sha256,
       version: outcome.version,
@@ -295,7 +346,7 @@ Future<int> runCrossWire(
     );
     lockFile
       ..parent.createSync(recursive: true)
-      ..writeAsStringSync(_lockToJson(lock));
+      ..writeAsStringSync(crossWireLockToJson(lock));
     sink
       ..writeln('wrote $outPath')
       ..writeln('wrote $lockPath')
@@ -396,22 +447,10 @@ String? _firstParagraph(String? about) {
   return first.isEmpty ? null : first;
 }
 
-// Запись модуля в `sources/crosswire.lock.json`.
-final class _LockEntry {
-  const _LockEntry({
-    required this.url,
-    required this.sha256,
-    required this.version,
-    required this.fetched,
-  });
-
-  final String url;
-  final String sha256;
-  final String version;
-  final String fetched;
-}
-
-Map<String, _LockEntry> _parseLock(String json) {
+/// Читает `sources/crosswire.lock.json` из [json]: модуль → его архив.
+///
+/// Не JSON или другая форма — [FormatException].
+Map<String, CrossWireSource> parseCrossWireLock(String json) {
   final Object? root;
   try {
     root = jsonDecode(json);
@@ -431,7 +470,7 @@ Map<String, _LockEntry> _parseLock(String json) {
           'version': final String version,
           'fetched': final String fetched,
         } =>
-          _LockEntry(
+          CrossWireSource(
             url: url,
             sha256: sha256,
             version: version,
@@ -444,7 +483,9 @@ Map<String, _LockEntry> _parseLock(String json) {
   };
 }
 
-String _lockToJson(Map<String, _LockEntry> lock) {
+/// JSON `sources/crosswire.lock.json` из [lock]: модули по алфавиту,
+/// отступ в два пробела, перевод строки в конце.
+String crossWireLockToJson(Map<String, CrossWireSource> lock) {
   const encoder = JsonEncoder.withIndent('  ');
   final keys = lock.keys.toList()..sort();
   final json = encoder.convert({
@@ -458,4 +499,26 @@ String _lockToJson(Map<String, _LockEntry> lock) {
   });
 
   return '$json\n';
+}
+
+// Книги [books] по заветам, как в указателе.
+({int ot, int nt, int dc}) _bookCounts(Set<int> books) {
+  var ot = 0;
+  var nt = 0;
+  var dc = 0;
+  for (final number in books) {
+    final info = BookCatalog.byNumber(number);
+    if (info == null) {
+      continue;
+    }
+    if (info.deuterocanonical) {
+      dc++;
+    } else if (info.testament == Testament.old) {
+      ot++;
+    } else {
+      nt++;
+    }
+  }
+
+  return (ot: ot, nt: nt, dc: dc);
 }

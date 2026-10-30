@@ -93,7 +93,53 @@ void main() {
     expect(meta.version, '2021-10-19');
     expect(meta.created, '2026-10-30');
     expect(meta.numbering, 'eng');
+    expect(meta.catalog, isNull);
+    expect(meta.catalogId, isNull);
+    expect(out.meta, meta);
+    expect(out.books, (ot: 1, nt: 1, dc: 0));
     expect(File('$path.part').existsSync(), isFalse);
+  });
+
+  test('for the catalog: catalog id and a revision of the version', () {
+    final out = buildCrossWire(
+      crosswireZip('Clarke', _clarkeFiles()),
+      'Clarke',
+      path,
+      now: now,
+      version: '2021-10-19.1',
+      catalogId: crosswireCatalogId('Clarke'),
+    );
+
+    expect(crosswireCatalogId('KD'), 'crosswire-kd');
+    expect(out.version, '2021-10-19');
+    final m = CommentaryModule.open(path);
+    addTearDown(m.close);
+    expect(m.meta.version, '2021-10-19.1');
+    expect(m.meta.catalog, 'hisbible');
+    expect(m.meta.catalogId, 'crosswire-clarke');
+  });
+
+  test('crosswire.lock.json: read and written back', () {
+    const json =
+        '{\n'
+        '  "Clarke": {\n'
+        '    "url": "https://example.org/Clarke.zip",\n'
+        '    "sha256": "abc",\n'
+        '    "version": "2021-10-19",\n'
+        '    "fetched": "2026-10-30"\n'
+        '  }\n'
+        '}\n';
+
+    final lock = parseCrossWireLock(json);
+    expect(lock.keys, ['Clarke']);
+    expect(lock['Clarke']!.sha256, 'abc');
+    expect(lock['Clarke']!.version, '2021-10-19');
+    expect(crossWireLockToJson(lock), json);
+    expect(() => parseCrossWireLock('[]'), throwsFormatException);
+    expect(
+      () => parseCrossWireLock('{"KD": {"url": 1}}'),
+      throwsFormatException,
+    );
   });
 
   test('zCom4 of KD', () {
