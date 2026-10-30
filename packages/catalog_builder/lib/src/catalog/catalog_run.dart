@@ -9,6 +9,7 @@ import 'package:catalog_builder/src/catalog/overrides.dart';
 import 'package:catalog_builder/src/catalog/publisher.dart';
 import 'package:catalog_builder/src/catalog/report.dart';
 import 'package:catalog_builder/src/catalog/sources_lock.dart';
+import 'package:catalog_builder/src/crosswire/crosswire_build.dart';
 import 'package:catalog_builder/src/ebible/translations_csv.dart';
 import 'package:catalog_builder/src/text_helpers.dart';
 import 'package:crypto/crypto.dart' as crypto;
@@ -133,6 +134,21 @@ final class CatalogRun {
 /// Любая другая ошибка сборки перевода — тоже только его неудача: прогон
 /// всегда доходит до указателя, списка исходников и отчёта.
 ///
+/// Модули толкований CrossWire — записи [crosswire]
+/// (`sources/crosswire.lock.json`): id в каталоге — [crosswireCatalogId],
+/// идут первыми, в [limit] не считаются и таблицы переводов не ждут.
+/// Архив каждый прогон качается с CrossWire и сверяется с записью; другая
+/// sha256 или архив не получен — неудача модуля, прежняя запись остаётся.
+/// Новый архив прогон не принимает никогда: его принимает команда
+/// `--crosswire <модуль> <out.hb> --accept-new-source`. Своя копия архива —
+/// в [lock] под тем же id, `updateDate` — `SwordVersionDate`, файл
+/// `<id>-<дата>.zip`. Модуль без изменений, если версия в [previous] той же
+/// даты, что запись, а копия — того же архива. Версия — `SwordVersionDate`;
+/// та же дата с другим архивом, id из [rebuild] или модуль, собранный
+/// до [rebuildBefore], — следующая правка. Копия выкладывается, только если
+/// выложился и модуль. Модуль, чьей записи в [crosswire] больше нет,
+/// отзывается, как перевод.
+///
 /// Удаления этого прогона не делаются сразу: они — в
 /// [CatalogRun.deletions], для следующего прогона. Файлы прогона лежат
 /// в [work]: `sources/`, `modules/`, `fonts/`; без [keepFiles] архив
@@ -149,6 +165,7 @@ Future<CatalogRun> runCatalogBuild({
   required DateTime now,
   FontsLock fonts = FontsLock.empty,
   List<ReleaseAsset> pending = const [],
+  Map<String, CrossWireSource> crosswire = const {},
   int? limit,
   Set<String> rebuild = const {},
   String? rebuildBefore,
@@ -241,8 +258,11 @@ Future<CatalogRun> runCatalogBuild({
       (copied ? retries : fresh).add(t);
     }
   }
+  final crosswireIds = {
+    for (final module in crosswire.keys) crosswireCatalogId(module),
+  };
   for (final id in rebuild.toList()..sort()) {
-    if (!taken.containsKey(id)) {
+    if (!taken.containsKey(id) && !crosswireIds.contains(id)) {
       failed[id] = [
         'cannot rebuild $id: the run did not take it from translations.csv',
       ];
@@ -253,18 +273,82 @@ Future<CatalogRun> runCatalogBuild({
       modules[id] = old;
     }
   }
-  var attempts = 0;
   String? stopped;
+  String? stopReason() =>
+      run.stopReason() ??
+      (deadline != null && !clock().isBefore(deadline)
+          ? 'Stopped at the deadline'
+          : null);
+  // Кладёт итог сборки [outcome] модуля [id] с прежней записью [old];
+  // `true` — собран.
+  bool settle(
+    String id,
+    IndexModule? old,
+    (IndexModule?, List<String>) outcome,
+  ) {
+    final (module, notes) = outcome;
+    if (module == null) {
+      if (old != null) {
+        modules[id] = old;
+      }
+      failed[id] = notes;
+
+      return false;
+    }
+    modules[id] = module;
+    built.add(id);
+    if (notes.isNotEmpty) {
+      warnings[id] = notes;
+    }
+    final file = old == null ? null : releaseAssetOf(old.url);
+    if (file != null && old!.url != module.url) {
+      run.deletions.add(file);
+    }
+
+    return true;
+  }
+
+  for (final module in crosswire.keys.toList()..sort()) {
+    final id = crosswireCatalogId(module);
+    final old = before[id];
+    stopped ??= stopReason();
+    if (stopped != null) {
+      if (old != null) {
+        modules[id] = old;
+      }
+      waiting.add(id);
+      continue;
+    }
+    (IndexModule?, List<String>)? outcome;
+    try {
+      outcome = await run.crossWire(
+        module,
+        crosswire[module]!,
+        old,
+        rebuild:
+            rebuild.contains(id) ||
+            (rebuildBefore != null &&
+                old != null &&
+                _builtBefore(old.url, rebuildBefore)),
+      );
+    } on Object catch (e) {
+      outcome = (null, ['unexpected error: $e']);
+    }
+    if (outcome == null) {
+      modules[id] = old!;
+      unchanged.add(id);
+    } else {
+      settle(id, old, outcome);
+    }
+  }
+
+  var attempts = 0;
   final agedIds = {for (final t in aged) t.translationId};
   var agedRebuilt = 0;
   for (final t in [...requested, ...fresh, ...retries, ...aged]) {
     final id = t.translationId;
     final old = before[id];
-    stopped ??=
-        run.stopReason() ??
-        (deadline != null && !clock().isBefore(deadline)
-            ? 'Stopped at the deadline'
-            : null);
+    stopped ??= stopReason();
     if ((limit != null && attempts >= limit) || stopped != null) {
       if (old != null) {
         modules[id] = old;
@@ -289,29 +373,15 @@ Future<CatalogRun> runCatalogBuild({
       // Ошибка, которой сборка не ждала, валит только этот перевод.
       outcome = (null, ['unexpected error: $e']);
     }
-    switch (outcome) {
-      case (final IndexModule module, final List<String> moduleWarnings):
-        modules[id] = module;
-        built.add(id);
-        if (agedIds.contains(id)) {
-          agedRebuilt++;
-        }
-        if (moduleWarnings.isNotEmpty) {
-          warnings[id] = moduleWarnings;
-        }
-        final file = old == null ? null : releaseAssetOf(old.url);
-        if (file != null && old!.url != module.url) {
-          run.deletions.add(file);
-        }
-      case (null, final List<String> reasons):
-        if (old != null) {
-          modules[id] = old;
-        }
-        failed[id] = reasons;
+    if (settle(id, old, outcome) && agedIds.contains(id)) {
+      agedRebuilt++;
     }
   }
   stopped ??= run.stopReason();
-  bool leaving(String id) => !taken.containsKey(id) && !held.contains(id);
+  bool leaving(String id) =>
+      !taken.containsKey(id) &&
+      !held.contains(id) &&
+      !crosswireIds.contains(id);
   final leavers = [
     for (final old in previous.modules)
       if (leaving(old.id)) old,
@@ -388,6 +458,7 @@ Future<CatalogRun> runCatalogBuild({
       xtLinked: run.xtLinked,
       xtByHref: run.xtByHref,
       xtUnresolved: run.xtUnresolved,
+      commentaries: run.commentaries,
       rebuildMissed: [
         for (final id in rebuild.toList()..sort())
           if (!built.contains(id)) id,
@@ -424,10 +495,21 @@ String _versionOf(
   if (!rebuild) {
     return old.version;
   }
-  final dot = old.version.indexOf('.');
-  final revision = dot < 0 ? 0 : int.parse(old.version.substring(dot + 1));
 
-  return '${t.updateDate}.${revision + 1}';
+  return _nextRevision(old.version);
+}
+
+// Следующая правка версии [version]: `<дата>` → `<дата>.1`, `<дата>.1` →
+// `<дата>.2`. Номер правки, который не читается как `int`, —
+// [FormatException].
+String _nextRevision(String version) {
+  final dot = version.indexOf('.');
+  if (dot < 0) {
+    return '$version.1';
+  }
+  final revision = int.parse(version.substring(dot + 1));
+
+  return '${version.substring(0, dot)}.${revision + 1}';
 }
 
 // Что не так со строкой перевода [t], которую сборка взяла бы, или `null`.
@@ -548,6 +630,9 @@ final class _Run {
   int xtByHref = 0;
   int xtUnresolved = 0;
 
+  // Собранные модули толкований: id → числа толкований, статей и ссылок.
+  final commentaries = <String, String>{};
+
   // GitHub ответил, что предел запросов исчерпан.
   bool rateLimited = false;
 
@@ -655,6 +740,144 @@ final class _Run {
 
         return (_entry(t, outcome, url, version), outcome.warnings);
     }
+  }
+
+  // Собирает и выкладывает модуль толкований CrossWire [module] по записи
+  // [locked] при прежней записи указателя [old]: запись указателя или
+  // `null` и причины; `null` вместо итога — модуль без изменений.
+  // [rebuild] — собрать следующей правкой, даже если архив тот же.
+  Future<(IndexModule?, List<String>)?> crossWire(
+    String module,
+    CrossWireSource locked,
+    IndexModule? old, {
+    required bool rebuild,
+  }) async {
+    final id = crosswireCatalogId(module);
+    final List<int> bytes;
+    try {
+      bytes = await fetcher.get(crosswireUrl(module));
+    } on Exception catch (e) {
+      return (null, ['cannot fetch the CrossWire archive of $module: $e']);
+    }
+    final sha256 = crypto.sha256.convert(bytes).toString();
+    if (sha256 != locked.sha256) {
+      final reason =
+          'the CrossWire archive of $module changed: sha256 $sha256, locked '
+          '${locked.sha256}; check it, take it with --crosswire $module '
+          '<out.hb> --accept-new-source and commit $crosswireLockPath';
+
+      return (null, [reason]);
+    }
+    final copy = entries[id];
+    final copied = copy != null && copy.sha256 == sha256;
+    final current =
+        old != null && moduleVersionDate(old.version) == locked.version;
+    if (current && copied && !rebuild) {
+      return null;
+    }
+    // Та же дата: другой архив или пересборка — следующая правка; копия
+    // потеряна — та же версия.
+    final version = !current
+        ? locked.version
+        : rebuild || copy != null
+        ? _nextRevision(old.version)
+        : old.version;
+    final asset = '$id-${locked.version}.zip';
+    final source = File(p.join(work.path, 'sources', asset));
+    source.parent.createSync(recursive: true);
+    source.writeAsBytesSync(bytes);
+    final file = File(
+      p.join(work.path, 'modules', '$id-$version$moduleExtension'),
+    );
+    final CrossWireOutcome outcome;
+    try {
+      outcome = buildCrossWire(
+        bytes,
+        module,
+        file.path,
+        now: now,
+        version: version,
+        catalogId: id,
+      );
+    } on Object catch (e) {
+      _remove(source);
+
+      return (null, ['cannot build $module: $e']);
+    }
+    LockedSource? fresh;
+    if (!copied) {
+      final (:release, :url, :problem) = await _upload(
+        _sources,
+        source,
+        prerelease: true,
+      );
+      if (release == null || url == null) {
+        _remove(source);
+        _remove(file);
+
+        return (null, [problem]);
+      }
+      fresh = LockedSource(
+        id: id,
+        updateDate: locked.version,
+        sha256: sha256,
+        release: release,
+        asset: asset,
+        fetched: isoDate(now),
+      );
+    }
+    _remove(source);
+    final size = file.lengthSync();
+    final moduleSha256 = crypto.sha256
+        .convert(file.readAsBytesSync())
+        .toString();
+    final (:url, :problem, release: _) = await _upload(_builds, file);
+    _remove(file);
+    if (url == null) {
+      // Копия без модуля не нужна: следующий прогон выложит её снова.
+      if (fresh != null) {
+        deletions.add((release: fresh.release, asset: fresh.asset));
+      }
+
+      return (null, [problem]);
+    }
+    if (fresh != null) {
+      if (copy != null &&
+          (copy.release != fresh.release || copy.asset != fresh.asset)) {
+        deletions.add((release: copy.release, asset: copy.asset));
+      }
+      entries[id] = fresh;
+    }
+    commentaries[id] =
+        'comments ${outcome.comments}, '
+        'book articles ${outcome.bookArticles}, '
+        'chapter articles ${outcome.chapterArticles}, '
+        'links ${outcome.links}, unresolved ${outcome.unresolved}';
+    final meta = outcome.meta;
+
+    return (
+      IndexModule(
+        id: id,
+        type: 'commentaries',
+        abbreviation: meta.abbreviation,
+        name: meta.name,
+        description: meta.description,
+        language: meta.language,
+        languageName: crosswireLanguageName,
+        languageNameEnglish: crosswireLanguageName,
+        script: meta.script ?? 'Latn',
+        direction: meta.direction,
+        license: meta.license,
+        copyright: meta.copyright,
+        books: outcome.books,
+        size: size,
+        sha256: moduleSha256,
+        url: url.toString(),
+        version: version,
+        moduleFormat: formatVersion,
+      ),
+      const <String>[],
+    );
   }
 
   // Выкладывает [file] в очередной выпуск [releases]; выпуск узнаётся

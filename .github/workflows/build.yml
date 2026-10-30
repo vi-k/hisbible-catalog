@@ -11,8 +11,8 @@ on:
         default: ''
       rebuild:
         description: >-
-          Translation ids to rebuild as a new revision, separated by spaces or
-          commas
+          Module ids (translations or crosswire-<module>) to rebuild as a new
+          revision, separated by spaces or commas
         required: false
         default: ''
       rebuild_before:

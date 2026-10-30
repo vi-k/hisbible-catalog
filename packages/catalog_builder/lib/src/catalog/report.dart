@@ -22,6 +22,7 @@ final class BuildReport {
     this.xtLinked = 0,
     this.xtByHref = 0,
     this.xtUnresolved = 0,
+    this.commentaries = const {},
   });
 
   /// Дата прогона, `YYYY-MM-DD`.
@@ -87,6 +88,9 @@ final class BuildReport {
 
   /// Сколько `\xt` остались текстом.
   final int xtUnresolved;
+
+  /// Собранные модули толкований: id → числа толкований, статей и ссылок.
+  final Map<String, String> commentaries;
 
   /// Что сказать о [rebuildMissed], или `null`, если пересобраны все.
   String? get rebuildProblem => rebuildMissed.isEmpty
@@ -164,6 +168,10 @@ final class BuildReport {
     }
 
     list('Built', [for (final id in built) '`$id`']);
+    list('Commentaries', [
+      for (final id in commentaries.keys.toList()..sort())
+        '`$id`: ${commentaries[id]}',
+    ]);
     sections('Failed', failed);
     list('Skipped rows', [
       for (final id in skipped.keys.toList()..sort())

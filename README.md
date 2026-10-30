@@ -13,8 +13,10 @@ eBible.org.
 `packages/catalog_builder` builds the catalog: it reads
 `https://ebible.org/Scriptures/translations.csv`, takes the translations marked
 `Redistributable` and downloadable (minus `exclude` in `overrides.json`),
-builds a module from each USFM archive, publishes the modules as GitHub release
-files, and writes `index/index.json` and `sources/sources.lock.json`. The
+builds a module from each USFM archive, adds the commentaries listed in
+`sources/crosswire.lock.json` (see "Commentaries from CrossWire"), publishes
+the modules as GitHub release files, and writes `index/index.json` and
+`sources/sources.lock.json`. The
 `build` workflow runs it on the 1st of every month at 03:00 UTC and on demand.
 Run the commands from the repository root after `dart pub get`:
 
@@ -28,7 +30,8 @@ dart run catalog_builder:build --apply-deletions <deletions.json>
   publishes through `gh release` (credentials from `GH_TOKEN`) and writes
   `index/index.json`, `sources/sources.lock.json`,
   `sources/pending-deletions.json`, and `out/report.md`. `--limit` caps the
-  number of builds in one run, and the rest wait for the next run; `--work` is
+  number of translation builds in one run, and the rest wait for the next run
+  (CrossWire commentaries do not count toward it); `--work` is
   the folder for downloaded archives and built modules (default `out/work`).
 - A run does not delete the release files that its new index no longer uses. It
   lists them in `sources/pending-deletions.json`, which is committed with the
@@ -60,8 +63,9 @@ dart run catalog_builder:build --apply-deletions <deletions.json>
   module takes four or five. Build the first, full catalog in runs of about
   `--limit 200`, an hour apart.
 - `--dry-run` publishes and deletes nothing and writes the same four files to
-  `out/dry-run/`. It still downloads from eBible.org and prints the files a
-  real run would delete and upload.
+  `out/dry-run/`. It still downloads from eBible.org and CrossWire, checks the
+  CrossWire archives against `sources/crosswire.lock.json`, and prints the
+  files a real run would delete and upload.
 - `--apply-deletions` deletes the files listed in a deletion list, for manual
   use: for example, `sources/pending-deletions.json` when no run is planned
   soon. Run it only when the pushed index has not used those files for at least
@@ -133,9 +137,9 @@ version from the lock.
 Two public-domain commentaries of the
 [CrossWire SWORD](https://www.crosswire.org/sword/) library can be built into
 `commentaries` modules: `Clarke` (Adam Clarke) and `KD` (Keil and Delitzsch).
-They are not part of the catalog and are not published: run
-`dart run catalog_builder:build --crosswire <module> <out.hb>` and take the
-file. The command downloads
+`dart run catalog_builder:build --crosswire <module> <out.hb>` builds one into
+a file and records its archive in `sources/crosswire.lock.json`; the catalog
+run builds and publishes every module recorded there. The command downloads
 `https://www.crosswire.org/ftpmirror/pub/sword/packages/rawzip/<module>.zip`
 and reads the module's `.conf` and its zCom or zCom4 files from the archive in
 memory. The module must be OSIS, UTF-8, ZIP-compressed, in the KJV
@@ -159,6 +163,31 @@ date to `sources/crosswire.lock.json`; the entries of other modules stay as
 they are. A later run with another archive stops with an error and leaves the
 lock and the module as they were; check the new data and run again with
 `--accept-new-source` to take it.
+
+### Commentaries in the catalog
+
+To add a module to the catalog, run `--crosswire <module> <out.hb>` (with
+`--accept-new-source` for a new archive of a module already listed) and commit
+`sources/crosswire.lock.json`. The catalog run never takes a new archive
+itself, in the workflow or not. For every module in the lock it downloads the
+archive from CrossWire and checks its sha256 against the lock; an archive that
+differs, or that cannot be downloaded, fails the module in the report, and the
+module already in the index stays there as it was. The commentaries come
+first in the run and do not count toward `--limit`; they are not withdrawn for
+being absent from `translations.csv`, only when their entry leaves the lock.
+
+A commentaries module enters the index with `type` `commentaries`, the id
+`crosswire-<module in lowercase>` (`crosswire-clarke`, `crosswire-kd`),
+`language` `en`, and the abbreviation of the module. Like a translation, its
+archive is saved to `sources-<date>` and listed in `sources/sources.lock.json`
+(as `<id>-<SwordVersionDate>.zip`), and the module goes to `build-<date>` as
+`<id>-<version>.hb`. The version is the `SwordVersionDate`. A module whose
+version has that date and whose saved copy is of the same archive is left as
+it is. It becomes the next revision (`.1`, `.2`…) when an accepted archive has
+the same `SwordVersionDate`, or when its id is given to `--rebuild`, or when
+it was built before `--rebuild-before`; a new `SwordVersionDate` starts again
+from the bare date. The report lists the comments, articles and links of each
+commentaries module built.
 
 ## License
 

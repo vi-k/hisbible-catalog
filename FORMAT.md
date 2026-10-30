@@ -154,9 +154,10 @@ revision: N is an integer from 1, without leading zeros. Examples:
 `2025-03-04`, `2025-03-04.1`, `2025-03-04.2`. The date must exist in the
 calendar. For a catalog module the date is the eBible.org `UpdateDate` of the
 translation; for a module converted from CrossWire it is the `SwordVersionDate`
-in the `.conf` of the CrossWire module. A revision is a rebuild of the same source by the catalog, for
-example after a fix in the builder: `2025-03-04` → `2025-03-04.1` →
-`2025-03-04.2`. A new `UpdateDate` starts again from the bare date.
+in the `.conf` of the CrossWire module. A revision is a rebuild by the catalog
+with the same date, for example after a fix in the builder or, for a CrossWire
+module, from a new archive with the same `SwordVersionDate`: `2025-03-04` →
+`2025-03-04.1` → `2025-03-04.2`. A new date starts again from the bare date.
 
 Readers compare versions only for inequality and show only the date part. The
 function `moduleVersionDate` of `hisbible_format` checks a version and returns
@@ -283,9 +284,14 @@ only from the releases of this repository: a `url` that does not start with
 - `moduleFormat` is the file format version of the module. A client hides
   modules with a `moduleFormat` newer than it knows and modules of an unknown
   `type`. Unknown fields are skipped.
+- `type` is `bible` for the translations of eBible.org and `commentaries` for
+  the commentaries converted from CrossWire. A commentaries entry has the same
+  fields; its `id` is `crosswire-<module in lowercase>` (`crosswire-kd`), so it
+  never meets a `translationId` of eBible.org.
 - `books` counts the books of the Old Testament, the New Testament, and the
-  deuterocanon; `size` and `sha256` describe the file at `url`. `sha256` is 64
-  lowercase hex digits.
+  deuterocanon; for commentaries, the books that have comments or articles.
+  `size` and `sha256` describe the file at `url`. `sha256` is 64 lowercase hex
+  digits.
 - `description` and `copyright` of a module are optional: the field is left out
   when the source gives no value.
 - `version` follows "Versions" above; a client drops a module entry whose

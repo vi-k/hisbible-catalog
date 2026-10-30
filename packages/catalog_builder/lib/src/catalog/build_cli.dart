@@ -312,6 +312,7 @@ final class _Cli {
             _readJson('fonts/fonts.lock.json', FontsLock.parse) ??
             FontsLock.empty,
         pending: _readJson(pendingDeletionsPath, parseDeletions) ?? const [],
+        crosswire: _readJson(crosswireLockPath, parseCrossWireLock) ?? const {},
         fetcher: fetcher,
         publisher: publisher,
         work: Directory(work)..createSync(recursive: true),
