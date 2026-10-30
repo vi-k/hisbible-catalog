@@ -232,6 +232,24 @@ void main() {
     expect(() => parseSwordConf('Description=x\n'), throwsFormatException);
   });
 
+  test('crossWireDescription: first paragraph without a lead-in', () {
+    expect(crossWireDescription(null), isNull);
+    expect(crossWireDescription(r' \par Second.'), isNull);
+    expect(
+      crossWireDescription(r'First. Second.\par Third.'),
+      'First. Second.',
+    );
+    // KD: «… in English. The authors' preface follows:» — предисловие
+    // в описание не входит, и вступление к нему обрывается.
+    expect(
+      crossWireDescription(
+        r"Keil published it in 1864. The authors' preface follows:\par Text.",
+      ),
+      'Keil published it in 1864.',
+    );
+    expect(crossWireDescription(r'Contents:\par One.'), 'Contents:');
+  });
+
   group('runCrossWire', () {
     late String lockPath;
     final zip = crosswireZip('Clarke', _clarkeFiles());

@@ -210,7 +210,7 @@ CrossWireOutcome buildCrossWire(
     script: 'Latn',
     license: 'PD',
     copyright: 'Public Domain',
-    description: _firstParagraph(conf['About']),
+    description: crossWireDescription(conf['About']),
     source: 'crosswire:$module',
     sourceUrl: conf['TextSource'],
     version: version ?? swordVersion,
@@ -437,12 +437,23 @@ Map<String, String> _findConf(Archive archive, String module) {
   return (section: section, values: values);
 }
 
-// Первый абзац `About`: до первого `\par` RTF.
-String? _firstParagraph(String? about) {
+/// Описание модуля из `About` его `.conf`: первый абзац, до первого `\par`
+/// RTF.
+///
+/// Последнее предложение, которое кончается двоеточием, — вступление
+/// к следующему абзацу (у KD «The authors' preface follows:»), и без него
+/// описание не обрывается. Если предложение одно, оно остаётся.
+String? crossWireDescription(String? about) {
   if (about == null) {
     return null;
   }
-  final first = about.split(r'\par').first.trim();
+  var first = about.split(r'\par').first.trim();
+  if (first.endsWith(':')) {
+    final end = first.lastIndexOf(RegExp(r'[.!?]\s'));
+    if (end >= 0) {
+      first = first.substring(0, end + 1);
+    }
+  }
 
   return first.isEmpty ? null : first;
 }
