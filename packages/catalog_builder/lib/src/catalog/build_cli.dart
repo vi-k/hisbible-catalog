@@ -11,6 +11,7 @@ import 'package:catalog_builder/src/catalog/overrides.dart';
 import 'package:catalog_builder/src/catalog/publisher.dart';
 import 'package:catalog_builder/src/catalog/report.dart';
 import 'package:catalog_builder/src/catalog/sources_lock.dart';
+import 'package:catalog_builder/src/crosswire/crosswire_build.dart';
 import 'package:catalog_builder/src/ebible/translations_csv.dart';
 import 'package:catalog_builder/src/openbible/openbible_build.dart';
 import 'package:catalog_builder/src/text_helpers.dart';
@@ -65,6 +66,8 @@ const _usage =
     '[--out <file>]\n'
     '  dart run catalog_builder:build --apply-deletions <deletions.json>\n'
     '  dart run catalog_builder:build --openbible <out.hb> '
+    '[--accept-new-source]\n'
+    '  dart run catalog_builder:build --crosswire <module> <out.hb> '
     '[--accept-new-source]';
 
 const _defaultCsv = 'https://ebible.org/Scriptures/translations.csv';
@@ -75,13 +78,19 @@ final _datedId = RegExp(r'^(.+)-\d{4}-\d{2}-\d{2}$');
 /// с указателем и коммитится с ним.
 const pendingDeletionsPath = 'sources/pending-deletions.json';
 
+/// Ключ в `options`, под которым [parseCliOptions] кладёт второе значение
+/// `--crosswire <module> <out.hb>` — путь модуля; первое лежит под
+/// `--crosswire`.
+const crosswireOutKey = '--crosswire <out.hb>';
+
 /// Разобранные аргументы сборки: ключи со значениями и флаги в
 /// `options`, id из повторяемого ключа `--rebuild` в `rebuild`.
 typedef CliOptions = ({Map<String, String> options, List<String> rebuild});
 
 /// Разбирает аргументы [args] сборки: ключи со значениями, флаги
 /// `--dry-run`, `--allow-mass-withdrawal` и `--accept-new-source` (значение —
-/// пустая строка) и повторяемый `--rebuild <id>`; незнакомый ключ, ключ
+/// пустая строка), повторяемый `--rebuild <id>` и `--crosswire` с двумя
+/// значениями (второе — под [crosswireOutKey]); незнакомый ключ, ключ
 /// без значения, повтор другого ключа, id `--rebuild` не по
 /// [translationIdPattern] или `--rebuild-before` не датой `YYYY-MM-DD` —
 /// `null`.
@@ -105,7 +114,10 @@ CliOptions? parseCliOptions(List<String> args) {
     if (options.containsKey(key)) {
       return null;
     }
-    if (key == '--rebuild' && i + 1 < args.length) {
+    if (key == '--crosswire' && i + 2 < args.length) {
+      options[key] = args[++i];
+      options[crosswireOutKey] = args[++i];
+    } else if (key == '--rebuild' && i + 1 < args.length) {
       final id = args[++i];
       if (!translationIdPattern.hasMatch(id)) {
         return null;
@@ -155,6 +167,23 @@ final class _Cli {
                     const {'--openbible', '--accept-new-source'}.contains(key),
               )
           ? _openBible(openBible, options.containsKey('--accept-new-source'))
+          : _badArguments();
+    }
+    final crossWire = options['--crosswire'];
+    if (crossWire != null) {
+      return rebuild.isEmpty &&
+              options.keys.every(
+                (key) => const {
+                  '--crosswire',
+                  crosswireOutKey,
+                  '--accept-new-source',
+                }.contains(key),
+              )
+          ? _crossWire(
+              crossWire,
+              options[crosswireOutKey]!,
+              options.containsKey('--accept-new-source'),
+            )
           : _badArguments();
     }
     if (options.containsKey('--accept-new-source')) {
@@ -217,6 +246,27 @@ final class _Cli {
     final fetcher = HttpFetcher();
     try {
       return await runOpenBible(
+        outPath,
+        fetcher: fetcher,
+        acceptNewSource: acceptNewSource,
+        out: _out,
+        err: _err,
+      );
+    } finally {
+      fetcher.close();
+    }
+  }
+
+  // Модуль толкований CrossWire [module] в [outPath].
+  Future<int> _crossWire(
+    String module,
+    String outPath,
+    bool acceptNewSource,
+  ) async {
+    final fetcher = HttpFetcher();
+    try {
+      return await runCrossWire(
+        module,
         outPath,
         fetcher: fetcher,
         acceptNewSource: acceptNewSource,

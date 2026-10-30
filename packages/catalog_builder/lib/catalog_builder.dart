@@ -14,6 +14,7 @@ export 'src/catalog/publisher.dart';
 export 'src/catalog/report.dart';
 export 'src/catalog/sources_lock.dart';
 export 'src/crosswire/articles.dart';
+export 'src/crosswire/crosswire_build.dart';
 export 'src/crosswire/kjv_canon.dart';
 export 'src/crosswire/osis_html.dart';
 export 'src/crosswire/zcom.dart';

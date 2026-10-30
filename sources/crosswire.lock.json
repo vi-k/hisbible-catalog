@@ -1,0 +1,14 @@
+{
+  "Clarke": {
+    "url": "https://www.crosswire.org/ftpmirror/pub/sword/packages/rawzip/Clarke.zip",
+    "sha256": "56bb33d3bf0f50c1609f4dd10ac81e7450bb0e8aae93bf340074ccb5e207a44f",
+    "version": "2021-10-19",
+    "fetched": "2026-10-30"
+  },
+  "KD": {
+    "url": "https://www.crosswire.org/ftpmirror/pub/sword/packages/rawzip/KD.zip",
+    "sha256": "ca3bdb6a04c0b717ee2faed71b432d58195db96f217f490ce6f7d9c36a2876f7",
+    "version": "2022-08-03",
+    "fetched": "2026-10-30"
+  }
+}
