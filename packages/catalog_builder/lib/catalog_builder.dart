@@ -13,6 +13,8 @@ export 'src/catalog/overrides.dart';
 export 'src/catalog/publisher.dart';
 export 'src/catalog/report.dart';
 export 'src/catalog/sources_lock.dart';
+export 'src/crosswire/kjv_canon.dart';
+export 'src/crosswire/zcom.dart';
 export 'src/ebible/license.dart';
 export 'src/ebible/scripts.dart';
 export 'src/ebible/translations_csv.dart';
