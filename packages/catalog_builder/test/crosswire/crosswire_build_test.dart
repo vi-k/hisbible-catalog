@@ -230,6 +230,7 @@ void main() {
         allOf(
           contains('comments 4, book articles 1, chapter articles 1'),
           contains('verse 1 split 1, whole articles 1'),
+          contains('widened to the leading reference 0'),
           contains('links 1, unresolved 0'),
         ),
       );

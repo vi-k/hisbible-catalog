@@ -41,6 +41,7 @@ final class CrossWireOutcome {
     required this.split,
     required this.whole,
     required this.shifted,
+    required this.widened,
     required this.empty,
     required this.links,
     required this.unresolved,
@@ -70,6 +71,9 @@ final class CrossWireOutcome {
 
   /// Толкований, чьё начало сдвинуто со стиха 2 на стих 1.
   final int shifted;
+
+  /// Толкований, чьё место расширено до их ведущей ссылки.
+  final int widened;
 
   /// Частей без текста: не записаны.
   final int empty;
@@ -147,7 +151,10 @@ CrossWireOutcome buildCrossWire(
         file.name.substring(dataPath.length): file.content,
   };
   final records = readZCom(files, indexEntrySize: entrySize);
-  final (:parts, :split, :whole, :shifted) = splitArticles(records, marker);
+  final (:parts, :split, :whole, :shifted, :widened) = splitArticles(
+    records,
+    marker,
+  );
 
   final meta = ModuleMeta(
     type: ModuleType.commentaries,
@@ -223,6 +230,7 @@ CrossWireOutcome buildCrossWire(
     split: split,
     whole: whole,
     shifted: shifted,
+    widened: widened,
     empty: empty,
     links: links,
     unresolved: unresolved,
@@ -305,7 +313,8 @@ Future<int> runCrossWire(
       )
       ..writeln(
         'verse 1 split ${outcome.split}, whole articles ${outcome.whole}, '
-        'shifted to verse 1 ${outcome.shifted}',
+        'shifted to verse 1 ${outcome.shifted}, '
+        'widened to the leading reference ${outcome.widened}',
       )
       ..writeln(
         'links ${outcome.links}, unresolved ${outcome.unresolved}, '

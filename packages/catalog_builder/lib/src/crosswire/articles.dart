@@ -1,5 +1,6 @@
 import 'package:catalog_builder/src/crosswire/osis_html.dart';
 import 'package:catalog_builder/src/crosswire/zcom.dart';
+import 'package:hisbible_format/hisbible_format.dart';
 
 /// Чем в записи стиха 1 отмечено начало толкования самого стиха — то, что
 /// перед ним, введение к книге или главе.
@@ -69,6 +70,7 @@ typedef SplitArticles = ({
   int split,
   int whole,
   int shifted,
+  int widened,
 });
 
 /// Делит записи [records] на толкования и статьи к книге и главе.
@@ -79,6 +81,13 @@ typedef SplitArticles = ({
 /// и статья к главе в других главах. Сколько записей поделено (`split`),
 /// сколько целиком стали статьями (`whole`) и у скольких следующих записей
 /// начало сдвинуто на стих 1 (`shifted`), — в итоге.
+///
+/// У [ArticleMarker.verseReference] место толкования ещё и сверяется с его
+/// ведущей ссылкой — ссылкой, которая одна стоит в первом абзаце: если она
+/// в той же книге и главе и её промежуток содержит место записи, место
+/// толкования — промежуток ссылки (`widened`). Толкование, которое так
+/// стало начинаться со стиха 1, делает запись стиха 1 этой главы без
+/// ведущей ссылки, начатую заголовком, статьёй (она считается в `whole`).
 SplitArticles splitArticles(List<ZComRecord> records, ArticleMarker marker) {
   final parts = <CommentPart>[];
   var split = 0;
@@ -171,7 +180,105 @@ SplitArticles splitArticles(List<ZComRecord> records, ArticleMarker marker) {
     }
   }
 
-  return (parts: parts, split: split, whole: whole, shifted: shifted);
+  if (marker != ArticleMarker.verseReference) {
+    return (
+      parts: parts,
+      split: split,
+      whole: whole,
+      shifted: shifted,
+      widened: 0,
+    );
+  }
+  final (:widened, :articles) = _widenToLeadingReference(parts);
+
+  return (
+    parts: parts,
+    split: split,
+    whole: whole + articles,
+    shifted: shifted,
+    widened: widened,
+  );
+}
+
+// Расширяет места толкований [parts] до их ведущих ссылок и делает
+// статьями записи стиха 1, чьё место заняло расширенное толкование.
+({int widened, int articles}) _widenToLeadingReference(
+  List<CommentPart> parts,
+) {
+  var widened = 0;
+  // Главы, где толкование после расширения начинается со стиха 1.
+  final fromVerseOne = <(int, int)>{};
+  for (final (i, part) in parts.indexed) {
+    if (part.kind != CommentPartKind.comment || part.chapterEnd != null) {
+      continue;
+    }
+    final range = _leadingRange(part.osis);
+    final end = range?.end ?? range?.start;
+    if (range == null ||
+        end == null ||
+        range.start.book != part.book ||
+        range.start.chapter != part.chapter ||
+        end.chapter != part.chapter ||
+        range.start.verse > part.verse ||
+        end.verse < (part.verseEnd ?? part.verse)) {
+      continue;
+    }
+    final verseEnd = end.verse == range.start.verse ? null : end.verse;
+    if (range.start.verse == part.verse && verseEnd == part.verseEnd) {
+      continue;
+    }
+    parts[i] = CommentPart(
+      kind: CommentPartKind.comment,
+      book: part.book,
+      chapter: part.chapter,
+      verse: range.start.verse,
+      verseEnd: verseEnd,
+      osis: part.osis,
+    );
+    widened++;
+    if (range.start.verse == 1 && part.verse != 1) {
+      fromVerseOne.add((part.book, part.chapter));
+    }
+  }
+  var articles = 0;
+  for (final (i, part) in parts.indexed) {
+    if (part.kind == CommentPartKind.comment &&
+        part.verse == 1 &&
+        part.verseEnd == null &&
+        fromVerseOne.contains((part.book, part.chapter)) &&
+        _startsWithTitle(part.osis) &&
+        _leadingRange(part.osis) == null) {
+      parts[i] = CommentPart(
+        kind: part.chapter == 1
+            ? CommentPartKind.bookArticle
+            : CommentPartKind.chapterArticle,
+        book: part.book,
+        chapter: part.chapter == 1 ? 0 : part.chapter,
+        verse: 0,
+        osis: part.osis,
+      );
+      articles++;
+    }
+  }
+
+  return (widened: widened, articles: articles);
+}
+
+// Ведущая ссылка записи: после вех тег `reference`, а за ним сразу граница
+// абзаца или конец записи; `null` — такой ссылки нет или её не прочесть.
+RefRange? _leadingRange(String osis) {
+  final start = _skip.matchAsPrefix(osis)!.end;
+  final match = _leadingReference.matchAsPrefix(osis, start);
+  if (match == null) {
+    return null;
+  }
+  final after = _skip.matchAsPrefix(osis, match.end)!;
+  final rest = osis.substring(match.end, after.end);
+  if (after.end < osis.length && !rest.contains(_paragraphMilestone)) {
+    return null;
+  }
+
+  return parseOsisRef(match[1]!);
 }
 
 // Пробелы и вехи: `div`, `chapter`, `milestone` без содержимого.
@@ -181,6 +288,10 @@ final _label = RegExp(r'<hi type="bold">\s*Verse\s+1\s*</hi>');
 // Начало абзаца: после вехи абзаца или после заголовка.
 final _paragraphStart = RegExp(r'<div\b[^>]*\btype="x-p"[^>]*/>|</title>');
 final _referenceTag = RegExp(r'<reference osisRef="([^".]+)\.(\d+)\.(\d+)[-"]');
+final _leadingReference = RegExp(
+  '<reference osisRef="([^"]+)">[^<]*</reference>',
+);
+final _paragraphMilestone = RegExp(r'<div\b[^>]*\btype="x-p"[^>]*/>');
 final _referenceText = RegExp(
   r'(?:[1-3] ?)?[A-Z][a-z]{1,5}\.? ?(\d+):(\d+)(?!\d)',
 );

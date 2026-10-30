@@ -219,6 +219,133 @@ void main() {
     });
   });
 
+  group('KD: the leading reference', () {
+    final psa = parseOsisRef('Ps.1.1')!.start.book;
+    ZComRecord psRec(int chapter, int verse, String text, {int? verseEnd}) =>
+        ZComRecord(
+          book: psa,
+          chapter: chapter,
+          verse: verse,
+          verseEnd: verseEnd,
+          text: text,
+        );
+    List<(CommentPartKind, int, int, int?)> places(SplitArticles split) => [
+      for (final p in split.parts) (p.kind, p.chapter, p.verse, p.verseEnd),
+    ];
+
+    test('the comment takes the range of its leading reference', () {
+      final split = splitArticles([
+        psRec(
+          5,
+          3,
+          '<reference osisRef="Ps.5.2-Ps.5.4">Psa 5:2-4</reference>'
+          '<div type="x-p" sID="a"/> Comment.',
+        ),
+      ], ArticleMarker.verseReference);
+
+      expect(places(split), [(comment, 5, 2, 4)]);
+      expect(split.widened, 1);
+    });
+
+    test('Psalm 23: verse 1 with a title becomes the chapter article', () {
+      final split = splitArticles([
+        psRec(23, 1, '<title type="x-s2">The Good Shepherd</title> Intro.'),
+        psRec(
+          23,
+          3,
+          '<reference osisRef="Ps.23.1-Ps.23.3">Psa 23:1-3</reference>'
+          '<div type="x-p" sID="a"/> The poet.',
+        ),
+        psRec(
+          23,
+          4,
+          '<reference osisRef="Ps.23.4-Ps.23.5">Psa 23:4-5</reference>'
+          '<div type="x-p" sID="b"/> Rod and staff.',
+          verseEnd: 5,
+        ),
+      ], ArticleMarker.verseReference);
+
+      expect(places(split), [
+        (chapterArticle, 23, 0, null),
+        (comment, 23, 1, 3),
+        (comment, 23, 4, 5),
+      ]);
+      expect((split.widened, split.whole), (1, 1));
+    });
+
+    test('in chapter 1 verse 1 with a title becomes the book article', () {
+      final split = splitArticles([
+        psRec(1, 1, '<title type="x-s2">The Psalter</title> Intro.'),
+        psRec(
+          1,
+          2,
+          '<reference osisRef="Ps.1.1-Ps.1.3">Psa 1:1-3</reference>',
+          verseEnd: 3,
+        ),
+      ], ArticleMarker.verseReference);
+
+      expect(places(split), [(bookArticle, 0, 0, null), (comment, 1, 1, 3)]);
+    });
+
+    test('verse 1 without a title stays a comment', () {
+      final split = splitArticles([
+        psRec(7, 1, 'No title here.'),
+        psRec(7, 2, '<reference osisRef="Ps.7.1-Ps.7.2">Psa 7:1-2</reference>'),
+      ], ArticleMarker.verseReference);
+
+      expect(places(split), [(comment, 7, 1, null), (comment, 7, 1, 2)]);
+      expect((split.widened, split.whole), (1, 0));
+    });
+
+    test('a reference elsewhere or not covering the place is left alone', () {
+      final split = splitArticles([
+        // В другую главу.
+        psRec(
+          4,
+          1,
+          '<reference osisRef="Ps.1.1-Ps.1.9">Psa 1:1-9</reference> Moses.',
+        ),
+        // Уже места записи.
+        psRec(
+          35,
+          21,
+          '<reference osisRef="Ps.35.21-Ps.35.22">Psa 35:21-22</reference>',
+          verseEnd: 29,
+        ),
+        // Не одна в первом абзаце.
+        psRec(
+          36,
+          3,
+          '<reference osisRef="Ps.36.2-Ps.36.4">Psa 36:2-4</reference> and '
+          '<reference osisRef="Ps.36.5">Psa 36:5</reference>.',
+        ),
+        // Через главы.
+        psRec(
+          37,
+          3,
+          '<reference osisRef="Ps.37.1-Ps.38.2">Psa 37:1-38:2</reference>',
+        ),
+      ], ArticleMarker.verseReference);
+
+      expect(places(split), [
+        (comment, 4, 1, null),
+        (comment, 35, 21, 29),
+        (comment, 36, 3, null),
+        (comment, 37, 3, null),
+      ]);
+      expect(split.widened, 0);
+    });
+
+    test('Clarke keeps the places of its records', () {
+      final split = splitArticles([
+        psRec(5, 3, '<reference osisRef="Ps.5.2-Ps.5.4">Psa 5:2-4</reference>'),
+      ], ArticleMarker.verseLabel);
+
+      expect(places(split), [(comment, 5, 3, null)]);
+      expect(split.widened, 0);
+    });
+  });
+
   test('book and chapter records are articles', () {
     final split = splitArticles([
       rec(0, 0, '<div type="book"/> About the book'),
