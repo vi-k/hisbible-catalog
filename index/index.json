@@ -2,7 +2,7 @@
   "format": 1,
   "catalog": "hisbible",
   "name": "HisBible",
-  "updated": "2026-10-30",
+  "updated": "2026-11-01",
   "modules": [
     {
       "id": "aai",
@@ -22415,9 +22415,9 @@
         "dc": 0
       },
       "size": 212992,
-      "sha256": "4da7de1a625d2132ab6efee717eb415bdab865bb4f355ef9f4c32876d97d03ed",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-30/rmyArli-2026-10-29.hb",
-      "version": "2026-10-29",
+      "sha256": "d342294b3f05f008dcc09d963d626a52fc55ff37bdcee21e3cdcc1a4c6c55af4",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-01/rmyArli-2026-10-30.hb",
+      "version": "2026-10-30",
       "moduleFormat": 1
     },
     {
@@ -22583,9 +22583,9 @@
         "dc": 0
       },
       "size": 290816,
-      "sha256": "a8c20e67012475d79075119ca148bc36b5cb26ec3a9103ab02b18e0d866df289",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-10-30/ronBayash-2026-10-29.hb",
-      "version": "2026-10-29",
+      "sha256": "d26c61d510211dcdf59214b0947891d1f3aefe1dbcd328f9095505407ef7d479",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-01/ronBayash-2026-10-30.hb",
+      "version": "2026-10-30",
       "moduleFormat": 1
     },
     {
