@@ -296,11 +296,36 @@ final class _Content {
     }
   }
 
-  // Добавляет знак сноски; пробелов он не меняет.
+  // Добавляет знак сноски.
+  //
+  // Знак между пробелами (`слово \f…\f* слово`) прилегает к слову перед
+  // ним, пробел встаёт после знака. Иначе пробел после `\f*` схлопнулся бы
+  // с пробелом перед `\f`, и знак прилип бы к следующему слову. Пробел перед
+  // знаком вне открытого маркера переставить нельзя — тогда пробел после
+  // знака не схлопывается.
   void add(MarkupNode node) {
-    if (!dropping) {
-      _top.add(node);
+    if (dropping) {
+      return;
     }
+    final top = _top;
+    if (node is FootnoteRef && _lastSpace && hasText) {
+      top.flush();
+      if (top.children.lastOrNull case TextRun(:final text)
+          when text.endsWith(' ')) {
+        final rest = text.substring(0, text.length - 1);
+        if (rest.isEmpty) {
+          top.children.removeLast();
+        } else {
+          top.children.last = TextRun(rest);
+        }
+        top
+          ..add(node)
+          ..write(' ');
+        return;
+      }
+      _lastSpace = false;
+    }
+    top.add(node);
   }
 
   // Добавляет разрыв строки или абзаца, срезав пробелы перед ним.
