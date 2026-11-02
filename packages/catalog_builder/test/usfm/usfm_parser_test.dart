@@ -376,6 +376,44 @@ void main() {
     expect(book.unknownMarkers, {'zq'});
   });
 
+  test('a note between spaces sticks to the word before it', () {
+    // BSB, Плач 4:7: пробел и перед `\f`, и после `\f*`.
+    final book = parseUsfm(
+      '\\id LAM\n\\c 4\n'
+      r'\v 7 their appearance \f + \fr 4:7 \ft Or polishing\f* '
+      r'\w like|strong="H7950"\w* sapphire'
+      '\n\\v 8 a \\wj b \\f + \\ft n\\f* c\\wj*',
+    );
+    expect(book.verses[0].nodes, [
+      const TextRun('their appearance'),
+      const FootnoteRef(1, 'a'),
+      const TextRun(' '),
+      const TaggedWord([TextRun('like')], strong: ['H7950']),
+      const TextRun(' sapphire'),
+    ]);
+    expect(book.verses[1].nodes, [
+      const TextRun('a '),
+      const StyledSpan(MarkupStyle.wordsOfChrist, [
+        TextRun('b'),
+        FootnoteRef(2, 'b'),
+        TextRun(' c'),
+      ]),
+    ]);
+  });
+
+  test('a note between spaces at a span start keeps the space after it', () {
+    final book = parseUsfm(
+      '\\id MAT\n\\c 1\n\\v 1 a \\wj \\f + \\ft n\\f* b\\wj*',
+    );
+    expect(book.verses.single.nodes, [
+      const TextRun('a '),
+      const StyledSpan(MarkupStyle.wordsOfChrist, [
+        FootnoteRef(1, 'a'),
+        TextRun(' b'),
+      ]),
+    ]);
+  });
+
   test('text after a mid-verse heading joins the verse', () {
     final book = parseUsfm(
       '\\id MAT\n\\c 1\n\\v 1 word\\s Head\n\\nb\\f + \\ft n\\f* more\n'
