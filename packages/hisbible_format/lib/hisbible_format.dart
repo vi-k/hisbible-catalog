@@ -29,6 +29,8 @@ export 'src/module_type.dart';
 export 'src/problems.dart';
 export 'src/refs/ref_range.dart';
 export 'src/refs/verse_ref.dart';
+export 'src/usfm/copyright_page.dart';
+export 'src/usfm/script_of_text.dart';
 export 'src/usfm/usfm_book.dart';
 export 'src/usfm/usfm_module.dart';
 export 'src/usfm/usfm_parser.dart';

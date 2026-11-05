@@ -1,0 +1,219 @@
+// Сколько букв выборки считается.
+const _sampleLetters = 10000;
+
+/// Письменность ISO 15924 по буквам [sample] — та часть `scriptCodeOf`, что
+/// не смотрит в CSV: самая частая письменность первых 10 000 букв; при
+/// равенстве — раньше по таблице диапазонов. Кана (`Kana`) идёт в счёт
+/// иероглифов (`Hani`), а `Hani` уточняется в `Hans`, `Hant` или `Jpan` по
+/// кане и частым знакам пар «упрощённый — полный». Буква — знак категории
+/// Юникода `L`. Букв этих письменностей нет — `null`.
+String? scriptOfText(String sample) {
+  final counts = <String, int>{};
+  var letters = 0;
+  var simplified = 0;
+  var traditional = 0;
+  for (final rune in sample.runes) {
+    final script = _scriptOfRune(rune);
+    if (script == null) {
+      continue;
+    }
+    counts[script] = (counts[script] ?? 0) + 1;
+    if (script == 'Hani') {
+      if (_simplified.contains(rune)) {
+        simplified++;
+      } else if (_traditional.contains(rune)) {
+        traditional++;
+      }
+    }
+    if (++letters == _sampleLetters) {
+      break;
+    }
+  }
+  final kana = counts.remove('Kana') ?? 0;
+  if (kana > 0) {
+    counts['Hani'] = (counts['Hani'] ?? 0) + kana;
+  }
+  String? best;
+  var bestCount = 0;
+  for (final (script, _, _) in _ranges) {
+    final count = counts[script] ?? 0;
+    if (count > bestCount) {
+      best = script;
+      bestCount = count;
+    }
+  }
+  if (best == 'Hani') {
+    return _hanVariant(
+      han: bestCount,
+      kana: kana,
+      simplified: simplified,
+      traditional: traditional,
+    );
+  }
+
+  return best;
+}
+
+// Вариант иероглифов: [kana] знаков каны из [han] иероглифов с каной,
+// [simplified] и [traditional] знаков пар [_hanPairs].
+String _hanVariant({
+  required int han,
+  required int kana,
+  required int simplified,
+  required int traditional,
+}) {
+  if (kana * 100 >= han * _kanaPercent) {
+    return 'Jpan';
+  }
+  if (simplified != traditional) {
+    return simplified > traditional ? 'Hans' : 'Hant';
+  }
+
+  return 'Hani';
+}
+
+// Сколько процентов каны среди иероглифов с каной делает текст японским.
+const _kanaPercent = 5;
+
+// Частые знаки, у которых упрощённое и полное написания различаются:
+// упрощённый знак, затем полный.
+const _hanPairs = [
+  ('这', '這'),
+  ('说', '說'),
+  ('们', '們'),
+  ('来', '來'),
+  ('时', '時'),
+  ('为', '為'),
+  ('国', '國'),
+  ('会', '會'),
+  ('对', '對'),
+  ('个', '個'),
+  ('从', '從'),
+  ('发', '發'),
+  ('见', '見'),
+  ('门', '門'),
+  ('长', '長'),
+  ('头', '頭'),
+  ('书', '書'),
+  ('话', '話'),
+  ('进', '進'),
+  ('过', '過'),
+  ('还', '還'),
+  ('后', '後'),
+  ('万', '萬'),
+  ('与', '與'),
+  ('爱', '愛'),
+  ('圣', '聖'),
+  ('经', '經'),
+  ('华', '華'),
+  ('亲', '親'),
+  ('于', '於'),
+  ('稣', '穌'),
+  ('约', '約'),
+  ('灵', '靈'),
+  ('马', '馬'),
+  ('罗', '羅'),
+];
+
+final _simplified = {for (final (s, _) in _hanPairs) s.runes.single};
+
+final _traditional = {for (final (_, t) in _hanPairs) t.runes.single};
+
+// Письменность буквы [rune] или `null`, если это не буква письменностей
+// [_ranges].
+String? _scriptOfRune(int rune) {
+  for (final (script, from, to) in _ranges) {
+    if (rune >= from && rune <= to) {
+      return _letter.hasMatch(String.fromCharCode(rune)) ? script : null;
+    }
+  }
+
+  return null;
+}
+
+final _letter = RegExp(r'\p{L}', unicode: true);
+
+// Диапазоны букв: письменность, первый и последний код. `Hans`, `Hant`
+// и `Jpan` по одной букве не отличить от `Hani`, их здесь нет; кана
+// (`Kana`, хирагана и катакана) считается отдельно и складывается
+// с иероглифами. Коптские буквы греческого блока стоят раньше греческого
+// диапазона и считаются коптскими.
+const _ranges = [
+  ('Latn', 0x41, 0x5A),
+  ('Latn', 0x61, 0x7A),
+  ('Latn', 0xC0, 0xD6),
+  ('Latn', 0xD8, 0xF6),
+  ('Latn', 0xF8, 0x2AF),
+  ('Latn', 0x1E00, 0x1EFF),
+  ('Latn', 0x2C60, 0x2C7F),
+  ('Latn', 0xA720, 0xA7FF),
+  ('Latn', 0xAB30, 0xAB6F),
+  ('Cyrl', 0x400, 0x52F),
+  ('Cyrl', 0x1C80, 0x1C8F),
+  ('Cyrl', 0x2DE0, 0x2DFF),
+  ('Cyrl', 0xA640, 0xA69F),
+  ('Arab', 0x600, 0x6FF),
+  ('Arab', 0x750, 0x77F),
+  ('Arab', 0x8A0, 0x8FF),
+  ('Arab', 0xFB50, 0xFDFF),
+  ('Arab', 0xFE70, 0xFEFF),
+  ('Hebr', 0x590, 0x5FF),
+  ('Hebr', 0xFB1D, 0xFB4F),
+  ('Deva', 0x900, 0x97F),
+  ('Deva', 0xA8E0, 0xA8FF),
+  ('Ethi', 0x1200, 0x139F),
+  ('Ethi', 0x2D80, 0x2DDF),
+  ('Ethi', 0xAB00, 0xAB2F),
+  ('Mlym', 0xD00, 0xD7F),
+  ('Telu', 0xC00, 0xC7F),
+  ('Beng', 0x980, 0x9FF),
+  ('Hani', 0x3400, 0x4DBF),
+  ('Hani', 0x4E00, 0x9FFF),
+  ('Hani', 0xF900, 0xFAFF),
+  ('Hani', 0x20000, 0x323AF),
+  ('Copt', 0x3E2, 0x3EF),
+  ('Copt', 0x2C80, 0x2CFF),
+  ('Taml', 0xB80, 0xBFF),
+  ('Tibt', 0xF00, 0xFFF),
+  ('Gujr', 0xA80, 0xAFF),
+  ('Knda', 0xC80, 0xCFF),
+  ('Orya', 0xB00, 0xB7F),
+  ('Thai', 0xE00, 0xE7F),
+  ('Syrc', 0x700, 0x74F),
+  ('Mymr', 0x1000, 0x109F),
+  ('Mymr', 0xA9E0, 0xA9FF),
+  ('Mymr', 0xAA60, 0xAA7F),
+  ('Guru', 0xA00, 0xA7F),
+  ('Tfng', 0x2D30, 0x2D7F),
+  ('Grek', 0x370, 0x3FF),
+  ('Grek', 0x1F00, 0x1FFF),
+  ('Armn', 0x531, 0x58F),
+  ('Armn', 0xFB13, 0xFB17),
+  ('Geor', 0x10A0, 0x10FF),
+  ('Geor', 0x1C90, 0x1CBF),
+  ('Geor', 0x2D00, 0x2D2F),
+  ('Hang', 0x1100, 0x11FF),
+  ('Hang', 0x3130, 0x318F),
+  ('Hang', 0xAC00, 0xD7AF),
+  ('Kana', 0x3040, 0x30FF),
+  ('Kana', 0x31F0, 0x31FF),
+  ('Kana', 0xFF66, 0xFF9D),
+  ('Khmr', 0x1780, 0x17FF),
+  ('Khmr', 0x19E0, 0x19FF),
+  ('Sinh', 0xD80, 0xDFF),
+  ('Laoo', 0xE80, 0xEFF),
+  ('Mong', 0x1800, 0x18AF),
+  ('Mong', 0x11660, 0x1167F),
+  ('Cher', 0x13A0, 0x13FF),
+  ('Cher', 0xAB70, 0xABBF),
+  ('Cans', 0x1400, 0x167F),
+  ('Cans', 0x18B0, 0x18FF),
+  ('Cans', 0x11AB0, 0x11ABF),
+  ('Yiii', 0xA000, 0xA4CF),
+  ('Vaii', 0xA500, 0xA63F),
+  ('Thaa', 0x780, 0x7BF),
+  ('Java', 0xA980, 0xA9DF),
+  ('Bali', 0x1B00, 0x1B7F),
+  ('Kali', 0xA900, 0xA92F),
+  ('Sylo', 0xA800, 0xA82F),
+];

@@ -326,6 +326,21 @@ final class FootnotesWithoutBible extends ModuleProblem {
   String toString() => 'FootnotesWithoutBible($abbreviation)';
 }
 
+/// Файлы USFM есть, но ни один не дал книги Библии.
+final class NoUsfmBooks extends ModuleProblem {
+  /// Создаёт причину.
+  const NoUsfmBooks();
+
+  @override
+  bool operator ==(Object other) => other is NoUsfmBooks;
+
+  @override
+  int get hashCode => (NoUsfmBooks).hashCode;
+
+  @override
+  String toString() => 'NoUsfmBooks()';
+}
+
 /// Модуль не открылся; причина — в [problem].
 final class ModuleOpenException implements Exception {
   /// Создаёт исключение для причины [problem].

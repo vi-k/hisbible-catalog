@@ -18,7 +18,6 @@ export 'src/crosswire/crosswire_build.dart';
 export 'src/crosswire/kjv_canon.dart';
 export 'src/crosswire/osis_html.dart';
 export 'src/crosswire/zcom.dart';
-export 'src/ebible/license.dart';
 export 'src/ebible/scripts.dart';
 export 'src/ebible/translations_csv.dart';
 export 'src/openbible/openbible_build.dart';

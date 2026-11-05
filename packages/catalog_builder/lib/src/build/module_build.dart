@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:archive/archive.dart';
 import 'package:catalog_builder/src/build/module_validation.dart';
 import 'package:catalog_builder/src/catalog/overrides.dart';
-import 'package:catalog_builder/src/ebible/license.dart';
 import 'package:catalog_builder/src/ebible/scripts.dart';
 import 'package:catalog_builder/src/ebible/translations_csv.dart';
 import 'package:catalog_builder/src/text_helpers.dart';

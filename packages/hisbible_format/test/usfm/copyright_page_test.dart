@@ -1,4 +1,4 @@
-import 'package:catalog_builder/catalog_builder.dart';
+import 'package:hisbible_format/hisbible_format.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -104,5 +104,52 @@ void main() {
       licenseOf('<p>© 2001 Someone. All rights reserved.</p>'),
       'redistributable',
     );
+  });
+
+  test('reads name, language and public domain from an eBible page', () {
+    const page = '''
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<title>Синодальный перевод  </title>
+</head>
+<body>
+<h1 class='gentium_plus'>Синодальный перевод</h1>
+<h2>Synodal Translation of the Holy Bible in Russian</h2>
+<p><a href='http://en.wikipedia.org/wiki/Public_domain'>Public Domain</a><br />
+Language: <a href='http://www.ethnologue.org/language/rus'>русский (Russian)</a><br />
+</p>
+<div class="copyright">
+<p align="center"><a href='copyright.htm'>Public Domain</a></p>
+</div>
+</body></html>
+''';
+
+    expect(readCopyrightPage(page), (
+      name: 'Синодальный перевод',
+      language: 'ru',
+      license: 'PD',
+    ));
+  });
+
+  test('a page without h1 takes the title', () {
+    final page = readCopyrightPage(
+      '<html lang="en"><head><title> Some Bible </title></head> '
+      '<body>© 2001 Someone</body></html>',
+    );
+
+    expect(page.name, 'Some Bible');
+    expect(page.license, 'redistributable');
+  });
+
+  test('no lang gives null', () {
+    final page = readCopyrightPage('<html><body><h1>Name</h1></body></html>');
+
+    expect(page.language, isNull);
+    expect(page.name, 'Name');
+  });
+
+  test('no h1 and no title give a null name', () {
+    expect(readCopyrightPage('<p>text</p>').name, isNull);
   });
 }

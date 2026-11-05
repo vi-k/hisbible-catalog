@@ -4,7 +4,8 @@ The HisBible module format and a catalog of free Bible translations from
 eBible.org.
 
 - `packages/hisbible_format` is a pure Dart package: the book list, verse
-  numbering schemes, verse markup, and reading and writing module files.
+  numbering schemes, verse markup, reading and writing module files, and
+  reading USFM and writing a module from it.
 - `FORMAT.md` describes the module file format, the markup, and the catalog
   index.
 
@@ -16,9 +17,9 @@ eBible.org.
 builds a module from each USFM archive, adds the commentaries listed in
 `sources/crosswire.lock.json` (see "Commentaries from CrossWire"), publishes
 the modules as GitHub release files, and writes `index/index.json` and
-`sources/sources.lock.json`. The
-`build` workflow runs it on the 1st of every month at 03:00 UTC and on demand.
-Run the commands from the repository root after `dart pub get`:
+`sources/sources.lock.json`. The `build` workflow runs it on the 1st of every
+month at 03:00 UTC and on demand. Run the commands from the repository root
+after `dart pub get`:
 
 ```
 dart run catalog_builder:build [--csv <path or url>] [--limit <N>] [--deadline <minutes>] [--rebuild <id>]... [--rebuild-before <YYYY-MM-DD>] [--allow-mass-withdrawal] [--dry-run] [--work <dir>]
@@ -31,8 +32,8 @@ dart run catalog_builder:build --apply-deletions <deletions.json>
   `index/index.json`, `sources/sources.lock.json`,
   `sources/pending-deletions.json`, and `out/report.md`. `--limit` caps the
   number of translation builds in one run, and the rest wait for the next run
-  (CrossWire commentaries do not count toward it); `--work` is
-  the folder for downloaded archives and built modules (default `out/work`).
+  (CrossWire commentaries do not count toward it); `--work` is the folder for
+  downloaded archives and built modules (default `out/work`).
 - A run does not delete the release files that its new index no longer uses. It
   lists them in `sources/pending-deletions.json`, which is committed with the
   index. The next run deletes them at its start; by then the CDN of
@@ -143,8 +144,8 @@ run builds and publishes every module recorded there. The command downloads
 `https://www.crosswire.org/ftpmirror/pub/sword/packages/rawzip/<module>.zip`
 and reads the module's `.conf` and its zCom or zCom4 files from the archive in
 memory. The module must be OSIS, UTF-8, ZIP-compressed, in the KJV
-versification and `Public Domain`; anything else stops with an error and
-writes nothing. The module gets `numbering` `eng`, `license` `PD`, `source`
+versification and `Public Domain`; anything else stops with an error and writes
+nothing. The module gets `numbering` `eng`, `license` `PD`, `source`
 `crosswire:<module>`, and its `version` is the `SwordVersionDate` of the
 `.conf`.
 
@@ -152,16 +153,16 @@ OSIS markup becomes HTML, and references become links. The record of verse 1
 often begins with an introduction to the book or the chapter; it is split off
 into a book article (chapter 1) or a chapter article: in `Clarke` the comment
 on the verse begins at the bold label "Verse 1", in `KD` at a paragraph opened
-by a reference to verse 1. In `KD` a record often sits on the last verse of
-the passage it explains, and the passage is named by the single reference of
-its first paragraph; when that reference is in the same chapter and covers the
+by a reference to verse 1. In `KD` a record often sits on the last verse of the
+passage it explains, and the passage is named by the single reference of its
+first paragraph; when that reference is in the same chapter and covers the
 record's verses, the comment takes its range. The command prints how many
 comments, articles and links it wrote.
 
-The first run of each module writes its archive's URL, sha256, version and
-date to `sources/crosswire.lock.json`; the entries of other modules stay as
-they are. A later run with another archive stops with an error and leaves the
-lock and the module as they were; check the new data and run again with
+The first run of each module writes its archive's URL, sha256, version and date
+to `sources/crosswire.lock.json`; the entries of other modules stay as they
+are. A later run with another archive stops with an error and leaves the lock
+and the module as they were; check the new data and run again with
 `--accept-new-source` to take it.
 
 ### Commentaries in the catalog
@@ -172,9 +173,9 @@ To add a module to the catalog, run `--crosswire <module> <out.hb>` (with
 itself, in the workflow or not. For every module in the lock it downloads the
 archive from CrossWire and checks its sha256 against the lock; an archive that
 differs, or that cannot be downloaded, fails the module in the report, and the
-module already in the index stays there as it was. The commentaries come
-first in the run and do not count toward `--limit`; they are not withdrawn for
-being absent from `translations.csv`, only when their entry leaves the lock.
+module already in the index stays there as it was. The commentaries come first
+in the run and do not count toward `--limit`; they are not withdrawn for being
+absent from `translations.csv`, only when their entry leaves the lock.
 
 A commentaries module enters the index with `type` `commentaries`, the id
 `crosswire-<module in lowercase>` (`crosswire-clarke`, `crosswire-kd`),
@@ -182,11 +183,11 @@ A commentaries module enters the index with `type` `commentaries`, the id
 archive is saved to `sources-<date>` and listed in `sources/sources.lock.json`
 (as `<id>-<SwordVersionDate>.zip`), and the module goes to `build-<date>` as
 `<id>-<version>.hb`. The version is the `SwordVersionDate`. A module whose
-version has that date and whose saved copy is of the same archive is left as
-it is. It becomes the next revision (`.1`, `.2`…) when an accepted archive has
-the same `SwordVersionDate`, or when its id is given to `--rebuild`, or when
-it was built before `--rebuild-before`; a new `SwordVersionDate` starts again
-from the bare date. The report lists the comments, articles and links of each
+version has that date and whose saved copy is of the same archive is left as it
+is. It becomes the next revision (`.1`, `.2`…) when an accepted archive has the
+same `SwordVersionDate`, or when its id is given to `--rebuild`, or when it was
+built before `--rebuild-before`; a new `SwordVersionDate` starts again from the
+bare date. The report lists the comments, articles and links of each
 commentaries module built.
 
 ## License

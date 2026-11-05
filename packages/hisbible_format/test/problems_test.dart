@@ -24,4 +24,11 @@ void main() {
       'FootnotesWithoutBible(RST+)',
     );
   });
+
+  test('no USFM books are equal', () {
+    expect(const NoUsfmBooks(), const NoUsfmBooks());
+    expect(const NoUsfmBooks().hashCode, const NoUsfmBooks().hashCode);
+    expect(const NoUsfmBooks(), isNot(const EmptyModule()));
+    expect(const NoUsfmBooks().toString(), 'NoUsfmBooks()');
+  });
 }

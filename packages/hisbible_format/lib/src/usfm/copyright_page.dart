@@ -1,3 +1,45 @@
+/// Что приложение берёт из `copr.htm` eBible: имя перевода, язык страницы
+/// и лицензию.
+typedef CopyrightPage = ({String? name, String? language, String license});
+
+/// Читает страницу `copr.htm` архива eBible.org [html].
+///
+/// `name` — текст `<h1>`, иначе `<title>`, без тегов и пробелов по краям;
+/// `language` — `lang` тега `<html>`; `license` — [licenseOf] страницы
+/// с текстом страницы без тегов в роли `copyright`.
+CopyrightPage readCopyrightPage(String html) {
+  final heading = _h1.firstMatch(html) ?? _title.firstMatch(html);
+  final name = heading == null ? null : _plain(heading[1]!, '');
+
+  return (
+    name: name == null || name.isEmpty ? null : name,
+    language: _htmlLang.firstMatch(html)?[1],
+    license: licenseOf(html, copyright: _plain(html, ' ')),
+  );
+}
+
+// Текст [html] без тегов (на их месте [gap]) и без пробелов по краям.
+String _plain(String html, String gap) => html.replaceAll(_tag, gap).trim();
+
+final _tag = RegExp('<[^>]*>');
+
+final _h1 = RegExp(
+  r'<h1\b[^>]*>(.*?)</h1>',
+  caseSensitive: false,
+  dotAll: true,
+);
+
+final _title = RegExp(
+  r'<title\b[^>]*>(.*?)</title>',
+  caseSensitive: false,
+  dotAll: true,
+);
+
+final _htmlLang = RegExp(
+  r"""<html\b[^>]*?\blang\s*=\s*["']([^"']+)["']""",
+  caseSensitive: false,
+);
+
 /// Лицензия модуля по странице `copr.htm` архива eBible.org и столбцу
 /// `Copyright` таблицы переводов [copyright].
 ///
