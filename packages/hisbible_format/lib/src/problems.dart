@@ -305,6 +305,27 @@ final class ConversionFailed extends ModuleProblem {
   String toString() => 'ConversionFailed($message)';
 }
 
+/// Файл — сноски к переводу [abbreviation] (у MyBible — толкования
+/// с `is_footnotes`), а самого перевода нет: ни рядом в той же пачке,
+/// ни среди установленных. Отдельным модулем сноски не ставятся.
+final class FootnotesWithoutBible extends ModuleProblem {
+  /// Создаёт причину для сносок к переводу [abbreviation].
+  const FootnotesWithoutBible(this.abbreviation);
+
+  /// Аббревиатура перевода, к которому сноски.
+  final String abbreviation;
+
+  @override
+  bool operator ==(Object other) =>
+      other is FootnotesWithoutBible && other.abbreviation == abbreviation;
+
+  @override
+  int get hashCode => Object.hash(FootnotesWithoutBible, abbreviation);
+
+  @override
+  String toString() => 'FootnotesWithoutBible($abbreviation)';
+}
+
 /// Модуль не открылся; причина — в [problem].
 final class ModuleOpenException implements Exception {
   /// Создаёт исключение для причины [problem].
