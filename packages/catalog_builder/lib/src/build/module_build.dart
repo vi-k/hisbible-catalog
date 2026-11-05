@@ -8,9 +8,6 @@ import 'package:catalog_builder/src/ebible/license.dart';
 import 'package:catalog_builder/src/ebible/scripts.dart';
 import 'package:catalog_builder/src/ebible/translations_csv.dart';
 import 'package:catalog_builder/src/text_helpers.dart';
-import 'package:catalog_builder/src/usfm/usfm_book.dart';
-import 'package:catalog_builder/src/usfm/usfm_parser.dart';
-import 'package:catalog_builder/src/usfm/xt_links.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:hisbible_format/hisbible_format.dart';
 

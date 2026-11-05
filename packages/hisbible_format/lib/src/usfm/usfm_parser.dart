@@ -1,4 +1,3 @@
-import 'package:catalog_builder/src/usfm/usfm_book.dart';
 import 'package:hisbible_format/hisbible_format.dart';
 
 /// Разбирает книгу USFM из eBible.org в стихи, заголовки и сноски.

@@ -1,4 +1,3 @@
-import 'package:catalog_builder/catalog_builder.dart';
 import 'package:hisbible_format/hisbible_format.dart';
 import 'package:test/test.dart';
 
