@@ -152,4 +152,25 @@ Language: <a href='http://www.ethnologue.org/language/rus'>русский (Russi
   test('no h1 and no title give a null name', () {
     expect(readCopyrightPage('<p>text</p>').name, isNull);
   });
+
+  test('entities in the name are decoded', () {
+    final page = readCopyrightPage(
+      '<h1>A &amp; B &lt;c&gt; &quot;d&quot; &#39;e&#39; &apos;f&apos;'
+      ' &#1057;&#x421;&#X43F; &unknown; &#0; &#xD800;</h1>',
+    );
+
+    expect(page.name, 'A & B <c> "d" \'e\' \'f\' ССп &unknown; &#0; &#xD800;');
+  });
+
+  test('a non-breaking space becomes a plain one', () {
+    expect(readCopyrightPage('<h1>A&nbsp;&nbsp;B</h1>').name, 'A B');
+  });
+
+  test('a multi-line h1 with inner tags is one line', () {
+    final page = readCopyrightPage(
+      '<h1 class="x">\n  Holy\n  <span>Bible</span>\tof\r\n  Rus</h1>',
+    );
+
+    expect(page.name, 'Holy Bible of Rus');
+  });
 }

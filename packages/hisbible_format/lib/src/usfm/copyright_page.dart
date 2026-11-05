@@ -9,7 +9,7 @@ typedef CopyrightPage = ({String? name, String? language, String license});
 /// с текстом страницы без тегов в роли `copyright`.
 CopyrightPage readCopyrightPage(String html) {
   final heading = _h1.firstMatch(html) ?? _title.firstMatch(html);
-  final name = heading == null ? null : _plain(heading[1]!, '');
+  final name = heading == null ? null : _nameText(heading[1]!);
 
   return (
     name: name == null || name.isEmpty ? null : name,
@@ -17,6 +17,47 @@ CopyrightPage readCopyrightPage(String html) {
     license: licenseOf(html, copyright: _plain(html, ' ')),
   );
 }
+
+// Имя из содержимого `<h1>` или `<title>`: без тегов, сущности HTML
+// раскрыты, подряд идущие пробелы и переводы строк — один пробел.
+String _nameText(String html) =>
+    _decodeEntities(html.replaceAll(_tag, ''))
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+
+// Раскрывает `&amp; &lt; &gt; &quot; &#39; &apos; &nbsp;` и числовые сущности
+// (десятичные и шестнадцатеричные); незнакомые имена и негодные коды
+// остаются как есть.
+String _decodeEntities(String text) => text.replaceAllMapped(_entity, (match) {
+  final body = match[1]!;
+  if (body.startsWith('#')) {
+    final hex = body.startsWith('#x') || body.startsWith('#X');
+    final code = int.tryParse(
+      body.substring(hex ? 2 : 1),
+      radix: hex ? 16 : 10,
+    );
+    final valid =
+        code != null &&
+        code > 0 &&
+        code <= 0x10FFFF &&
+        !(code >= 0xD800 && code <= 0xDFFF);
+
+    return valid ? String.fromCharCode(code) : match[0]!;
+  }
+
+  return _namedEntities[body] ?? match[0]!;
+});
+
+final _entity = RegExp('&(#[xX][0-9a-fA-F]+|#[0-9]+|[a-zA-Z]+);');
+
+const _namedEntities = {
+  'amp': '&',
+  'lt': '<',
+  'gt': '>',
+  'quot': '"',
+  'apos': "'",
+  'nbsp': ' ',
+};
 
 // Текст [html] без тегов (на их месте [gap]) и без пробелов по краям.
 String _plain(String html, String gap) => html.replaceAll(_tag, gap).trim();
