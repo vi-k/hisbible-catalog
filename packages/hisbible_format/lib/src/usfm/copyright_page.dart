@@ -19,11 +19,16 @@ CopyrightPage readCopyrightPage(String html) {
 }
 
 // Имя из содержимого `<h1>` или `<title>`: без тегов, сущности HTML
-// раскрыты, подряд идущие пробелы и переводы строк — один пробел.
+// раскрыты, управляющие символы направления убраны, подряд идущие пробелы
+// и переводы строк — один пробел.
 String _nameText(String html) =>
     _decodeEntities(html.replaceAll(_tag, ''))
+        .replaceAll(_bidiControls, '')
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim();
+
+// U+200E, U+200F, U+202A–U+202E, U+2066–U+2069: метки и вставки направления.
+final _bidiControls = RegExp('[\u200E\u200F\u202A-\u202E\u2066-\u2069]');
 
 // Раскрывает `&amp; &lt; &gt; &quot; &#39; &apos; &nbsp;` и числовые сущности
 // (десятичные и шестнадцатеричные); незнакомые имена и негодные коды

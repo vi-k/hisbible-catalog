@@ -173,4 +173,12 @@ Language: <a href='http://www.ethnologue.org/language/rus'>русский (Russi
 
     expect(page.name, 'Holy Bible of Rus');
   });
+
+  test('direction controls are removed from the name', () {
+    final page = readCopyrightPage(
+      '<h1>\u200E\u202B שלום \u200F\u2066עולם\u2069\u202C </h1>',
+    );
+
+    expect(page.name, 'שלום עולם');
+  });
 }
