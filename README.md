@@ -202,8 +202,10 @@ and built into a catalog module by the catalog run. It lives in
 - `edition.json` gives the module's `id`, `abbreviation`, `name`,
   `description`, `language`, `languageName`, `languageNameEnglish`, `script`,
   `direction`, `license`, `copyright`, and `sourceUrl`; all of them are
-  required.
-- `usfm/` holds the books, one USFM file each.
+  required. The `id` is the name of the folder, and `direction` is `ltr` or
+  `rtl`.
+- `usfm/` holds the books, one USFM file each, ending in `.usfm` or `.sfm`;
+  other files there are not read.
 - `spelling.tsv` is the spelling table: one `old<TAB>new` pair per line, in
   lowercase and without stress marks; empty lines and lines starting with `#`
   are skipped. The USFM keeps the spelling of its source, and the builder
@@ -248,23 +250,28 @@ edition is rebuilt when its digest differs from the recorded one, when its
 index entry does not come from the edition yet, when its id is given to
 `--rebuild` (in the workflow, the `rebuild` input), or when it was built before
 `--rebuild-before`; otherwise its entry stays as it is. The version of the
-module is the date of the run, and a second build on the same day is its next
-revision (`.1`, `.2`…). The run date is later than the date of the eBible
-module it replaces, so the app offers the edition as an update to everyone who
-installed that module.
+module is the date of the run. When the previous version has the same date or
+a later one, as after a second build on the same day, the version is the next
+revision of the previous one (`.1`, `.2`…): it never goes back. The run date is
+later than the date of the eBible module it replaces, so the app offers the
+edition as an update to everyone who installed that module.
 
 The module goes to `build-<date>` as `<id>-<version>.hb`. The old module file
 goes to `sources/pending-deletions.json`, and so does the saved eBible source
 copy with the same id, which leaves `sources/sources.lock.json`. An edition
 that fails to build is listed under "Failed" in the report; its index entry and
-its digest stay as they were, and the next run tries again. The same goes for a
+its digest stay as they were, the next run tries again, and the run ends with
+exit code 3, so the workflow commits the index and then turns red with
+"Edition not built". The same goes for a
 folder of `editions/` that cannot be read (a broken `edition.json`, no `usfm/`
 or `spelling.tsv`), known by the `id` in its `edition.json` if that can be read
 and by the folder name otherwise, and for an id that two folders declare:
 neither of them is built. Such an id still keeps the eBible row out and is not
 withdrawn, and the rest of the run goes on. The report lists each built edition
-under "Editions" with the same numbers as `--edition`, and its warnings under
-it; an edition that was not built is listed there with the reasons.
+under "Editions" with the numbers `--edition` prints except the book counts:
+verses, words replaced, links, unresolved cross references, and numbering
+schemes. Its warnings go under it; an edition that was not built is listed
+there with the reasons.
 
 ## License
 

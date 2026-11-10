@@ -133,9 +133,9 @@ The first five keys are required.
 | `license` | `PD`; any Creative Commons license as its SPDX-style id `CC-<terms>-<version>`, such as `CC-BY-4.0`, `CC-BY-SA-4.0`, `CC-BY-ND-4.0`, `CC-BY-NC-4.0`, `CC-BY-NC-SA-4.0` or `CC-BY-NC-ND-4.0`; `redistributable` (the source allows redistribution without naming a license), `unknown` (a user's own file); `unknown` if absent. CC0 and the Public Domain Mark are written `PD`. A jurisdiction port of a Creative Commons license is written without the jurisdiction: `by-nc/2.5/in` is `CC-BY-NC-2.5` |
 | `copyright` | rights holder and copyright notice as given by the source |
 | `description` | description of the module as given by its source |
-| `source` | where the module comes from: `ebible:<translationId>` for a translation from eBible.org, `crosswire:<module>` for a module of CrossWire (`crosswire:Clarke`); other sources may use their own value |
+| `source` | where the module comes from: `ebible:<translationId>` for a translation from eBible.org, `crosswire:<module>` for a module of CrossWire (`crosswire:Clarke`), `edition:<id>` for an edition kept in the catalog repository (`edition:russyn`); other sources may use their own value |
 | `source_url` | page of the source |
-| `version` | module version, see "Versions": `YYYY-MM-DD`, for catalog modules the eBible.org `UpdateDate` or, for a CrossWire module, its `SwordVersionDate`, optionally followed by a revision `.N` |
+| `version` | module version, see "Versions": `YYYY-MM-DD`, for catalog modules the eBible.org `UpdateDate`, for a CrossWire module its `SwordVersionDate`, or for an edition the date of the catalog run, optionally followed by a revision `.N` |
 | `created` | date the file was written, `YYYY-MM-DD` |
 | `catalog`, `catalog_id` | the catalog and the module id in it; absent in a user's own files |
 | `chapter_word`, `chapter_word_psalms` | the module's words for "Chapter" and "Psalm" |
@@ -154,10 +154,14 @@ revision: N is an integer from 1, without leading zeros. Examples:
 `2025-03-04`, `2025-03-04.1`, `2025-03-04.2`. The date must exist in the
 calendar. For a catalog module the date is the eBible.org `UpdateDate` of the
 translation; for a module converted from CrossWire it is the `SwordVersionDate`
-in the `.conf` of the CrossWire module. A revision is a rebuild by the catalog
-with the same date, for example after a fix in the builder or, for a CrossWire
-module, from a new archive with the same `SwordVersionDate`: `2025-03-04` →
-`2025-03-04.1` → `2025-03-04.2`. A new date starts again from the bare date.
+in the `.conf` of the CrossWire module; for an edition kept in the catalog
+repository it is the date of the catalog run that built it. A revision is a
+rebuild by the catalog with the same date, for example after a fix in the
+builder or, for a CrossWire module, from a new archive with the same
+`SwordVersionDate`: `2025-03-04` → `2025-03-04.1` → `2025-03-04.2`. A new date
+starts again from the bare date. An edition built again on the same day, or
+when its previous version has a later date, gets the next revision of the
+previous version, so its version never goes back.
 
 Readers compare versions only for inequality and show only the date part. The
 function `moduleVersionDate` of `hisbible_format` checks a version and returns
