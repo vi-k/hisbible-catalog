@@ -1,0 +1,14 @@
+{
+  "id": "russyn",
+  "abbreviation": "RST",
+  "name": "Синодальный перевод",
+  "description": "Синодальный перевод 1876 года, полное издание: 77 книг с неканоническими, вставки по Септуагинте в квадратных скобках, ударения и примечания издания, параллельные места. Основа — модуль RusSynodal библиотеки CrossWire, текст сверен с изданием Московской Патриархии; написание современное.",
+  "language": "ru",
+  "languageName": "русский",
+  "languageNameEnglish": "Russian",
+  "script": "Cyrl",
+  "direction": "ltr",
+  "license": "PD",
+  "copyright": "Текст — общественное достояние. Параллельные места — по изданию Московской Патриархии.",
+  "sourceUrl": "https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=RusSynodal"
+}
