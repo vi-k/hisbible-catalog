@@ -168,7 +168,10 @@ final class CatalogRun {
 /// а если у прежней записи та же дата — следующая правка. Прежний файл
 /// модуля и копия исходника eBible с тем же id идут к удалению, когда
 /// модуль издания встал. Сборка не удалась — прежняя запись (и отпечаток)
-/// остаётся, причины в отчёте. Новые отпечатки — в
+/// остаётся, причины в отчёте. Так же — для папок [brokenEditions] (id →
+/// почему издание не читается) и для id, который объявили две папки:
+/// ни одна не собирается, строка eBible с этим id не берётся и id
+/// не отзывается. Новые отпечатки — в
 /// [CatalogRun.editionDigests].
 ///
 /// Удаления этого прогона не делаются сразу: они — в
@@ -189,6 +192,7 @@ Future<CatalogRun> runCatalogBuild({
   List<ReleaseAsset> pending = const [],
   Map<String, CrossWireSource> crosswire = const {},
   List<Edition> editions = const [],
+  Map<String, String> brokenEditions = const {},
   Map<String, String> editionDigests = const {},
   int? limit,
   Set<String> rebuild = const {},
@@ -216,7 +220,10 @@ Future<CatalogRun> runCatalogBuild({
     publisher: publisher,
     work: work,
   );
-  final editionIds = {for (final edition in editions) edition.id};
+  final editionIds = {
+    for (final edition in editions) edition.id,
+    ...brokenEditions.keys,
+  };
   final taken = <String, EbibleTranslation>{};
   final skipped = <String, String>{};
   for (final t in translations) {
@@ -344,14 +351,41 @@ Future<CatalogRun> runCatalogBuild({
       if (editionDigests[id] case final digest?) id: digest,
   };
   final editionLines = <String, ({String summary, List<String> warnings})>{};
+  // Издание не собрано: прежняя запись остаётся, причины — в `Failed`
+  // и под строкой издания.
+  void editionFailed(String id, List<String> reasons) {
+    settle(id, before[id], (null, reasons));
+    editionLines[id] = (summary: 'not built', warnings: reasons);
+  }
+
+  // Id нечитаемой папки и id, который объявили две папки: ни одна
+  // не собирается. Нечитаемая папка с id годной — тоже не собирается.
+  final folders = <String, List<String>>{};
+  for (final edition in editions) {
+    (folders[edition.id] ??= []).add(p.basename(edition.dir.path));
+  }
+  for (final id in editionIds.toList()..sort()) {
+    final reasons = [
+      if (brokenEditions[id] case final broken?)
+        'cannot read the edition $id: $broken',
+      if (folders[id] case final names? when names.length > 1)
+        'folders ${names.join(', ')} of editions/ declare the same id $id',
+    ];
+    if (reasons.isNotEmpty) {
+      editionFailed(id, reasons);
+    }
+  }
   for (final edition in editions) {
     final id = edition.id;
+    if (editionLines.containsKey(id)) {
+      continue;
+    }
     final old = before[id];
     final String digest;
     try {
       digest = editionDigest(edition.dir);
     } on Object catch (e) {
-      settle(id, old, (null, ['cannot read the edition $id: $e']));
+      editionFailed(id, ['cannot read the edition $id: $e']);
       continue;
     }
     final forced =
@@ -382,10 +416,13 @@ Future<CatalogRun> runCatalogBuild({
       outcome = (null, ['unexpected error: $e'], null);
     }
     final (module, notes, result) = outcome;
-    if (settle(id, old, (module, notes))) {
+    if (module == null || result == null) {
+      editionFailed(id, notes);
+    } else {
+      settle(id, old, (module, notes));
       digests[id] = digest;
       editionLines[id] = (
-        summary: _editionSummary(result!),
+        summary: _editionSummary(result),
         warnings: result.warnings,
       );
     }

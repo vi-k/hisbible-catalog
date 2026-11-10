@@ -257,9 +257,14 @@ The module goes to `build-<date>` as `<id>-<version>.hb`. The old module file
 goes to `sources/pending-deletions.json`, and so does the saved eBible source
 copy with the same id, which leaves `sources/sources.lock.json`. An edition
 that fails to build is listed under "Failed" in the report; its index entry and
-its digest stay as they were, and the next run tries again. The report lists
-each built edition under "Editions" with the same numbers as `--edition`, and
-its warnings under it.
+its digest stay as they were, and the next run tries again. The same goes for a
+folder of `editions/` that cannot be read (a broken `edition.json`, no `usfm/`
+or `spelling.tsv`), known by the `id` in its `edition.json` if that can be read
+and by the folder name otherwise, and for an id that two folders declare:
+neither of them is built. Such an id still keeps the eBible row out and is not
+withdrawn, and the rest of the run goes on. The report lists each built edition
+under "Editions" with the same numbers as `--edition`, and its warnings under
+it; an edition that was not built is listed there with the reasons.
 
 ## License
 

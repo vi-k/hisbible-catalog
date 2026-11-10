@@ -337,6 +337,7 @@ final class _Cli {
     try {
       final translations = parseTranslationsCsv(await _readCsv(csv, fetcher));
       final publisher = dryRun ? DryRunPublisher() : GhPublisher();
+      final editions = scanEditions(Directory.current);
       final result = await runCatalogBuild(
         translations: translations,
         previous:
@@ -352,8 +353,10 @@ final class _Cli {
             FontsLock.empty,
         pending: _readJson(pendingDeletionsPath, parseDeletions) ?? const [],
         crosswire: _readJson(crosswireLockPath, parseCrossWireLock) ?? const {},
-        // Издания — из `editions/` в корне репозитория.
-        editions: readEditions(Directory.current),
+        // Издания — из `editions/` в корне репозитория; нечитаемая папка —
+        // неудача своего издания, а не всего прогона.
+        editions: editions.editions,
+        brokenEditions: editions.broken,
         editionDigests:
             _readJson(editionsLockPath, parseEditionsLock) ?? const {},
         fetcher: fetcher,

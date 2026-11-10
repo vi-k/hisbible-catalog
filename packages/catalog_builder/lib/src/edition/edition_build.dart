@@ -126,15 +126,57 @@ Edition readEdition(Directory dir) {
 }
 
 /// Все издания папки [root]`/editions/`, по именам папок.
-List<Edition> readEditions(Directory root) {
+List<Edition> readEditions(Directory root) => [
+  for (final dir in _editionDirs(root)) readEdition(dir),
+];
+
+/// Издания папки [root]`/editions/` по именам папок и папки, из которых
+/// издание не читается: id → причина. Id такой папки — `id` из её
+/// `edition.json`, если он там читается, иначе имя папки; у двух таких
+/// папок с одним id причины склеиваются.
+({List<Edition> editions, Map<String, String> broken}) scanEditions(
+  Directory root,
+) {
+  final editions = <Edition>[];
+  final broken = <String, String>{};
+  for (final dir in _editionDirs(root)) {
+    try {
+      editions.add(readEdition(dir));
+    } on Exception catch (e) {
+      final id = _declaredId(dir);
+      final reason = e is FormatException ? e.message : '$e';
+      broken[id] = [?broken[id], reason].join('; ');
+    }
+  }
+
+  return (editions: editions, broken: broken);
+}
+
+// Id, который объявляет `edition.json` папки [dir], или имя папки.
+String _declaredId(Directory dir) {
+  try {
+    final json = jsonDecode(
+      File(p.join(dir.path, 'edition.json')).readAsStringSync(),
+    );
+    if (json case {'id': final String id} when id.isNotEmpty) {
+      return id;
+    }
+  } on Exception {
+    // Нечитаемый `edition.json` — id по имени папки.
+  }
+
+  return p.basename(dir.path);
+}
+
+// Папки изданий в [root]`/editions/`, по именам.
+List<Directory> _editionDirs(Directory root) {
   final base = Directory(p.join(root.path, editionsDir));
   if (!base.existsSync()) {
     return const [];
   }
-  final dirs = base.listSync().whereType<Directory>().toList()
-    ..sort((a, b) => a.path.compareTo(b.path));
 
-  return [for (final dir in dirs) readEdition(dir)];
+  return base.listSync().whereType<Directory>().toList()
+    ..sort((a, b) => a.path.compareTo(b.path));
 }
 
 /// SHA-256 издания: по отсортированным путям и байтам всех файлов `usfm/`,

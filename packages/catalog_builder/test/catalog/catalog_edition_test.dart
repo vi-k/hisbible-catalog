@@ -112,16 +112,14 @@ void main() {
   void write(String name, String text) =>
       File(p.join(dir.path, 'usfm', name)).writeAsStringSync(text);
 
-  setUp(() {
-    root = Directory.systemTemp.createTempSync('catalog_edition_test');
-    addTearDown(() => root.deleteSync(recursive: true));
-    work = Directory(p.join(root.path, 'work'))..createSync();
-    dir = Directory(p.join(root.path, editionsDir, 'russyn'))
+  // Папка издания [folder] с id [id] и книгами Бытия, Псалтири и Манассии.
+  Directory edition(String folder, {String id = 'russyn'}) {
+    final dir = Directory(p.join(root.path, editionsDir, folder))
       ..createSync(recursive: true);
     Directory(p.join(dir.path, 'usfm')).createSync();
     File(p.join(dir.path, 'edition.json')).writeAsStringSync(
       jsonEncode({
-        'id': 'russyn',
+        'id': id,
         'abbreviation': 'RST',
         'name': 'Синодальный перевод',
         'description': 'Русский синодальный перевод',
@@ -136,9 +134,22 @@ void main() {
       }),
     );
     File(p.join(dir.path, 'spelling.tsv')).writeAsStringSync('лицем\tлицом\n');
-    write('01-GEN.usfm', _gen);
-    write('19-PSA.usfm', _psa);
-    write('MAN.usfm', _man);
+    for (final (name, text) in [
+      ('01-GEN.usfm', _gen),
+      ('19-PSA.usfm', _psa),
+      ('MAN.usfm', _man),
+    ]) {
+      File(p.join(dir.path, 'usfm', name)).writeAsStringSync(text);
+    }
+
+    return dir;
+  }
+
+  setUp(() {
+    root = Directory.systemTemp.createTempSync('catalog_edition_test');
+    addTearDown(() => root.deleteSync(recursive: true));
+    work = Directory(p.join(root.path, 'work'))..createSync();
+    dir = edition('russyn');
     publisher = FakePublisher();
     fetcher = FakeFetcher(publisher);
   });
@@ -158,7 +169,8 @@ void main() {
     previous: after?.index ?? _ebibleIndex,
     lock: after?.lock ?? const SourcesLock({'russyn': _ebibleSource}),
     pending: after?.deletions ?? const [],
-    editions: readEditions(root),
+    editions: scanEditions(root).editions,
+    brokenEditions: scanEditions(root).broken,
     editionDigests: after?.editionDigests ?? const {},
     overrides: Overrides.parse('{"abbreviations": {"russyn": "RST"}}'),
     fetcher: fetcher,
@@ -378,6 +390,74 @@ void main() {
     expect(entry(second), entry(first));
     expect(second.editionDigests, first.editionDigests);
     expect(second.report.failed['russyn'], isNotEmpty);
+  });
+
+  test('a broken edition folder does not stop the run', () async {
+    File(p.join(dir.path, 'edition.json')).writeAsStringSync('{');
+    edition('abc', id: 'abc');
+
+    final result = await run();
+
+    expect(entry(result), _ebibleEntry);
+    expect(result.lock.entries['russyn'], _ebibleSource);
+    expect(result.index.withdrawn, isEmpty);
+    expect(result.report.withdrawn, isEmpty);
+    expect(fetcher.calls, isEmpty, reason: 'the eBible row is not taken');
+    expect(result.report.failed['russyn'], isNotEmpty);
+    expect(result.report.built, ['abc']);
+    expect(result.editionDigests.keys, ['abc']);
+    expect(
+      result.report.toMarkdown(),
+      matches(
+        RegExp(
+          '- `russyn`: not built\n'
+          r'  - [^\n]*edition\.json',
+        ),
+      ),
+    );
+  });
+
+  test('a broken edition keeps its built entry and digest', () async {
+    final first = await run();
+    Directory(p.join(dir.path, 'usfm')).deleteSync(recursive: true);
+
+    final second = await run(after: first, translations: const []);
+
+    expect(entry(second), entry(first));
+    expect(second.editionDigests, first.editionDigests);
+    expect(second.index.withdrawn, isEmpty);
+    expect(second.deletions, isEmpty);
+    expect(second.report.failed['russyn'], isNotEmpty);
+  });
+
+  test('a broken folder is named by its declared id or folder name', () {
+    Directory(p.join(dir.path, 'usfm')).deleteSync(recursive: true);
+    final other = edition('other', id: 'abc');
+    File(p.join(other.path, 'edition.json')).writeAsStringSync('[');
+
+    final scan = scanEditions(root);
+
+    expect(scan.editions, isEmpty);
+    expect(scan.broken.keys, unorderedEquals(['russyn', 'other']));
+    expect(scan.broken['russyn'], contains('usfm'));
+  });
+
+  test('two editions with the same id are both failures', () async {
+    edition('russyn-copy');
+
+    final result = await run();
+
+    expect(entry(result), _ebibleEntry);
+    expect(result.lock.entries['russyn'], _ebibleSource);
+    expect(result.report.built, isEmpty);
+    expect(publisher.uploads, isEmpty);
+    expect(fetcher.calls, isEmpty, reason: 'the eBible row is not taken');
+    expect(result.report.failed['russyn']!.join(), contains('russyn-copy'));
+    expect(result.report.toMarkdown(), contains('- `russyn`: not built\n'));
+
+    final dropped = await run(translations: const []);
+    expect(entry(dropped), _ebibleEntry, reason: 'not withdrawn');
+    expect(dropped.index.withdrawn, isEmpty);
   });
 
   test('editions lock round trips', () {
