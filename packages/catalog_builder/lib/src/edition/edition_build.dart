@@ -299,7 +299,7 @@ Future<EditionOutcome> buildEdition(
       replaced: replaced,
       links: links,
       schemes: check.schemes,
-      warnings: read.warnings,
+      warnings: [...read.warnings, ...check.warnings],
     );
   } finally {
     if (!done && part.existsSync()) {
@@ -337,6 +337,7 @@ List<File> _usfmFiles(Directory dir) {
 
 typedef _Check = ({
   List<String> reasons,
+  List<String> warnings,
   ({int ot, int nt, int dc}) books,
   int verses,
   Map<VerseScheme, int> schemes,
@@ -346,6 +347,7 @@ typedef _Check = ({
 // числу `\v` в файлах, нет остатка разметки, у каждой книги есть схема.
 _Check _check(String path, int expectedVerses) {
   final reasons = <String>[];
+  final warnings = <String>[];
   var ot = 0;
   var nt = 0;
   var dc = 0;
@@ -357,6 +359,7 @@ _Check _check(String path, int expectedVerses) {
   } on ModuleOpenException catch (e) {
     return (
       reasons: ['the module does not open: ${e.problem}'],
+      warnings: warnings,
       books: (ot: 0, nt: 0, dc: 0),
       verses: 0,
       schemes: schemes,
@@ -421,7 +424,7 @@ _Check _check(String path, int expectedVerses) {
     );
     final codes = {for (final b in bible.books) b.number: b.code};
     for (final number in detected.uncertain.toList()..sort()) {
-      reasons.add(
+      warnings.add(
         '${codes[number] ?? number}: '
         'numbering scheme is uncertain (last verses fit no scheme in 95% '
         'of chapters)',
@@ -438,6 +441,7 @@ _Check _check(String path, int expectedVerses) {
 
   return (
     reasons: reasons,
+    warnings: warnings,
     books: (ot: ot, nt: nt, dc: dc),
     verses: verses,
     schemes: schemes,

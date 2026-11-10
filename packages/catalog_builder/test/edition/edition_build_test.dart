@@ -194,7 +194,7 @@ void main() {
     );
   });
 
-  test('uncertain numbering scheme is a reason', () async {
+  test('uncertain numbering scheme is a warning', () async {
     write(
       '01-GEN.usfm',
       [
@@ -206,17 +206,8 @@ void main() {
         for (var v = 1; v <= 3; v++) '\\v $v Стих $v.',
       ].join('\n'),
     );
-    await expectLater(
-      build(),
-      throwsA(
-        isA<FormatException>().having(
-          (e) => e.message,
-          'message',
-          allOf(contains('GEN'), contains('uncertain')),
-        ),
-      ),
-    );
-    expect(File(out()).existsSync(), isFalse);
-    expect(File('${out()}.part').existsSync(), isFalse);
+    final outcome = await build();
+    expect(outcome.warnings, contains(contains('GEN: numbering scheme')));
+    expect(File(out()).existsSync(), isTrue);
   });
 }
