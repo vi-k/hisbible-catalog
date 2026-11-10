@@ -14,6 +14,7 @@ import 'package:catalog_builder/src/catalog/sources_lock.dart';
 import 'package:catalog_builder/src/crosswire/crosswire_build.dart';
 import 'package:catalog_builder/src/ebible/translations_csv.dart';
 import 'package:catalog_builder/src/edition/edition_build.dart';
+import 'package:catalog_builder/src/edition/editions_lock.dart';
 import 'package:catalog_builder/src/openbible/openbible_build.dart';
 import 'package:catalog_builder/src/text_helpers.dart';
 import 'package:hisbible_format/hisbible_format.dart';
@@ -351,6 +352,10 @@ final class _Cli {
             FontsLock.empty,
         pending: _readJson(pendingDeletionsPath, parseDeletions) ?? const [],
         crosswire: _readJson(crosswireLockPath, parseCrossWireLock) ?? const {},
+        // Издания — из `editions/` в корне репозитория.
+        editions: readEditions(Directory.current),
+        editionDigests:
+            _readJson(editionsLockPath, parseEditionsLock) ?? const {},
         fetcher: fetcher,
         publisher: publisher,
         work: Directory(work)..createSync(recursive: true),
@@ -373,6 +378,8 @@ final class _Cli {
         p.join(out, 'report.md'): result.report.toMarkdown(),
         dryRun ? p.join(out, 'pending-deletions.json') : pendingDeletionsPath:
             deletionsToJson(result.deletions),
+        dryRun ? p.join(out, 'editions.lock.json') : editionsLockPath:
+            editionsLockToJson(result.editionDigests),
       };
       for (final MapEntry(:key, :value) in written.entries) {
         File(key)

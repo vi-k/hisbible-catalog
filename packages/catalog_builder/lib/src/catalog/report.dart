@@ -23,6 +23,7 @@ final class BuildReport {
     this.xtByHref = 0,
     this.xtUnresolved = 0,
     this.commentaries = const {},
+    this.editions = const {},
   });
 
   /// Дата прогона, `YYYY-MM-DD`.
@@ -91,6 +92,9 @@ final class BuildReport {
 
   /// Собранные модули толкований: id → числа толкований, статей и ссылок.
   final Map<String, String> commentaries;
+
+  /// Собранные издания: id → строка итога и предупреждения сборки.
+  final Map<String, ({String summary, List<String> warnings})> editions;
 
   /// Что сказать о [rebuildMissed], или `null`, если пересобраны все.
   String? get rebuildProblem => rebuildMissed.isEmpty
@@ -172,6 +176,19 @@ final class BuildReport {
       for (final id in commentaries.keys.toList()..sort())
         '`$id`: ${commentaries[id]}',
     ]);
+    if (editions.isNotEmpty) {
+      out
+        ..writeln()
+        ..writeln('## Editions')
+        ..writeln();
+      for (final id in editions.keys.toList()..sort()) {
+        final (:summary, :warnings) = editions[id]!;
+        out.writeln('- `$id`: $summary');
+        for (final warning in warnings) {
+          out.writeln('  - ${_escaped(warning)}');
+        }
+      }
+    }
     sections('Failed', failed);
     list('Skipped rows', [
       for (final id in skipped.keys.toList()..sort())

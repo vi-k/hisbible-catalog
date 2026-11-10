@@ -10,6 +10,7 @@ void main() {
   const russyn = IndexModule(
     id: 'russyn',
     type: 'bible',
+    source: 'edition',
     abbreviation: 'russyn',
     name: 'Синодальный перевод',
     description: 'Русская Библия',
@@ -32,6 +33,7 @@ void main() {
   const arb = IndexModule(
     id: 'arb-vd',
     type: 'bible',
+    source: 'ebible',
     abbreviation: 'AVD',
     name: 'Van Dyck',
     language: 'ar',
@@ -106,6 +108,7 @@ void main() {
     expect((modules.last! as Map<String, Object?>).keys, [
       'id',
       'type',
+      'source',
       'abbreviation',
       'name',
       'description',
@@ -161,6 +164,29 @@ void main() {
     expect(
       CatalogIndex.parse(CatalogIndex.empty().toJson()),
       CatalogIndex.empty(),
+    );
+  });
+
+  test('old index without source reads as ebible', () {
+    String module(String id) =>
+        '{"id": "$id", "type": "bible", "abbreviation": "A", "name": "N", '
+        '"language": "en", "languageName": "English", '
+        '"languageNameEnglish": "English", "script": "Latn", '
+        '"direction": "ltr", "license": "PD", '
+        '"books": {"ot": 1, "nt": 0, "dc": 0}, "size": 1, "sha256": "aa", '
+        '"url": "https://example.org/$id.hb", "version": "2022-11-25", '
+        '"moduleFormat": 1}';
+    final parsed = CatalogIndex.parse(
+      '{"format": 1, "catalog": "hisbible", "name": "HisBible", '
+      '"updated": "2026-11-01", '
+      '"modules": [${module('russyn')}, ${module('crosswire-clarke')}]}',
+    );
+
+    expect(parsed.modules.map((m) => m.source), ['ebible', 'crosswire']);
+    expect(
+      jsonDecode(parsed.toJson()),
+      containsPair('modules', everyElement(containsPair('source', anything))),
+      reason: 'source is always written',
     );
   });
 

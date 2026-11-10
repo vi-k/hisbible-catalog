@@ -8,14 +8,20 @@
 // Таблица переводов по умолчанию —
 // https://ebible.org/Scriptures/translations.csv. Читает `index/index.json`,
 // `sources/sources.lock.json`, `sources/pending-deletions.json`,
-// `sources/crosswire.lock.json`, `overrides.json` и `fonts/fonts.lock.json`
-// (нет файла — пусто). Сначала
+// `sources/crosswire.lock.json`, `sources/editions.lock.json`,
+// `overrides.json`, `fonts/fonts.lock.json` (нет файла — пусто) и издания
+// из `editions/`. Сначала
 // удаляет файлы из `sources/pending-deletions.json`, записанные прошлым
 // прогоном, потом собирает модули через `runCatalogBuild`, выкладывает их
 // через `gh release` и пишет `index/index.json`,
 // `sources/sources.lock.json`, `sources/pending-deletions.json` — файлы
 // выпусков, на которые новый указатель больше не ссылается, их удалит
-// следующий прогон, — и `out/report.md`.
+// следующий прогон, — `sources/editions.lock.json` и `out/report.md`.
+// Издания из `editions/<id>/` идут первыми и в `--limit` не считаются;
+// строка таблицы переводов с id издания не берётся. Издание
+// пересобирается, когда его отпечаток не тот, что в
+// `sources/editions.lock.json`, или по `--rebuild` и `--rebuild-before`;
+// версия — дата прогона.
 // Модули толкований CrossWire из `sources/crosswire.lock.json` (id
 // `crosswire-<модуль строчными>`) идут первыми и в `--limit`
 // не считаются: архив качается с CrossWire и сверяется с записью; другой
@@ -34,7 +40,7 @@
 // модули, даже если их больше предела массового отзыва. Прогон, который
 // отказался от отзыва или не собрал id из `--rebuild`, пишет свои файлы
 // как обычно и выходит с кодом 3. `--dry-run` ничего не выкладывает
-// и не удаляет и пишет те же четыре файла в `out/dry-run/`. Скачанные архивы
+// и не удаляет и пишет те же пять файлов в `out/dry-run/`. Скачанные архивы
 // и собранные модули лежат в `--work`, по умолчанию `out/work`;
 // в настоящем прогоне архив удаляется после сборки, модуль — после
 // выкладки, `--dry-run` их оставляет.

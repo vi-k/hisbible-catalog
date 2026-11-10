@@ -132,6 +132,7 @@ final class IndexModule {
   const IndexModule({
     required this.id,
     required this.type,
+    required this.source,
     required this.abbreviation,
     required this.name,
     required this.language,
@@ -153,9 +154,12 @@ final class IndexModule {
   factory IndexModule._parse(Map<String, Object?> json) {
     final books = _object(json['books'], 'books');
 
+    final id = _string(json, 'id');
+
     return IndexModule(
-      id: _string(json, 'id'),
+      id: id,
       type: _string(json, 'type'),
+      source: _optionalString(json, 'source') ?? _sourceOfOld(id),
       abbreviation: _string(json, 'abbreviation'),
       name: _string(json, 'name'),
       description: _optionalString(json, 'description'),
@@ -181,11 +185,16 @@ final class IndexModule {
     );
   }
 
-  /// Id модуля в каталоге: `translationId` eBible.
+  /// Id модуля в каталоге: `translationId` eBible, `crosswire-<модуль>`
+  /// или id издания.
   final String id;
 
   /// Тип модуля, значение `meta` `type`: `bible`.
   final String type;
+
+  /// Откуда модуль: `ebible` — перевод eBible.org, `crosswire` — толкования
+  /// CrossWire, `edition` — своё издание из `editions/<id>/`.
+  final String source;
 
   /// Аббревиатура модуля.
   final String abbreviation;
@@ -229,7 +238,8 @@ final class IndexModule {
   /// Полный адрес файла модуля.
   final String url;
 
-  /// Версия модуля: `UpdateDate` перевода.
+  /// Версия модуля: `UpdateDate` перевода, дата CrossWire или дата сборки
+  /// издания; `.<правка>` в конце — пересборка той же даты.
   final String version;
 
   /// Версия формата файла модуля.
@@ -238,6 +248,7 @@ final class IndexModule {
   Map<String, Object?> _toJson() => {
     'id': id,
     'type': type,
+    'source': source,
     'abbreviation': abbreviation,
     'name': name,
     'description': ?description,
@@ -261,6 +272,7 @@ final class IndexModule {
       other is IndexModule &&
       other.id == id &&
       other.type == type &&
+      other.source == source &&
       other.abbreviation == abbreviation &&
       other.name == name &&
       other.description == description &&
@@ -384,6 +396,11 @@ final class WithdrawnModule {
   @override
   int get hashCode => Object.hash(id, abbreviation, name, since);
 }
+
+// Источник модуля в указателе, записанном до поля `source`: тогда были
+// только переводы eBible и толкования CrossWire.
+String _sourceOfOld(String id) =>
+    id.startsWith('crosswire-') ? 'crosswire' : 'ebible';
 
 Object? _decode(String json) {
   try {

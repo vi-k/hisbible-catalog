@@ -15,11 +15,13 @@ eBible.org.
 `https://ebible.org/Scriptures/translations.csv`, takes the translations marked
 `Redistributable` and downloadable (minus `exclude` in `overrides.json`),
 builds a module from each USFM archive, adds the commentaries listed in
-`sources/crosswire.lock.json` (see "Commentaries from CrossWire"), publishes
-the modules as GitHub release files, and writes `index/index.json` and
-`sources/sources.lock.json`. The `build` workflow runs it on the 1st of every
-month at 03:00 UTC and on demand. Run the commands from the repository root
-after `dart pub get`:
+`sources/crosswire.lock.json` (see "Commentaries from CrossWire") and the
+editions in `editions/` (see "Own editions"), publishes the modules as GitHub
+release files, and writes `index/index.json` and `sources/sources.lock.json`. A
+row of `translations.csv` whose `translationId` is the id of an edition is not
+taken: the edition builds that module. The `build` workflow runs it on the 1st
+of every month at 03:00 UTC and on demand. Run the commands from the repository
+root after `dart pub get`:
 
 ```
 dart run catalog_builder:build [--csv <path or url>] [--limit <N>] [--deadline <minutes>] [--rebuild <id>]... [--rebuild-before <YYYY-MM-DD>] [--allow-mass-withdrawal] [--dry-run] [--work <dir>]
@@ -30,10 +32,11 @@ dart run catalog_builder:build --apply-deletions <deletions.json>
 - Without `--one` or `--apply-deletions`, the command builds the catalog. It
   publishes through `gh release` (credentials from `GH_TOKEN`) and writes
   `index/index.json`, `sources/sources.lock.json`,
-  `sources/pending-deletions.json`, and `out/report.md`. `--limit` caps the
-  number of translation builds in one run, and the rest wait for the next run
-  (CrossWire commentaries do not count toward it); `--work` is the folder for
-  downloaded archives and built modules (default `out/work`).
+  `sources/pending-deletions.json`, `sources/editions.lock.json`, and
+  `out/report.md`. `--limit` caps the number of translation builds in one run,
+  and the rest wait for the next run (CrossWire commentaries and editions do
+  not count toward it); `--work` is the folder for downloaded archives and
+  built modules (default `out/work`).
 - A run does not delete the release files that its new index no longer uses. It
   lists them in `sources/pending-deletions.json`, which is committed with the
   index. The next run deletes them at its start; by then the CDN of
@@ -63,7 +66,7 @@ dart run catalog_builder:build --apply-deletions <deletions.json>
   says why. A `GITHUB_TOKEN` allows about 1000 API requests an hour, and each
   module takes four or five. Build the first, full catalog in runs of about
   `--limit 200`, an hour apart.
-- `--dry-run` publishes and deletes nothing and writes the same four files to
+- `--dry-run` publishes and deletes nothing and writes the same five files to
   `out/dry-run/`. It still downloads from eBible.org and CrossWire, checks the
   CrossWire archives against `sources/crosswire.lock.json`, and prints the
   files a real run would delete and upload.
@@ -189,6 +192,74 @@ same `SwordVersionDate`, or when its id is given to `--rebuild`, or when it was
 built before `--rebuild-before`; a new `SwordVersionDate` starts again from the
 bare date. The report lists the comments, articles and links of each
 commentaries module built.
+
+## Own editions
+
+An edition is a translation kept in this repository as USFM, corrected here,
+and built into a catalog module by the catalog run. It lives in
+`editions/<id>/`:
+
+- `edition.json` gives the module's `id`, `abbreviation`, `name`,
+  `description`, `language`, `languageName`, `languageNameEnglish`, `script`,
+  `direction`, `license`, `copyright`, and `sourceUrl`; all of them are
+  required.
+- `usfm/` holds the books, one USFM file each.
+- `spelling.tsv` is the spelling table: one `old<TAB>new` pair per line, in
+  lowercase and without stress marks; empty lines and lines starting with `#`
+  are skipped. The USFM keeps the spelling of its source, and the builder
+  replaces whole words by the table, keeping a capital letter and stress marks
+  and leaving markers and attributes alone. A word is taken out of the modern
+  spelling by deleting its line.
+- `CHANGES.md` is the log of changes to the text of the source: the verse, the
+  reading of the source, and the reading taken. Every change of the text has a
+  line there. Stress marks, notes and cross references are not listed; the
+  edition's `README.md` describes them.
+- `README.md` says what the edition is based on and what its brackets, italics
+  and notes mean.
+
+To correct the text, edit the USFM file, add a line to `CHANGES.md`, and
+commit. The next catalog run sees that the edition changed and rebuilds the
+module; nothing else has to be run. To check a change first, build the module
+into a file:
+
+```
+dart run catalog_builder:build --edition editions/<id> <out.hb>
+```
+
+The command publishes nothing. It prints the number of verses, the books of the
+Old Testament, the New Testament and the deuterocanon, the words the spelling
+table replaced, the cross references that became links and those that did not,
+and how many books are in each numbering scheme, followed by warnings. A module
+that would lose text (an unknown marker, a dropped fragment), keep markup in
+its text, or have a different number of verses than there are `\v` markers is
+not written: the command lists the reasons and exits with code 1.
+
+### Editions in the catalog
+
+The catalog run builds the editions first, before the CrossWire commentaries,
+and they do not count toward `--limit`. The module of an edition takes the
+place of the eBible module with the same id: the id stays, the eBible row is
+not taken, and the module is never withdrawn because eBible drops that row. Its
+index entry has `source` `edition`.
+
+The run records a digest of each edition folder (`edition.json`,
+`spelling.tsv`, and the files of `usfm/`) in `sources/editions.lock.json`. An
+edition is rebuilt when its digest differs from the recorded one, when its
+index entry does not come from the edition yet, when its id is given to
+`--rebuild` (in the workflow, the `rebuild` input), or when it was built before
+`--rebuild-before`; otherwise its entry stays as it is. The version of the
+module is the date of the run, and a second build on the same day is its next
+revision (`.1`, `.2`…). The run date is later than the date of the eBible
+module it replaces, so the app offers the edition as an update to everyone who
+installed that module.
+
+The module goes to `build-<date>` as `<id>-<version>.hb`. The old module file
+goes to `sources/pending-deletions.json`, and so does the saved eBible source
+copy with the same id, which leaves `sources/sources.lock.json`. An edition
+that fails to build is listed under "Failed" in the report; its index entry and
+its digest stay as they were, and the next run tries again. The report lists
+each built edition under "Editions" with the same numbers as `--edition`, and
+its warnings under it.
 
 ## License
 

@@ -11,6 +11,7 @@ import 'package:catalog_builder/src/catalog/report.dart';
 import 'package:catalog_builder/src/catalog/sources_lock.dart';
 import 'package:catalog_builder/src/crosswire/crosswire_build.dart';
 import 'package:catalog_builder/src/ebible/translations_csv.dart';
+import 'package:catalog_builder/src/edition/edition_build.dart';
 import 'package:catalog_builder/src/text_helpers.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:hisbible_format/hisbible_format.dart';
@@ -35,6 +36,9 @@ const int massWithdrawalMinimum = 20;
 /// не отзывает.
 const int massWithdrawalPercent = 5;
 
+/// Значение `source` записи указателя для модуля издания.
+const editionSource = 'edition';
+
 /// Каким должен быть `translationId`, чтобы стать именем файла и выпуска.
 final translationIdPattern = RegExp(r'^[A-Za-z0-9_-]+$');
 
@@ -54,6 +58,7 @@ final class CatalogRun {
     required this.lock,
     required this.report,
     this.deletions = const [],
+    this.editionDigests = const {},
   });
 
   /// Новый указатель.
@@ -70,6 +75,10 @@ final class CatalogRun {
   /// не удались. Пишутся в `sources/pending-deletions.json` рядом
   /// с указателем.
   final List<ReleaseAsset> deletions;
+
+  /// Новые отпечатки изданий для `sources/editions.lock.json`: id →
+  /// `editionDigest` папки, из которой собран модуль в указателе.
+  final Map<String, String> editionDigests;
 }
 
 /// Собирает каталог из переводов [translations] поверх прежнего указателя
@@ -149,6 +158,19 @@ final class CatalogRun {
 /// выложился и модуль. Модуль, чьей записи в [crosswire] больше нет,
 /// отзывается, как перевод.
 ///
+/// Свои издания — [editions] из `editions/<id>/`: идут первыми, раньше
+/// CrossWire, в [limit] не считаются. Строка таблицы переводов с id издания
+/// не берётся вовсе: модуль издания встаёт на место модуля eBible с тем же
+/// id и не отзывается, когда eBible этот перевод убирает. Модуль без
+/// изменений, если прежняя запись — из издания, а `editionDigest` папки
+/// равен записанному в [editionDigests]; иначе, для id из [rebuild] и для
+/// модуля, собранного до [rebuildBefore], — сборка. Версия — дата прогона,
+/// а если у прежней записи та же дата — следующая правка. Прежний файл
+/// модуля и копия исходника eBible с тем же id идут к удалению, когда
+/// модуль издания встал. Сборка не удалась — прежняя запись (и отпечаток)
+/// остаётся, причины в отчёте. Новые отпечатки — в
+/// [CatalogRun.editionDigests].
+///
 /// Удаления этого прогона не делаются сразу: они — в
 /// [CatalogRun.deletions], для следующего прогона. Файлы прогона лежат
 /// в [work]: `sources/`, `modules/`, `fonts/`; без [keepFiles] архив
@@ -166,6 +188,8 @@ Future<CatalogRun> runCatalogBuild({
   FontsLock fonts = FontsLock.empty,
   List<ReleaseAsset> pending = const [],
   Map<String, CrossWireSource> crosswire = const {},
+  List<Edition> editions = const [],
+  Map<String, String> editionDigests = const {},
   int? limit,
   Set<String> rebuild = const {},
   String? rebuildBefore,
@@ -192,9 +216,14 @@ Future<CatalogRun> runCatalogBuild({
     publisher: publisher,
     work: work,
   );
+  final editionIds = {for (final edition in editions) edition.id};
   final taken = <String, EbibleTranslation>{};
   final skipped = <String, String>{};
   for (final t in translations) {
+    // Перевод с id издания собирается из издания, строка eBible не нужна.
+    if (editionIds.contains(t.translationId)) {
+      continue;
+    }
     if (!t.redistributable ||
         !t.downloadable ||
         overrides.exclude.contains(t.translationId)) {
@@ -262,7 +291,9 @@ Future<CatalogRun> runCatalogBuild({
     for (final module in crosswire.keys) crosswireCatalogId(module),
   };
   for (final id in rebuild.toList()..sort()) {
-    if (!taken.containsKey(id) && !crosswireIds.contains(id)) {
+    if (!taken.containsKey(id) &&
+        !crosswireIds.contains(id) &&
+        !editionIds.contains(id)) {
       failed[id] = [
         'cannot rebuild $id: the run did not take it from translations.csv',
       ];
@@ -306,6 +337,66 @@ Future<CatalogRun> runCatalogBuild({
     }
 
     return true;
+  }
+
+  final digests = {
+    for (final id in editionIds)
+      if (editionDigests[id] case final digest?) id: digest,
+  };
+  final editionLines = <String, ({String summary, List<String> warnings})>{};
+  for (final edition in editions) {
+    final id = edition.id;
+    final old = before[id];
+    final String digest;
+    try {
+      digest = editionDigest(edition.dir);
+    } on Object catch (e) {
+      settle(id, old, (null, ['cannot read the edition $id: $e']));
+      continue;
+    }
+    final forced =
+        rebuild.contains(id) ||
+        (rebuildBefore != null &&
+            old != null &&
+            _builtBefore(old.url, rebuildBefore));
+    if (old != null &&
+        old.source == editionSource &&
+        digests[id] == digest &&
+        !forced) {
+      modules[id] = old;
+      unchanged.add(id);
+      continue;
+    }
+    stopped ??= stopReason();
+    if (stopped != null) {
+      if (old != null) {
+        modules[id] = old;
+      }
+      waiting.add(id);
+      continue;
+    }
+    (IndexModule?, List<String>, EditionOutcome?) outcome;
+    try {
+      outcome = await run.edition(edition, _editionVersion(old, date));
+    } on Object catch (e) {
+      outcome = (null, ['unexpected error: $e'], null);
+    }
+    final (module, notes, result) = outcome;
+    if (settle(id, old, (module, notes))) {
+      digests[id] = digest;
+      editionLines[id] = (
+        summary: _editionSummary(result!),
+        warnings: result.warnings,
+      );
+    }
+  }
+  // Встало издание — копия исходника eBible с тем же id больше не нужна.
+  for (final id in editionIds) {
+    if (modules[id]?.source == editionSource) {
+      if (run.entries.remove(id) case final copy?) {
+        run.deletions.add((release: copy.release, asset: copy.asset));
+      }
+    }
   }
 
   for (final module in crosswire.keys.toList()..sort()) {
@@ -381,7 +472,8 @@ Future<CatalogRun> runCatalogBuild({
   bool leaving(String id) =>
       !taken.containsKey(id) &&
       !held.contains(id) &&
-      !crosswireIds.contains(id);
+      !crosswireIds.contains(id) &&
+      !editionIds.contains(id);
   final leavers = [
     for (final old in previous.modules)
       if (leaving(old.id)) old,
@@ -459,13 +551,36 @@ Future<CatalogRun> runCatalogBuild({
       xtByHref: run.xtByHref,
       xtUnresolved: run.xtUnresolved,
       commentaries: run.commentaries,
+      editions: editionLines,
       rebuildMissed: [
         for (final id in rebuild.toList()..sort())
           if (!built.contains(id)) id,
       ],
     ),
     deletions: List.unmodifiable(deletions),
+    editionDigests: Map.unmodifiable(digests),
   );
+}
+
+// Версия модуля издания при прежней записи [old] и дате прогона [date]:
+// [date], а если у [old] та же дата — следующая правка. Прежняя версия
+// с датой eBible (`2022-11-25.2`) — другая дата.
+String _editionVersion(IndexModule? old, String date) =>
+    old != null && moduleVersionDate(old.version) == date
+    ? _nextRevision(old.version)
+    : date;
+
+// Строка итога издания [built] для отчёта: схемы нумерации по имени.
+String _editionSummary(EditionOutcome built) {
+  final schemes = built.schemes.keys.toList()
+    ..sort((a, b) => a.name.compareTo(b.name));
+  final schemeText = [
+    for (final scheme in schemes) '${scheme.name} ${built.schemes[scheme]}',
+  ].join(', ');
+
+  return 'verses ${built.verses}, replaced ${built.replaced}, '
+      'links ${built.links.linked}, unresolved ${built.links.unresolved}, '
+      'schemes $schemeText';
 }
 
 final _buildRelease = RegExp(r'^build-(\d{4}-\d{2}-\d{2})(?:-\d+)?$');
@@ -859,6 +974,7 @@ final class _Run {
       IndexModule(
         id: id,
         type: 'commentaries',
+        source: 'crosswire',
         abbreviation: meta.abbreviation,
         name: meta.name,
         description: meta.description,
@@ -877,6 +993,76 @@ final class _Run {
         moduleFormat: formatVersion,
       ),
       const <String>[],
+    );
+  }
+
+  // Собирает и выкладывает модуль издания [edition] с версией [version]:
+  // запись указателя и итог сборки либо `null` и причины. Несобранное
+  // издание — причины из [FormatException] [buildEdition], по строке.
+  Future<(IndexModule?, List<String>, EditionOutcome?)> edition(
+    Edition edition,
+    String version,
+  ) async {
+    final id = edition.id;
+    if (!translationIdPattern.hasMatch(id)) {
+      return (null, ['edition id "$id" is not letters, digits, _ and -'], null);
+    }
+    final file = File(
+      p.join(work.path, 'modules', '$id-$version$moduleExtension'),
+    );
+    final EditionOutcome outcome;
+    try {
+      outcome = await buildEdition(
+        edition,
+        file.path,
+        version: version,
+        now: now,
+      );
+    } on FormatException catch (e) {
+      return (
+        null,
+        ['cannot build the edition $id:', ...e.message.split('\n')],
+        null,
+      );
+    }
+    final size = file.lengthSync();
+    final moduleSha256 = crypto.sha256
+        .convert(file.readAsBytesSync())
+        .toString();
+    final (:url, :problem, release: _) = await _upload(_builds, file);
+    _remove(file);
+    if (url == null) {
+      return (null, [problem], null);
+    }
+    xtLinked += outcome.links.linked;
+    xtByHref += outcome.links.byHref;
+    xtUnresolved += outcome.links.unresolved;
+    final meta = outcome.meta;
+
+    return (
+      IndexModule(
+        id: id,
+        type: 'bible',
+        source: editionSource,
+        abbreviation: meta.abbreviation,
+        name: meta.name,
+        description: meta.description,
+        language: meta.language,
+        languageName: edition.languageName,
+        languageNameEnglish: edition.languageNameEnglish,
+        script: meta.script ?? edition.script,
+        direction: meta.direction,
+        license: meta.license,
+        copyright: meta.copyright,
+        books: outcome.books,
+        size: size,
+        sha256: moduleSha256,
+        url: url.toString(),
+        version: version,
+        moduleFormat: formatVersion,
+      ),
+      const <String>[],
+      outcome,
     );
   }
 
@@ -933,6 +1119,7 @@ IndexModule _entry(EbibleTranslation t, Built built, Uri url, String version) {
   return IndexModule(
     id: t.translationId,
     type: 'bible',
+    source: 'ebible',
     abbreviation: meta.abbreviation,
     name: meta.name,
     description: meta.description,

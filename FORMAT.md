@@ -254,7 +254,8 @@ only from the releases of this repository: a `url` that does not start with
   "updated": "2026-11-01",
   "modules": [
     {
-      "id": "russyn", "type": "bible", "abbreviation": "russyn",
+      "id": "russyn", "type": "bible", "source": "ebible",
+      "abbreviation": "russyn",
       "name": "Синодальный перевод", "description": "…",
       "language": "ru", "languageName": "Русский",
       "languageNameEnglish": "Russian", "script": "Cyrl", "direction": "ltr",
@@ -284,10 +285,17 @@ only from the releases of this repository: a `url` that does not start with
 - `moduleFormat` is the file format version of the module. A client hides
   modules with a `moduleFormat` newer than it knows and modules of an unknown
   `type`. Unknown fields are skipped.
-- `type` is `bible` for the translations of eBible.org and `commentaries` for
-  the commentaries converted from CrossWire. A commentaries entry has the same
-  fields; its `id` is `crosswire-<module in lowercase>` (`crosswire-kd`), so it
-  never meets a `translationId` of eBible.org.
+- `type` is `bible` for the translations of eBible.org and the editions of this
+  repository, and `commentaries` for the commentaries converted from CrossWire.
+  A commentaries entry has the same fields; its `id` is
+  `crosswire-<module in lowercase>` (`crosswire-kd`), so it never meets a
+  `translationId` of eBible.org.
+- `source` says where the module comes from: `ebible` for a translation of
+  eBible.org, `crosswire` for commentaries converted from CrossWire, `edition`
+  for an edition kept as USFM in this repository (`editions/<id>/`, see
+  `README.md`). The builder always writes it. An entry without it comes from an
+  index written before the field: it is `crosswire` when its `id` starts with
+  `crosswire-` and `ebible` otherwise.
 - `books` counts the books of the Old Testament, the New Testament, and the
   deuterocanon; for commentaries, the books that have comments or articles.
   `size` and `sha256` describe the file at `url`. `sha256` is 64 lowercase hex
