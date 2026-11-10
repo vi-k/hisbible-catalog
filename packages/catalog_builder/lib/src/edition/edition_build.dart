@@ -413,11 +413,21 @@ _Check _check(String path, int expectedVerses) {
         'markup left in $leftovers places: ${places.join(', ')}$more',
       );
     }
-    final books = bible.schemes;
-    for (final number in books.uncertain) {
-      reasons.add('book $number: numbering scheme is uncertain');
+    // Схему книги пишет сборка, а неуверенность она не сообщает: распознаём
+    // заново по последним стихам глав записанного модуля.
+    final detected = Versification.standard.detect(
+      bible.lastVerses(),
+      russianFlag: true,
+    );
+    final codes = {for (final b in bible.books) b.number: b.code};
+    for (final number in detected.uncertain.toList()..sort()) {
+      reasons.add(
+        '${codes[number] ?? number}: '
+        'numbering scheme is uncertain (last verses fit no scheme in 95% '
+        'of chapters)',
+      );
     }
-    for (final scheme in books.schemes.values) {
+    for (final scheme in bible.schemes.schemes.values) {
       schemes[scheme] = (schemes[scheme] ?? 0) + 1;
     }
   } on Exception catch (e) {

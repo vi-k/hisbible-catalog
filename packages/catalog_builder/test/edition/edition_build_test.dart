@@ -10,14 +10,16 @@ const _copyright =
     'Текст — общественное достояние. '
     'Параллельные места — по изданию Московской Патриархии.';
 
-const _gen = r'''
-\id GEN
-\toc1 Бытие
-\c 1
-\p
-\v 1 Вначале сотворил Бог небо и землю пред лицем\f + \ft примечание\f* Его.
-\v 2 Земля же была что́ безвидна. \x - \xt Ин 1:3|link-href="JHN 1:3"\xt*\x*
-''';
+// Бытие 1: 31 стих, как в обеих схемах, иначе схема не распознается.
+final _gen = [
+  r'\id GEN',
+  r'\toc1 Бытие',
+  r'\c 1',
+  r'\p',
+  r'\v 1 Вначале сотворил Бог небо и землю пред лицем\f + \ft примечание\f* Его.',
+  r'\v 2 Земля же была что́ безвидна. \x - \xt Ин 1:3|link-href="JHN 1:3"\xt*\x*',
+  for (var v = 3; v <= 31; v++) '\\v $v Стих $v.',
+].join('\n');
 
 final _psa = [
   r'\id PSA',
@@ -34,7 +36,7 @@ final _man = [
   r'\toc1 Молитва Манассии',
   r'\c 1',
   r'\p',
-  for (var v = 1; v <= 12; v++) '\\v $v Стих $v.',
+  for (var v = 1; v <= 15; v++) '\\v $v Стих $v.',
 ].join('\n');
 
 int _book(String code) => BookCatalog.numberOfCode(code)!;
@@ -92,7 +94,7 @@ void main() {
     expect(meta.catalogId, 'russyn');
     expect(meta.created, '2026-11-10');
     expect(outcome.books, (ot: 2, nt: 0, dc: 1));
-    expect(outcome.verses, 2 + 9 + 12);
+    expect(outcome.verses, 31 + 9 + 15);
     expect(File(out()).existsSync(), isTrue);
     expect(File('${out()}.part').existsSync(), isFalse);
   });
@@ -190,5 +192,31 @@ void main() {
         ),
       ),
     );
+  });
+
+  test('uncertain numbering scheme is a reason', () async {
+    write(
+      '01-GEN.usfm',
+      [
+        r'\id GEN',
+        r'\toc1 Бытие',
+        r'\c 1',
+        for (var v = 1; v <= 7; v++) '\\v $v Стих $v.',
+        r'\c 2',
+        for (var v = 1; v <= 3; v++) '\\v $v Стих $v.',
+      ].join('\n'),
+    );
+    await expectLater(
+      build(),
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          allOf(contains('GEN'), contains('uncertain')),
+        ),
+      ),
+    );
+    expect(File(out()).existsSync(), isFalse);
+    expect(File('${out()}.part').existsSync(), isFalse);
   });
 }
