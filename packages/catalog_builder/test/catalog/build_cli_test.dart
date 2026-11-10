@@ -25,6 +25,14 @@ void main() {
     expect(options(['--csv']), isNull, reason: 'no value');
   });
 
+  test('--edition takes a folder and an output path', () {
+    expect(
+      parseCliOptions(['--edition', 'editions/russyn', 'out.hb'])?.options,
+      {'--edition': 'editions/russyn', editionOutKey: 'out.hb'},
+    );
+    expect(parseCliOptions(['--edition', 'editions/russyn']), isNull);
+  });
+
   test('--rebuild repeats and takes only translation ids', () {
     final parsed = parseCliOptions([
       '--rebuild',

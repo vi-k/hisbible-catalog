@@ -13,6 +13,7 @@ import 'package:catalog_builder/src/catalog/report.dart';
 import 'package:catalog_builder/src/catalog/sources_lock.dart';
 import 'package:catalog_builder/src/crosswire/crosswire_build.dart';
 import 'package:catalog_builder/src/ebible/translations_csv.dart';
+import 'package:catalog_builder/src/edition/edition_build.dart';
 import 'package:catalog_builder/src/openbible/openbible_build.dart';
 import 'package:catalog_builder/src/text_helpers.dart';
 import 'package:hisbible_format/hisbible_format.dart';
@@ -68,7 +69,8 @@ const _usage =
     '  dart run catalog_builder:build --openbible <out.hb> '
     '[--accept-new-source]\n'
     '  dart run catalog_builder:build --crosswire <module> <out.hb> '
-    '[--accept-new-source]';
+    '[--accept-new-source]\n'
+    '  dart run catalog_builder:build --edition <dir> <out.hb>';
 
 const _defaultCsv = 'https://ebible.org/Scriptures/translations.csv';
 
@@ -83,16 +85,20 @@ const pendingDeletionsPath = 'sources/pending-deletions.json';
 /// `--crosswire`.
 const crosswireOutKey = '--crosswire <out.hb>';
 
+/// Ключ в `options`, под которым [parseCliOptions] кладёт второе значение
+/// `--edition <dir> <out.hb>` — путь модуля; первое лежит под `--edition`.
+const editionOutKey = '--edition <out.hb>';
+
 /// Разобранные аргументы сборки: ключи со значениями и флаги в
 /// `options`, id из повторяемого ключа `--rebuild` в `rebuild`.
 typedef CliOptions = ({Map<String, String> options, List<String> rebuild});
 
 /// Разбирает аргументы [args] сборки: ключи со значениями, флаги
 /// `--dry-run`, `--allow-mass-withdrawal` и `--accept-new-source` (значение —
-/// пустая строка), повторяемый `--rebuild <id>` и `--crosswire` с двумя
-/// значениями (второе — под [crosswireOutKey]); незнакомый ключ, ключ
-/// без значения, повтор другого ключа, id `--rebuild` не по
-/// [translationIdPattern] или `--rebuild-before` не датой `YYYY-MM-DD` —
+/// пустая строка), повторяемый `--rebuild <id>`, `--crosswire` и `--edition`
+/// с двумя значениями (второе — под [crosswireOutKey] и [editionOutKey]);
+/// незнакомый ключ, ключ без значения, повтор другого ключа, id `--rebuild`
+/// не по [translationIdPattern] или `--rebuild-before` не датой `YYYY-MM-DD` —
 /// `null`.
 CliOptions? parseCliOptions(List<String> args) {
   const valued = {
@@ -117,6 +123,9 @@ CliOptions? parseCliOptions(List<String> args) {
     if (key == '--crosswire' && i + 2 < args.length) {
       options[key] = args[++i];
       options[crosswireOutKey] = args[++i];
+    } else if (key == '--edition' && i + 2 < args.length) {
+      options[key] = args[++i];
+      options[editionOutKey] = args[++i];
     } else if (key == '--rebuild' && i + 1 < args.length) {
       final id = args[++i];
       if (!translationIdPattern.hasMatch(id)) {
@@ -167,6 +176,12 @@ final class _Cli {
                     const {'--openbible', '--accept-new-source'}.contains(key),
               )
           ? _openBible(openBible, options.containsKey('--accept-new-source'))
+          : _badArguments();
+    }
+    final edition = options['--edition'];
+    if (edition != null) {
+      return rebuild.isEmpty && options.length == 2
+          ? _edition(edition, options[editionOutKey]!)
           : _badArguments();
     }
     final crossWire = options['--crosswire'];
@@ -254,6 +269,29 @@ final class _Cli {
       );
     } finally {
       fetcher.close();
+    }
+  }
+
+  // Модуль Библии из издания в папке [dir] в [outPath]: ничего не выкладывает.
+  Future<int> _edition(String dir, String outPath) async {
+    final now = DateTime.now().toUtc();
+    try {
+      final outcome = await buildEdition(
+        readEdition(Directory(dir)),
+        outPath,
+        version: isoDate(now),
+        now: now,
+      );
+      _out.writeln(outcome.summary());
+      for (final warning in outcome.warnings) {
+        _out.writeln('warning: $warning');
+      }
+
+      return 0;
+    } on FormatException catch (e) {
+      _err.writeln('edition not built: ${e.message}');
+
+      return 1;
     }
   }
 

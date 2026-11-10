@@ -20,5 +20,7 @@ export 'src/crosswire/osis_html.dart';
 export 'src/crosswire/zcom.dart';
 export 'src/ebible/scripts.dart';
 export 'src/ebible/translations_csv.dart';
+export 'src/edition/edition_build.dart';
+export 'src/edition/spelling.dart';
 export 'src/openbible/openbible_build.dart';
 export 'src/openbible/osis_books.dart';
