@@ -26,8 +26,8 @@ import 'package:path/path.dart' as p;
 /// Режимы и ключи описаны в `bin/build.dart`. Возвращает код выхода:
 /// 0 — готово, 1 — не собрано или не всё удалено,
 /// [redRunExitCode] — прогон записал свои файлы, но должен покраснеть
-/// (отказ от массового отзыва, несобранный `--rebuild`), 64 — неверные
-/// аргументы.
+/// (отказ от массового отзыва, несобранный `--rebuild`, несобранное
+/// издание), 64 — неверные аргументы.
 Future<int> runBuildCli(
   List<String> args, {
   StringSink? out,
@@ -45,16 +45,18 @@ Uri? csvAddress(String csv) {
 }
 
 /// Код выхода прогона, который записал указатель, список исходников
-/// и отчёт, но должен покраснеть: отказался от массового отзыва или
-/// не собрал id из `--rebuild`. Сборка `build` коммитит записанное
-/// и только потом падает с причинами из отчёта.
+/// и отчёт, но должен покраснеть: отказался от массового отзыва,
+/// не собрал id из `--rebuild` или издание. Сборка `build` коммитит
+/// записанное и только потом падает с причинами из отчёта.
 const int redRunExitCode = 3;
 
 /// Код выхода прогона каталога, который дошёл до отчёта [report]: 0 или
-/// [redRunExitCode], если прогон отказался от массового отзыва или
-/// не собрал id из `--rebuild`.
+/// [redRunExitCode], если прогон отказался от массового отзыва, не собрал
+/// id из `--rebuild` или не собрал издание.
 int catalogExitCode(BuildReport report) =>
-    report.withdrawalRefused == null && report.rebuildMissed.isEmpty
+    report.withdrawalRefused == null &&
+        report.rebuildMissed.isEmpty &&
+        report.editionsFailed.isEmpty
     ? 0
     : redRunExitCode;
 
@@ -293,6 +295,10 @@ final class _Cli {
       _err.writeln('edition not built: ${e.message}');
 
       return 1;
+    } on FileSystemException catch (e) {
+      _err.writeln('edition not built: $e');
+
+      return 1;
     }
   }
 
@@ -409,6 +415,7 @@ final class _Cli {
         ?report.stopped,
         ?report.withdrawalRefused,
         ?report.rebuildProblem,
+        ?report.editionProblem,
       ]) {
         _err.writeln(line);
       }

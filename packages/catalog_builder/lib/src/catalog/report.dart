@@ -24,6 +24,7 @@ final class BuildReport {
     this.xtUnresolved = 0,
     this.commentaries = const {},
     this.editions = const {},
+    this.editionsFailed = const [],
   });
 
   /// Дата прогона, `YYYY-MM-DD`.
@@ -96,6 +97,16 @@ final class BuildReport {
   /// Собранные издания: id → строка итога и предупреждения сборки.
   final Map<String, ({String summary, List<String> warnings})> editions;
 
+  /// Id изданий, которые прогон не собрал или не прочёл: их прежняя запись
+  /// осталась, а прогон должен покраснеть.
+  final List<String> editionsFailed;
+
+  /// Что сказать о [editionsFailed], или `null`, если не собраны все.
+  String? get editionProblem => editionsFailed.isEmpty
+      ? null
+      : 'Edition not built: ${editionsFailed.join(', ')}. The previous '
+            'entry stays; the reasons are under Editions';
+
   /// Что сказать о [rebuildMissed], или `null`, если пересобраны все.
   String? get rebuildProblem => rebuildMissed.isEmpty
       ? null
@@ -135,7 +146,11 @@ final class BuildReport {
         ..writeln()
         ..writeln('**$stopped; the rest waits for the next run.**');
     }
-    for (final problem in [?withdrawalRefused, ?rebuildProblem]) {
+    for (final problem in [
+      ?withdrawalRefused,
+      ?rebuildProblem,
+      ?editionProblem,
+    ]) {
       out
         ..writeln()
         ..writeln('**$problem.**');

@@ -167,9 +167,111 @@ void main() {
   });
 
   test('reads editions and rejects a missing field', () {
-    expect(readEditions(root).map((e) => e.id), ['russyn']);
+    expect(scanEditions(root).editions.map((e) => e.id), ['russyn']);
     File(p.join(dir.path, 'edition.json')).writeAsStringSync('{"id":"x"}');
     expect(() => readEdition(dir), throwsA(isA<FormatException>()));
+  });
+
+  // Поле [key] в `edition.json` издания — [value].
+  void setField(String key, Object value) {
+    final file = File(p.join(dir.path, 'edition.json'));
+    final json = jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
+    file.writeAsStringSync(jsonEncode({...json, key: value}));
+  }
+
+  test('the folder name is the id', () {
+    setField('id', 'russyn2');
+    expect(
+      () => readEdition(dir),
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          allOf(contains('russyn2'), contains('folder')),
+        ),
+      ),
+    );
+  });
+
+  test('direction is ltr or rtl', () {
+    setField('direction', 'rtl');
+    expect(readEdition(dir).direction, 'rtl');
+    setField('direction', 'RTL');
+    expect(
+      () => readEdition(dir),
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          contains('direction'),
+        ),
+      ),
+    );
+  });
+
+  test('only .usfm and .sfm files of usfm/ are read and hashed', () async {
+    final before = editionDigest(dir);
+    write('.DS_Store', 'не USFM');
+    write('notes.txt', r'\id EXO');
+    expect(editionDigest(dir), before);
+    write('02-EXO.SFM', [r'\id EXO', r'\c 1', r'\v 1 Стих.'].join('\n'));
+    expect(editionDigest(dir), isNot(before));
+    final outcome = await build();
+    expect(outcome.books, (ot: 3, nt: 0, dc: 1));
+  });
+
+  test('a file that is not UTF-8 is named', () async {
+    File(p.join(dir.path, 'usfm', '19-PSA.usfm'))
+        .writeAsBytesSync([...utf8.encode(r'\id PSA \c 1 \v 1 '), 0xff, 0xfe]);
+    await expectLater(
+      build(),
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          allOf(contains('19-PSA.usfm'), contains('UTF-8')),
+        ),
+      ),
+    );
+  });
+
+  test('a skipped empty book is not lost text', () async {
+    // Имя файла попадает в предупреждение разбора и похоже на потерю.
+    write('00: unknown markers.usfm', [r'\id EXO', r'\c 1'].join('\n'));
+    final outcome = await build();
+    expect(outcome.warnings, contains(contains('EXO: no verses')));
+  });
+
+  test('a verse lost on the way fails the build', () async {
+    write('01-GEN.usfm', _gen.replaceFirst(r'\v 3 ', r'\v 2 '));
+    await expectLater(
+      build(),
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'message',
+          contains('54 verses in the module, 55'),
+        ),
+      ),
+    );
+    expect(File(out()).existsSync(), isFalse);
+  });
+
+  test('meta is read back from the written file', () async {
+    final outcome = await build();
+    final bible = BibleModule.open(out());
+    addTearDown(bible.close);
+    expect(bible.meta, outcome.meta);
+    expect(bible.meta.source, 'edition:russyn');
+    expect(bible.meta.version, '2026-11-10');
+    expect(bible.meta.catalogId, 'russyn');
+    expect(bible.meta.direction, WritingDirection.ltr);
+  });
+
+  test('editions of the repository are readable', () {
+    final scan = scanEditions(Directory(p.join('..', '..')));
+    expect(scan.broken, isEmpty);
+    expect(scan.editions.map((e) => e.id), contains('russyn'));
   });
 
   test('invalid edition leaves no file', () async {
@@ -207,7 +309,13 @@ void main() {
       ].join('\n'),
     );
     final outcome = await build();
-    expect(outcome.warnings, contains(contains('GEN: numbering scheme')));
+    expect(
+      outcome.warnings,
+      contains(
+        'GEN: numbering scheme is uncertain: the best scheme matches '
+        'fewer than 95% of chapters',
+      ),
+    );
     expect(File(out()).existsSync(), isTrue);
   });
 }

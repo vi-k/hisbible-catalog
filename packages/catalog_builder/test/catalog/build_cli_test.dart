@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:catalog_builder/catalog_builder.dart';
@@ -86,7 +87,62 @@ void main() {
       ),
       redRunExitCode,
     );
+    expect(
+      catalogExitCode(
+        const BuildReport(date: '2026-12-01', editionsFailed: ['russyn']),
+      ),
+      redRunExitCode,
+    );
     expect(redRunExitCode, isNot(anyOf(0, 1, 64)));
+  });
+
+  test('a failed edition is a bold reason in the report', () {
+    const report = BuildReport(
+      date: '2026-12-01',
+      editionsFailed: ['abc', 'russyn'],
+    );
+
+    expect(report.editionProblem, startsWith('Edition not built: abc, russyn'));
+    expect(report.toMarkdown(), contains('\n**Edition not built: abc, russyn'));
+    expect(const BuildReport(date: '2026-12-01').editionProblem, isNull);
+  });
+
+  test('--edition that hits a file system error is not built', () async {
+    final dir = Directory.systemTemp.createTempSync('build_cli_test');
+    addTearDown(() => dir.deleteSync(recursive: true));
+    final edition = Directory(p.join(dir.path, 'abc'))..createSync();
+    Directory(p.join(edition.path, 'usfm')).createSync();
+    File(p.join(edition.path, 'edition.json')).writeAsStringSync(
+      jsonEncode({
+        for (final key in [
+          'abbreviation',
+          'name',
+          'description',
+          'languageName',
+          'languageNameEnglish',
+          'copyright',
+          'sourceUrl',
+        ])
+          key: key,
+        'id': 'abc',
+        'language': 'ru',
+        'script': 'Cyrl',
+        'direction': 'ltr',
+        'license': 'PD',
+      }),
+    );
+    // `spelling.tsv` — папка: есть, но не читается.
+    Directory(p.join(edition.path, 'spelling.tsv')).createSync();
+    final err = StringBuffer();
+
+    final code = await runBuildCli([
+      '--edition',
+      edition.path,
+      p.join(dir.path, 'abc.hb'),
+    ], err: err);
+
+    expect(code, 1);
+    expect(err.toString(), contains('edition not built'));
   });
 
   test('a --rebuild-before date after today exits with 64', () async {

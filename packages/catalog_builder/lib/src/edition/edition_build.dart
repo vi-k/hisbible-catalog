@@ -70,8 +70,9 @@ final class Edition {
   final String sourceUrl;
 }
 
-/// Читает издание из [dir]: нужны `edition.json` со всеми полями, папка
-/// `usfm/` и `spelling.tsv`; чего-то нет — [FormatException].
+/// Читает издание из [dir]: нужны `edition.json` со всеми полями, `id`
+/// по имени папки и `direction` `ltr` или `rtl`, папка `usfm/`
+/// и `spelling.tsv`; чего-то нет — [FormatException].
 Edition readEdition(Directory dir) {
   final file = File(p.join(dir.path, 'edition.json'));
   if (!file.existsSync()) {
@@ -116,6 +117,17 @@ Edition readEdition(Directory dir) {
   if (missing.isNotEmpty) {
     throw FormatException('${file.path}: нет полей ${missing.join(', ')}');
   }
+  final folder = p.basename(dir.path);
+  if (edition.id != folder) {
+    throw FormatException(
+      '${file.path}: id ${edition.id} is not the folder name $folder',
+    );
+  }
+  if (!const {'ltr', 'rtl'}.contains(edition.direction)) {
+    throw FormatException(
+      '${file.path}: direction ${edition.direction} is not ltr or rtl',
+    );
+  }
   for (final path in [_usfmDir(dir).path, _spellingFile(dir).path]) {
     if (FileSystemEntity.typeSync(path) == FileSystemEntityType.notFound) {
       throw FormatException('${dir.path}: нет ${p.basename(path)}');
@@ -124,11 +136,6 @@ Edition readEdition(Directory dir) {
 
   return edition;
 }
-
-/// Все издания папки [root]`/editions/`, по именам папок.
-List<Edition> readEditions(Directory root) => [
-  for (final dir in _editionDirs(root)) readEdition(dir),
-];
 
 /// Издания папки [root]`/editions/` по именам папок и папки, из которых
 /// издание не читается: id → причина. Id такой папки — `id` из её
@@ -179,8 +186,8 @@ List<Directory> _editionDirs(Directory root) {
     ..sort((a, b) => a.path.compareTo(b.path));
 }
 
-/// SHA-256 издания: по отсортированным путям и байтам всех файлов `usfm/`,
-/// `spelling.tsv` и `edition.json`.
+/// SHA-256 издания: по отсортированным путям и байтам файлов `.usfm`
+/// и `.sfm` папки `usfm/`, `spelling.tsv` и `edition.json`.
 ///
 /// Меняется от любой правки файла и не зависит от порядка, в котором
 /// файловая система отдаёт имена.
@@ -249,16 +256,24 @@ final class EditionOutcome {
   /// Что сборка пропустила или выбросила.
   final List<String> warnings;
 
-  /// Строка итога для `--edition`.
-  String summary() {
+  /// Строка итога: для `--edition` с числами книг, для строки издания
+  /// в отчёте прогона — без них ([books] `false`). Схемы нумерации — по имени.
+  String summary({bool books = true}) {
+    final names = schemes.keys.toList()
+      ..sort((a, b) => a.name.compareTo(b.name));
     final schemeText = [
-      for (final MapEntry(:key, :value) in schemes.entries)
-        '${key.name} $value',
+      for (final scheme in names) '${scheme.name} ${schemes[scheme]}',
     ].join(', ');
+    final counts = this.books;
 
-    return 'verses $verses, books ${books.ot}/${books.nt}/${books.dc}, '
-        'replaced $replaced, links ${links.linked}, '
-        'unresolved ${links.unresolved}, schemes $schemeText';
+    return [
+      'verses $verses',
+      if (books) 'books ${counts.ot}/${counts.nt}/${counts.dc}',
+      'replaced $replaced',
+      'links ${links.linked}',
+      'unresolved ${links.unresolved}',
+      'schemes $schemeText',
+    ].join(', ');
   }
 }
 
@@ -281,10 +296,16 @@ Future<EditionOutcome> buildEdition(
   var expectedVerses = 0;
   final sources = <UsfmSource>[];
   for (final file in _usfmFiles(edition.dir)) {
-    final fixed = applySpelling(
-      withoutBom(utf8.decode(file.readAsBytesSync())),
-      spelling,
-    );
+    final String text;
+    try {
+      text = utf8.decode(file.readAsBytesSync());
+    } on FormatException catch (e) {
+      throw FormatException(
+        '${edition.id}: usfm/${p.basename(file.path)} is not UTF-8: '
+        '${e.message}',
+      );
+    }
+    final fixed = applySpelling(withoutBom(text), spelling);
     replaced += fixed.replaced;
     expectedVerses += _verseMarker.allMatches(fixed.text).length;
     sources.add((name: p.basename(file.path), bytes: utf8.encode(fixed.text)));
@@ -322,10 +343,15 @@ Future<EditionOutcome> buildEdition(
     final links = writeUsfmModule(part.path, meta, read);
     final check = _check(part.path, expectedVerses);
     // Незнакомый маркер и выброшенный кусок — потерянный текст: у издания
-    // такого быть не должно, и разбор молча его выбрасывает.
+    // такого быть не должно, и разбор молча его выбрасывает. Берутся поля
+    // разбора, а не текст его предупреждений: в тексте бывает имя файла.
     final reasons = [
-      for (final warning in read.warnings)
-        if (_lossWarning.hasMatch(warning)) warning,
+      for (final (:usfm, number: _, info: _) in read.books) ...[
+        if (usfm.unknownMarkers.isNotEmpty)
+          '${usfm.code}: unknown markers: ${_sorted(usfm.unknownMarkers)}',
+        if (usfm.droppedFragments > 0)
+          '${usfm.code}: dropped fragments: ${usfm.droppedFragments}',
+      ],
       ...check.reasons,
     ];
     if (reasons.isNotEmpty) {
@@ -350,11 +376,11 @@ Future<EditionOutcome> buildEdition(
   }
 }
 
+// Маркеры [markers] по алфавиту через запятую.
+String _sorted(Set<String> markers) => (markers.toList()..sort()).join(', ');
+
 // Начало стиха: `\v` и пробел.
 final _verseMarker = RegExp(r'\\v\s');
-
-// Предупреждение разбора о потерянном тексте.
-final _lossWarning = RegExp(': (unknown markers|dropped fragments)');
 
 // Остаток разметки в видимом тексте: `\` или `<` перед буквой.
 final _leftover = RegExp(r'[\\<][A-Za-z]');
@@ -366,16 +392,22 @@ Directory _usfmDir(Directory dir) => Directory(p.join(dir.path, 'usfm'));
 
 File _spellingFile(Directory dir) => File(p.join(dir.path, 'spelling.tsv'));
 
-// Файлы `usfm/` по именам.
+// Файлы `.usfm` и `.sfm` папки `usfm/` по именам; прочие (`.DS_Store`,
+// заметки) не читаются и в отпечаток не идут.
 List<File> _usfmFiles(Directory dir) {
   final usfm = _usfmDir(dir);
   if (!usfm.existsSync()) {
     return const [];
   }
 
-  return usfm.listSync().whereType<File>().toList()
-    ..sort((a, b) => a.path.compareTo(b.path));
+  return [
+    for (final file in usfm.listSync().whereType<File>())
+      if (_usfmExtensions.contains(p.extension(file.path).toLowerCase())) file,
+  ]..sort((a, b) => a.path.compareTo(b.path));
 }
+
+// Расширения файлов книг в `usfm/`, строчными.
+const _usfmExtensions = {'.usfm', '.sfm'};
 
 typedef _Check = ({
   List<String> reasons,
@@ -468,8 +500,8 @@ _Check _check(String path, int expectedVerses) {
     for (final number in detected.uncertain.toList()..sort()) {
       warnings.add(
         '${codes[number] ?? number}: '
-        'numbering scheme is uncertain (last verses fit no scheme in 95% '
-        'of chapters)',
+        'numbering scheme is uncertain: the best scheme matches fewer than '
+        '95% of chapters',
       );
     }
     for (final scheme in bible.schemes.schemes.values) {

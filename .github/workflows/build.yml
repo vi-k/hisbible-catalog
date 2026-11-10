@@ -55,8 +55,9 @@ jobs:
       #
       # Код 3: указатель, список исходников и отчёт записаны, но прогон
       # должен покраснеть: сборка отказалась от массового отзыва (все
-      # модули остались) или не собрала id из rebuild. Такой прогон
-      # коммитится как обычно, а падает последний шаг, «Fail the run».
+      # модули остались), не собрала id из rebuild или издание из editions/
+      # (его прежняя запись осталась). Такой прогон коммитится как обычно,
+      # а падает последний шаг, «Fail the run».
       - name: Build the catalog
         id: build
         env:
@@ -114,7 +115,7 @@ jobs:
         if: always() && steps.build.outputs.red == 'true'
         run: |
           grep -o -e 'Withdrawal refused: [^*]*' -e 'Rebuild not done: [^*]*' \
-            out/report.md > reasons.txt || true
+            -e 'Edition not built: [^*]*' out/report.md > reasons.txt || true
           if [ ! -s reasons.txt ]; then
             echo 'The build asked to fail the run; see the report.' > reasons.txt
           fi

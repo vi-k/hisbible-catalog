@@ -381,6 +381,73 @@ void main() {
     expect(publisher.uploads, isEmpty);
   });
 
+  test('a failed or broken edition makes the run red', () async {
+    write('MAN.usfm', _man.replaceFirst(r'\p', r'\p \zz'));
+    final abc = edition('abc', id: 'abc');
+    File(p.join(abc.path, 'edition.json')).writeAsStringSync('{');
+
+    final result = await run();
+
+    expect(result.report.editionsFailed, ['abc', 'russyn']);
+    expect(catalogExitCode(result.report), redRunExitCode);
+    expect(
+      result.report.toMarkdown(),
+      contains('**Edition not built: abc, russyn'),
+    );
+    expect(entry(result), _ebibleEntry, reason: 'the old entry stays');
+
+    write('MAN.usfm', _man);
+    File(p.join(abc.path, 'edition.json')).deleteSync();
+    abc.deleteSync(recursive: true);
+    final fixed = await run(after: result);
+    expect(fixed.report.editionsFailed, isEmpty);
+    expect(catalogExitCode(fixed.report), 0);
+  });
+
+  test('the edition version never goes below the previous one', () async {
+    // Прежняя запись с датой позже даты прогона.
+    const later = IndexModule(
+      id: 'russyn',
+      type: 'bible',
+      source: 'ebible',
+      abbreviation: 'RST',
+      name: 'Russian Synodal Translation',
+      language: 'ru',
+      languageName: 'Русский',
+      languageNameEnglish: 'Russian',
+      script: 'Cyrl',
+      direction: WritingDirection.ltr,
+      license: 'PD',
+      books: (ot: 39, nt: 27, dc: 0),
+      size: 1,
+      sha256: 'aa',
+      url: '$_release/build-2026-10-01/russyn-2026-11-20.hb',
+      version: '2026-11-20',
+      moduleFormat: 1,
+    );
+    final result = await runCatalogBuild(
+      pause: (_) async {},
+      translations: [_russynRow],
+      previous: const CatalogIndex(
+        format: catalogIndexFormat,
+        catalog: 'hisbible',
+        name: 'HisBible',
+        updated: '2026-10-01',
+        modules: [later],
+      ),
+      lock: const SourcesLock({'russyn': _ebibleSource}),
+      editions: scanEditions(root).editions,
+      overrides: const Overrides(),
+      fetcher: fetcher,
+      publisher: publisher,
+      work: work,
+      now: today,
+      clock: () => today,
+    );
+
+    expect(entry(result).version, '2026-11-20.1');
+  });
+
   test('a failed rebuild keeps the previous digest', () async {
     final first = await run();
     write('MAN.usfm', _man.replaceFirst(r'\p', r'\p \zz'));

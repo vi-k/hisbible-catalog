@@ -351,11 +351,13 @@ Future<CatalogRun> runCatalogBuild({
       if (editionDigests[id] case final digest?) id: digest,
   };
   final editionLines = <String, ({String summary, List<String> warnings})>{};
+  final editionsFailed = <String>{};
   // Издание не собрано: прежняя запись остаётся, причины — в `Failed`
-  // и под строкой издания.
+  // и под строкой издания, прогон краснеет.
   void editionFailed(String id, List<String> reasons) {
     settle(id, before[id], (null, reasons));
     editionLines[id] = (summary: 'not built', warnings: reasons);
+    editionsFailed.add(id);
   }
 
   // Id нечитаемой папки и id, который объявили две папки: ни одна
@@ -422,7 +424,7 @@ Future<CatalogRun> runCatalogBuild({
       settle(id, old, (module, notes));
       digests[id] = digest;
       editionLines[id] = (
-        summary: _editionSummary(result),
+        summary: result.summary(books: false),
         warnings: result.warnings,
       );
     }
@@ -589,6 +591,7 @@ Future<CatalogRun> runCatalogBuild({
       xtUnresolved: run.xtUnresolved,
       commentaries: run.commentaries,
       editions: editionLines,
+      editionsFailed: editionsFailed.toList()..sort(),
       rebuildMissed: [
         for (final id in rebuild.toList()..sort())
           if (!built.contains(id)) id,
@@ -600,24 +603,15 @@ Future<CatalogRun> runCatalogBuild({
 }
 
 // Версия модуля издания при прежней записи [old] и дате прогона [date]:
-// [date], а если у [old] та же дата — следующая правка. Прежняя версия
-// с датой eBible (`2022-11-25.2`) — другая дата.
-String _editionVersion(IndexModule? old, String date) =>
-    old != null && moduleVersionDate(old.version) == date
-    ? _nextRevision(old.version)
-    : date;
+// [date], а если дата [old] — та же или позже — следующая правка [old]:
+// версия не идёт назад, иначе приложение не увидит обновления. Прежняя
+// версия с датой eBible (`2022-11-25.2`) обычно раньше даты прогона.
+String _editionVersion(IndexModule? old, String date) {
+  final oldDate = old == null ? null : moduleVersionDate(old.version);
 
-// Строка итога издания [built] для отчёта: схемы нумерации по имени.
-String _editionSummary(EditionOutcome built) {
-  final schemes = built.schemes.keys.toList()
-    ..sort((a, b) => a.name.compareTo(b.name));
-  final schemeText = [
-    for (final scheme in schemes) '${scheme.name} ${built.schemes[scheme]}',
-  ].join(', ');
-
-  return 'verses ${built.verses}, replaced ${built.replaced}, '
-      'links ${built.links.linked}, unresolved ${built.links.unresolved}, '
-      'schemes $schemeText';
+  return oldDate != null && oldDate.compareTo(date) >= 0
+      ? _nextRevision(old!.version)
+      : date;
 }
 
 final _buildRelease = RegExp(r'^build-(\d{4}-\d{2}-\d{2})(?:-\d+)?$');
