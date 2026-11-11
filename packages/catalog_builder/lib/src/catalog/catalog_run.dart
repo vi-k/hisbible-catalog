@@ -275,7 +275,8 @@ Future<CatalogRun> runCatalogBuild({
   // ждут своей очереди без ошибки и не попадают в `rebuildMissed`.
   final aged = <EbibleTranslation>[];
   // Модули, собранные другой версией сборщика (`generator`): встают в ту же
-  // очередь [aged]; издания и толкования CrossWire сюда же, но в очередь
+  // очередь [aged], есть у них своя копия исходника или нет, и выходят
+  // следующей правкой; издания и толкования CrossWire сюда же, но в очередь
   // не идут — собираются первыми, как при `forced`.
   final staleIds = <String>{};
   final agedIds = <String>{};
@@ -285,17 +286,20 @@ Future<CatalogRun> runCatalogBuild({
     final copied = run.entries[id]?.updateDate == t.updateDate;
     final current =
         old != null && moduleVersionDate(old.version) == t.updateDate;
+    final outdated =
+        current &&
+        copied &&
+        rebuildBefore != null &&
+        _builtBefore(old.url, rebuildBefore);
+    final stale = current && old.generator != currentGenerator;
     if (rebuild.contains(id)) {
       requested.add(t);
-    } else if (current &&
-        copied &&
-        ((rebuildBefore != null && _builtBefore(old.url, rebuildBefore)) ||
-            old.generator != currentGenerator)) {
+    } else if (outdated || stale) {
       aged.add(t);
-      if (rebuildBefore != null && _builtBefore(old.url, rebuildBefore)) {
+      if (outdated) {
         agedIds.add(id);
       }
-      if (old.generator != currentGenerator) {
+      if (stale) {
         staleIds.add(id);
       }
     } else if (current && copied) {

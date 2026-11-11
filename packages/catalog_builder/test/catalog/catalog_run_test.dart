@@ -505,6 +505,53 @@ void main() {
     },
   );
 
+  test(
+    'a stale module without its source copy gets the next revision',
+    () async {
+      final first = regenerated(
+        await run([offer('aaa')]),
+        'catalog_builder 0.2.0',
+      );
+      // Указатель прежний, а своей копии исходника нет.
+      final lost = CatalogRun(
+        index: first.index,
+        lock: const SourcesLock({}),
+        report: first.report,
+      );
+
+      final second = await run(
+        [offer('aaa')],
+        after: lost,
+        now: DateTime.utc(2026, 12),
+      );
+
+      expect(second.report.built, ['aaa']);
+      final module = second.index.modules.single;
+      expect(module.version, '2026-09-01.1');
+      expect(module.generator, currentGenerator);
+      expect(module.url, '$_release/build-2026-12-01/aaa-2026-09-01.1.hb');
+      expect(second.report.staleRebuilt, 1);
+      expect(second.report.staleLeft, 0);
+
+      // Последний в очереди, как прочие старые: не дошёл — прежняя запись
+      // и «left», а не «waiting».
+      final limited = await run(
+        [offer('aaa'), offer('bbb')],
+        after: lost,
+        now: DateTime.utc(2026, 12),
+        limit: 1,
+      );
+      expect(limited.report.built, ['bbb']);
+      expect(limited.report.waiting, isEmpty);
+      expect(limited.report.staleRebuilt, 0);
+      expect(limited.report.staleLeft, 1);
+      expect(
+        {for (final m in limited.index.modules) m.id: m}['aaa'],
+        first.index.modules.single,
+      );
+    },
+  );
+
   test('an entry built on or after the date is untouched', () async {
     final first = await run([offer('aaa')]);
 
