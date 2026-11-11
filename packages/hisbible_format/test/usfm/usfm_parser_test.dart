@@ -447,4 +447,46 @@ void main() {
     );
     expect([for (final v in book.verses) plainText(v.nodes)], ['a', 'b', 'c']);
   });
+
+  test('introduction before the first chapter is kept', () {
+    final book = parseUsfm(
+      '\\id SIR\n\\imt ПРЕДИСЛОВИЕ\\f ** \\ft С.\\f*\n\\ip Многое…\n'
+      '\\c 1\n\\v 1 Т',
+    );
+    expect(book.intros.map((intro) => intro.kind), [
+      IntroKind.title,
+      IntroKind.paragraph,
+    ]);
+    expect(book.intros[0].nodes, [
+      const TextRun('ПРЕДИСЛОВИЕ'),
+      const FootnoteRef(1, '**'),
+    ]);
+    expect(book.intros[1].nodes, [const TextRun('Многое…')]);
+    final note = book.notes.single;
+    expect((note.id, note.chapter, note.verse, note.caller), (1, 0, 0, '**'));
+    expect(plainText(note.nodes), 'С.');
+    expect(plainText(book.verses.single.nodes), 'Т');
+    expect(book.droppedFragments, 0);
+  });
+
+  test('introduction markers choose the kind or drop out', () {
+    final book = parseUsfm(
+      '\\id GEN\n\\is1 Section\n\\ipi Indented\n\\im Flush\n\\ipq Quote\n'
+      '\\iq1 Line\n\\io1 Outline\n\\iot Outline title\n\\ie\n\\ide UTF-8\n'
+      '\\c 1\n\\v 1 x',
+    );
+    expect(book.intros.map((i) => (i.kind, plainText(i.nodes))), [
+      (IntroKind.title, 'Section'),
+      (IntroKind.paragraph, 'Indented'),
+      (IntroKind.paragraph, 'Flush'),
+      (IntroKind.paragraph, 'Quote'),
+      (IntroKind.paragraph, 'Line'),
+    ]);
+  });
+
+  test('an introduction marker after a chapter stays unknown', () {
+    final book = parseUsfm('\\id GEN\n\\c 1\n\\ip Late\n\\v 1 x');
+    expect(book.intros, isEmpty);
+    expect(book.unknownMarkers, {'ip'});
+  });
 }

@@ -5,6 +5,7 @@ final class UsfmBook {
   /// Создаёт разобранную книгу.
   const UsfmBook({
     required this.code,
+    required this.intros,
     required this.verses,
     required this.headings,
     required this.notes,
@@ -35,6 +36,10 @@ final class UsfmBook {
   /// Слово «глава» из `\cl` до первой главы.
   final String? chapterLabel;
 
+  /// Вступление до первой главы по порядку текста; сноски в нём — заметки
+  /// [notes] с главой 0 и стихом 0.
+  final List<UsfmIntro> intros;
+
   /// Стихи по порядку текста.
   final List<UsfmVerse> verses;
 
@@ -49,6 +54,18 @@ final class UsfmBook {
 
   /// Незнакомые маркеры без обратной косой черты, например `zz`.
   final Set<String> unknownMarkers;
+}
+
+/// Абзац вступления книги: заглавие (`\imt`, `\is`) или текст (`\ip`, `\im`…).
+final class UsfmIntro {
+  /// Создаёт абзац вступления вида [kind].
+  const UsfmIntro({required this.kind, required this.nodes});
+
+  /// Вид абзаца.
+  final IntroKind kind;
+
+  /// Разметка абзаца.
+  final List<MarkupNode> nodes;
 }
 
 /// Стих книги USFM.

@@ -340,6 +340,13 @@ void _writeText(
       warnings.add('$place: repeated verse, skipped');
     }
   }
+  for (final intro in usfm.intros) {
+    writer.addIntro(
+      number,
+      intro.kind,
+      writeMarkup(_shiftNotes(intro.nodes, offset)),
+    );
+  }
   for (final verse in usfm.verses) {
     if (skipped.repeated.contains(verse) ||
         skipped.outOfRange.contains(verse)) {

@@ -15,7 +15,8 @@ import 'package:hisbible_format/hisbible_format.dart';
 /// считается в [UsfmBook.droppedFragments]. Исключение — `\sp` (имя
 /// говорящего) в конце главы при открытом стихе: выбрасывается и считается
 /// только оно само, а текст после него остаётся в стихе. Всё до первой главы,
-/// кроме полей книги, выбрасывается и не считается.
+/// кроме полей книги и вступления ([UsfmBook.intros]), выбрасывается
+/// и не считается.
 UsfmBook parseUsfm(String text) => _Parser(text).parse();
 
 // ---------------------------------------------------------------------------
@@ -629,7 +630,27 @@ String _clean(String text) => text
 // Разбор книги.
 
 // Куда идёт текст абзаца.
-enum _Target { verse, heading, drop, silent, field }
+enum _Target { verse, heading, drop, silent, field, intro }
+
+// Вступление книги до первой главы: вид и разметка.
+final class _IntroBuilder {
+  _IntroBuilder(this.kind);
+
+  final IntroKind kind;
+  final _Content content = _Content();
+}
+
+// Вид вступления по маркеру до первой главы; `null` — маркер не переносится:
+// `\io`, `\iot`, `\ie` и `\ide` (его ловит `silent` раньше).
+IntroKind? _introKindOf(String name) {
+  if (name.startsWith('imt') || RegExp(r'^is\d*$').hasMatch(name)) {
+    return IntroKind.title;
+  }
+  if (name.startsWith('io') || name == 'ie' || name == 'ide') {
+    return null;
+  }
+  return IntroKind.paragraph;
+}
 
 final class _VerseBuilder {
   _VerseBuilder(this.chapter, this.verse, this.verseEnd);
@@ -745,6 +766,7 @@ final class _Parser {
   final List<_HeadingBuilder> _headings = [];
   final List<_HeadingBuilder> _pendingHeadings = [];
   final List<_NoteBuilder> _notes = [];
+  final List<_IntroBuilder> _intros = [];
   final List<MarkupNode> _breaks = [];
   final Set<String> _unknown = {};
   int _dropped = 0;
@@ -799,6 +821,11 @@ final class _Parser {
       toc2: field('toc2'),
       toc3: field('toc3'),
       chapterLabel: field('cl'),
+      intros: [
+        for (final intro in _intros)
+          if (intro.content.finish() case final nodes when nodes.isNotEmpty)
+            UsfmIntro(kind: intro.kind, nodes: nodes),
+      ],
       verses: [
         for (final verse in _verses)
           UsfmVerse(
@@ -962,7 +989,13 @@ final class _Parser {
       case _Paragraph.field || _Paragraph.silent:
         _setTarget(_Target.silent);
       case _Paragraph.header when !_inChapters:
-        _setTarget(_Target.silent);
+        if (_introKindOf(name) case final kind?) {
+          final intro = _IntroBuilder(kind);
+          _intros.add(intro);
+          _setTarget(_Target.intro, intro.content);
+        } else {
+          _setTarget(_Target.silent);
+        }
       case _Paragraph.header:
         _unknown.add(name);
         _breakParagraph(const ParagraphBreak());
@@ -1058,7 +1091,7 @@ final class _Parser {
         }
       case _Target.field:
         _fields[_field] = plainText(_target.finish()).trim();
-      case _Target.verse || _Target.heading:
+      case _Target.verse || _Target.heading || _Target.intro:
         _target.closeAll();
       case _Target.silent:
         break;
@@ -1220,7 +1253,9 @@ final class _Parser {
 
   void _openNote(String name) {
     final keep =
-        (_targetKind == _Target.verse || _targetKind == _Target.heading) &&
+        (_targetKind == _Target.verse ||
+            _targetKind == _Target.heading ||
+            _targetKind == _Target.intro) &&
         !_target.dropping;
     if (keep && _targetKind == _Target.verse) {
       _flushBreaks();

@@ -133,4 +133,44 @@ void main() {
       module.close();
     }
   });
+
+  test('intros and their footnotes are written', () {
+    String book(String code) =>
+        '\\id $code\n\\imt Title\\f + \\ft intro $code\\f*\n\\ip Body\n'
+        '\\c 1\n\\p\n\\v 1 Verse\\f + \\ft verse $code\\f*\n';
+    final books = readUsfmBooks([
+      _file('a.usfm', book('GEN')),
+      _file('b.usfm', book('EXO')),
+    ]);
+    final path = '${dir.path}/i.hb';
+
+    writeUsfmModule(path, _meta('und'), books);
+
+    final module = BibleModule.open(path);
+    try {
+      expect(module.intros(10).map((i) => (i.position, i.kind)), [
+        (0, IntroKind.title),
+        (1, IntroKind.paragraph),
+      ]);
+      expect(module.intros(10)[1].text, 'Body');
+      final ids = <int>{};
+      for (final number in [10, 20]) {
+        final intro = module.footnotes(number, 0).single;
+        expect((intro.chapter, intro.verse), (0, 0));
+        expect(intro.text, 'intro ${number == 10 ? 'GEN' : 'EXO'}');
+        final verse = module.footnotes(number, 1).single;
+        expect(verse.verse, 1);
+        ids
+          ..add(intro.id)
+          ..add(verse.id);
+        expect(
+          module.intros(number).first.text,
+          contains('<f id="${intro.id}"'),
+        );
+      }
+      expect(ids, hasLength(4));
+    } finally {
+      module.close();
+    }
+  });
 }
