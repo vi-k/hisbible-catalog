@@ -103,6 +103,16 @@ Notes:
 - `scheme` is the verse numbering of the book, named as the SIL versification
   files: `eng` (English), `org` (original: a psalm title is verse 1), `rso`
   (Russian Synodal, full edition), `rsc` (Russian Synodal, canonical edition).
+- In a Bible whose 2 Chronicles follows `rsc` or `rso`, or whose 2 Chronicles
+  36 has more than 23 verses, 2 Chronicles 36:24–35 is the Prayer of Manasseh;
+  in `rso`, so is 2 Chronicles 37. A reader finds where a Bible keeps the
+  prayer from its books and chapters: with a book `MAN`, the prayer is that
+  book; otherwise, with more than 23 verses in 2 Chronicles 36, it follows
+  verse 23 there; otherwise, with a chapter 37 of 2 Chronicles, it is that
+  chapter; otherwise the Bible has no prayer. Commentaries and cross references
+  find it the same way from the places of their records. Places of the prayer
+  map to and from `MAN` by the `2CH 37 = MAN` lines of the SIL file `rso` (2
+  Chronicles 36:24 is 37:1), whatever the scheme of 2 Chronicles.
 - In `verses`, `chapter` is at most 200 and `verse` at most 1000. A file with a
   larger number in a row of a book from `books` is not a valid module.
 - Merged verses are one row: `verse` is the first verse, `verse_end` the last.
@@ -282,7 +292,8 @@ only from the releases of this repository: a `url` that does not start with
       "books": {"ot": 39, "nt": 27, "dc": 0},
       "size": 4567890, "sha256": "…",
       "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-01/russyn-2025-03-04.hb",
-      "version": "2025-03-04", "moduleFormat": 1
+      "version": "2025-03-04", "moduleFormat": 1,
+      "generator": "catalog_builder 0.3.0"
     }
   ],
   "fonts": {
@@ -324,6 +335,10 @@ only from the releases of this repository: a `url` that does not start with
 - `version` follows "Versions" above; a client drops a module entry whose
   `version` is not a version. A module has an update when its `version` in the
   index differs from the installed one.
+- `generator` names the builder version that produced the module file, as the
+  `generator` key of its `meta` (`catalog_builder 0.3.0`). The builder rebuilds
+  a module of another `generator` with a new `version`; an entry without the
+  field comes from a builder that did not write it. A reader ignores the field.
 - `fonts` maps ISO 15924 script codes to fonts for scripts that system fonts
   may lack. The field is optional; another catalog may leave it out.
 - `withdrawn` lists modules removed from the catalog and the date of removal.
