@@ -499,7 +499,9 @@ void main() {
     expect(book.notes, isEmpty);
     expect(book.header, 'Genesis');
     expect(book.toc1, 'The Book');
-    expect(book.droppedFragments, 0);
+    // Сноска `\mt1` в книгу не идёт, но и не пропадает молча: она
+    // в выброшенных, и отчёт сборки её покажет.
+    expect(book.droppedFragments, 1);
     expect(book.unknownMarkers, isEmpty);
   });
 }
