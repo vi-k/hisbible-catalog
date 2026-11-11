@@ -40,7 +40,8 @@ final class BookSchemes {
   /// Книги, где лучшая схема совпала меньше чем в 95% глав.
   final Set<int> uncertain;
 
-  /// Где у модуля Молитва Манассии; её ждёт `Versification.fromCanonical`.
+  /// Где у модуля Молитва Манассии; её ждут `Versification.toCanonical`
+  /// и `Versification.fromCanonical`.
   final ManassehHome manasseh;
 
   /// Схема книги; книга, которой нет в карте, — [VerseScheme.eng].

@@ -230,6 +230,65 @@ BEL 1:3 = DAG 14:3
     );
   });
 
+  test('the home of the prayer maps it whatever the scheme of 2 Chr', () {
+    VerseRef to(VerseRef ref, VerseScheme from, ManassehHome home) =>
+        vs.toCanonical(ref, from, manasseh: home);
+    VerseRef back(VerseRef ref, VerseScheme to, ManassehHome home) =>
+        vs.fromCanonical(ref, to, manasseh: home);
+    const home = ManassehHome.chronicles36;
+
+    // 2 Пар 36:30 — 2 Пар 37:7 таблицы `rso`, а это MAN 1:8.
+    expect(to(r(140, 36, 30), VerseScheme.eng, home), r(145, 1, 8));
+    for (final scheme in [VerseScheme.eng, VerseScheme.org]) {
+      for (var verse = 24; verse <= 35; verse++) {
+        final place = r(140, 36, verse);
+        final canonical = to(place, scheme, home);
+        // Та же карта, что у `rsc`: место не уходит из молитвы. Туда
+        // и обратно карта не тождественна (2 Пар 37:2 — MAN 1:2–5): место
+        // в себя возвращает якорь в приложении.
+        expect(canonical, vs.toCanonical(place, VerseScheme.rsc));
+        expect(canonical.book, 145, reason: '$scheme $place');
+        final again = back(canonical, scheme, home);
+        expect(again, back(canonical, VerseScheme.rsc, home));
+        expect(again.chapter, 36, reason: '$scheme $place');
+        expect(again.verse, greaterThan(23), reason: '$scheme $place');
+      }
+      // Прочие места дом молитвы не трогает.
+      expect(to(r(140, 36, 23), scheme, home), r(140, 36, 23));
+      expect(
+        to(r(140, 1, 1), scheme, home),
+        vs.toCanonical(r(140, 1, 1), scheme),
+      );
+    }
+    expect(
+      to(r(140, 36, 24), VerseScheme.eng, ManassehHome.book),
+      r(140, 36, 24),
+    );
+
+    // Молитва в 2 Пар 37 при любой схеме 2 Пар.
+    const in37 = ManassehHome.chronicles37;
+    expect(to(r(140, 37, 1), VerseScheme.eng, in37), r(145, 1, 1));
+    expect(to(r(140, 37, 12), VerseScheme.org, in37), r(145, 1, 15));
+    expect(back(r(145, 1, 15), VerseScheme.eng, in37), r(140, 37, 11));
+  });
+
+  test('the start of the prayer goes to the start of its home', () {
+    VerseRef back(ManassehHome home) =>
+        vs.fromCanonical(r(145, 1, 0), VerseScheme.eng, manasseh: home);
+
+    expect(back(ManassehHome.chronicles36), r(140, 36, 24));
+    expect(back(ManassehHome.chronicles37), r(140, 37, 0));
+    expect(back(ManassehHome.book), r(145, 1, 0));
+    expect(
+      vs.toCanonical(
+        r(140, 37, 0),
+        VerseScheme.eng,
+        manasseh: ManassehHome.chronicles37,
+      ),
+      r(145, 1, 0),
+    );
+  });
+
   test('malformed vrs lines name the line', () {
     for (final bad in ['GEN 1:31 2', 'GEN 1:x', 'GEN 1:2:3', 'GEN 1:2 = EXO']) {
       expect(

@@ -56,15 +56,24 @@ final class Versification {
   /// Переводит место [ref] из схемы [from] в каноническую.
   ///
   /// У схем `rsc` и `rso` стихи 2 Пар 36 после 23-го — Молитва Манассии,
-  /// как 2 Пар 37 таблицы `rso`: они ведут в книгу 145.
-  VerseRef toCanonical(VerseRef ref, VerseScheme from) {
-    if (from == VerseScheme.eng) {
+  /// как 2 Пар 37 таблицы `rso`: они ведут в книгу 145. Так же — у любой
+  /// схемы при [manasseh] [ManassehHome.chronicles36], а при
+  /// [ManassehHome.chronicles37] — 2 Пар 37: дом молитвы важнее схемы 2 Пар.
+  VerseRef toCanonical(
+    VerseRef ref,
+    VerseScheme from, {
+    ManassehHome manasseh = ManassehHome.book,
+  }) {
+    if (from == VerseScheme.eng && manasseh == ManassehHome.book) {
       return ref;
     }
 
     return _translate(ref, (r) {
-      final original =
-          _prayerToCanonical(r, from) ?? _tables[from]!.forward[r] ?? r;
+      final prayer = _prayerToCanonical(r, from, manasseh);
+      if (prayer == null && from == VerseScheme.eng) {
+        return r;
+      }
+      final original = prayer ?? _tables[from]!.forward[r] ?? r;
 
       return _eng.inverse[original] ?? original;
     });
@@ -98,32 +107,48 @@ final class Versification {
     });
   }
 
-  // Место Молитвы Манассии в 2 Пар схемы [from] — в книге MAN; `null` —
-  // [ref] не в молитве или карта его не знает.
-  _SilRef? _prayerToCanonical(_SilRef ref, VerseScheme from) {
+  // Место Молитвы Манассии в 2 Пар схемы [from] у перевода с домом молитвы
+  // [home] — в книге MAN; `null` — [ref] не в молитве или карта его
+  // не знает. Начало 2 Пар 37 (стих 0) — начало книги MAN.
+  _SilRef? _prayerToCanonical(
+    _SilRef ref,
+    VerseScheme from,
+    ManassehHome home,
+  ) {
     final (code, chapter, verse) = ref;
-    if (code != _VrsTable.chronicles ||
-        from != VerseScheme.rsc && from != VerseScheme.rso) {
+    if (code != _VrsTable.chronicles) {
       return null;
     }
+    final synodal = from == VerseScheme.rsc || from == VerseScheme.rso;
     final inRso = switch (chapter) {
-      36 when verse > _chronicles36Last => (
-        code,
-        37,
-        verse - _chronicles36Last,
-      ),
-      37 when from == VerseScheme.rso => ref,
+      36
+          when verse > _chronicles36Last &&
+              (synodal || home == ManassehHome.chronicles36) =>
+        (code, 37, verse - _chronicles36Last),
+      37 when from == VerseScheme.rso || home == ManassehHome.chronicles37 =>
+        ref,
       _ => null,
     };
+    if (inRso == null) {
+      return null;
+    }
 
-    return inRso == null ? null : _rso.prayerForward[inRso];
+    return _rso.prayerForward[inRso] ??
+        (inRso.$3 == 0 ? (_VrsTable.manasseh, 1, 0) : null);
   }
 
   // Место книги MAN в 2 Пар по дому молитвы [home]; `null` — дом
   // [ManassehHome.book], [original] не в книге MAN или карта его не знает.
+  // Начало книги MAN (стих 0) — первый стих молитвы в 2 Пар 36 или начало
+  // 2 Пар 37.
   _SilRef? _prayerFromCanonical(_SilRef original, ManassehHome home) {
     if (home == ManassehHome.book || original.$1 != _VrsTable.manasseh) {
       return null;
+    }
+    if (original case (_, 1, 0)) {
+      return home == ManassehHome.chronicles36
+          ? (_VrsTable.chronicles, 36, _chronicles36Last + 1)
+          : (_VrsTable.chronicles, 37, 0);
     }
     final in37 = _rso.prayerInverse[original];
     if (in37 == null) {
