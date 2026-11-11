@@ -115,10 +115,10 @@ Notes:
   title. Headings above one verse go in `position` order.
 - `intros` holds book introductions and exists only when some book has one. A
   part is a `title` or a `paragraph`; the parts of a book go in `position`
-  order and stand before the first chapter of the book. A reader skips a part of
-  a kind it does not know, and a reader of an earlier version ignores the table.
-  Footnotes of an introduction are in `footnotes` with `chapter` 0 and `verse`
-  0; the `<f id>` in the text of a part refers to them like any other.
+  order and stand before the first chapter of the book. A reader skips a part
+  of a kind it does not know, and a reader of an earlier version ignores the
+  table. Footnotes of an introduction are in `footnotes` with `chapter` 0 and
+  `verse` 0; the `<f id>` in the text of a part refers to them like any other.
 - A comment covers the place from `chapter`:`verse` to `chapter_end`:
   `verse_end`; without `chapter_end` it ends in the same chapter, without
   `verse_end` it is one verse. A reader finds comments by the chapter where
@@ -129,7 +129,9 @@ Notes:
   cross reference module has at least one record with a book code the reader
   knows.
 - A footnote kind is `note` or `crossref`. `caller` is the footnote mark as the
-  source gives it; an empty string means no mark.
+  source gives it; an empty string means no mark. A footnote whose `<f id>` is
+  in the text of a heading is stored with the `chapter` and `verse` of the
+  verse below that heading.
 
 ### `meta` keys
 

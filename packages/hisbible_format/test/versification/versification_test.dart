@@ -215,6 +215,14 @@ BEL 1:3 = DAG 14:3
       back(r(145, 1, 1), VerseScheme.eng, ManassehHome.chronicles36),
       r(140, 36, 24),
     );
+    expect(
+      back(r(145, 1, 1), VerseScheme.rso, ManassehHome.chronicles36),
+      r(140, 36, 24),
+    );
+    expect(
+      back(r(140, 36, 23), VerseScheme.eng, ManassehHome.chronicles36),
+      r(140, 36, 23),
+    );
     // Прочие места дом молитвы не трогает.
     expect(
       back(r(140, 36, 23), VerseScheme.rsc, ManassehHome.chronicles36),
