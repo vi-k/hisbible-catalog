@@ -489,4 +489,17 @@ void main() {
     expect(book.intros, isEmpty);
     expect(book.unknownMarkers, {'ip'});
   });
+
+  test('book headers before the first chapter are not an introduction', () {
+    final book = parseUsfm(
+      '\\id GEN\n\\h Genesis\n\\toc1 The Book\n\\mt1 The Book\\f + \\ft n\\f*\n'
+      '\\mt2 Sub\n\\mte End\n\\ms Major\n\\c 1\n\\v 1 x',
+    );
+    expect(book.intros, isEmpty);
+    expect(book.notes, isEmpty);
+    expect(book.header, 'Genesis');
+    expect(book.toc1, 'The Book');
+    expect(book.droppedFragments, 0);
+    expect(book.unknownMarkers, isEmpty);
+  });
 }

@@ -640,13 +640,19 @@ final class _IntroBuilder {
   final _Content content = _Content();
 }
 
-// Вид вступления по маркеру до первой главы; `null` — маркер не переносится:
-// `\io`, `\iot`, `\ie` и `\ide` (его ловит `silent` раньше).
+final _introSection = RegExp(r'^is\d*$');
+
+// Вид вступления по маркеру до первой главы; `null` — маркер не вступление
+// (`\mt`, `\mte` и прочие) или не переносится (`\io`, `\iot`, `\ie`;
+// `\ide` ловит `silent` раньше).
 IntroKind? _introKindOf(String name) {
-  if (name.startsWith('imt') || RegExp(r'^is\d*$').hasMatch(name)) {
+  if (!name.startsWith('i')) {
+    return null;
+  }
+  if (name.startsWith('imt') || _introSection.hasMatch(name)) {
     return IntroKind.title;
   }
-  if (name.startsWith('io') || name == 'ie' || name == 'ide') {
+  if (name.startsWith('io') || name == 'ie') {
     return null;
   }
   return IntroKind.paragraph;
