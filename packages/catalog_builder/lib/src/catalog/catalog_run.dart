@@ -271,8 +271,10 @@ Future<CatalogRun> runCatalogBuild({
   final requested = <EbibleTranslation>[];
   final fresh = <EbibleTranslation>[];
   final retries = <EbibleTranslation>[];
-  // Взятые переводы, чей модуль собран до `rebuildBefore`: идут последними,
-  // ждут своей очереди без ошибки и не попадают в `rebuildMissed`.
+  // Взятые переводы, чей модуль собран до `rebuildBefore`, есть у них своя
+  // копия исходника или нет (без копии новый файл ушёл бы под прежней
+  // версией): идут последними, ждут своей очереди без ошибки и не попадают
+  // в `rebuildMissed`.
   final aged = <EbibleTranslation>[];
   // Модули, собранные другой версией сборщика (`generator`): встают в ту же
   // очередь [aged], есть у них своя копия исходника или нет, и выходят
@@ -288,7 +290,6 @@ Future<CatalogRun> runCatalogBuild({
         old != null && moduleVersionDate(old.version) == t.updateDate;
     final outdated =
         current &&
-        copied &&
         rebuildBefore != null &&
         _builtBefore(old.url, rebuildBefore);
     final stale = current && old.generator != currentGenerator;

@@ -552,6 +552,36 @@ void main() {
     },
   );
 
+  test(
+    'a rebuild-before module without its source copy gets the next revision',
+    () async {
+      final first = await run([offer('aaa')]);
+      // Указатель прежний, а своей копии исходника нет.
+      final lost = CatalogRun(
+        index: first.index,
+        lock: const SourcesLock({}),
+        report: first.report,
+      );
+
+      final second = await run(
+        [offer('aaa')],
+        after: lost,
+        rebuildBefore: '2026-12-01',
+        now: DateTime.utc(2026, 12),
+      );
+
+      expect(second.report.built, ['aaa']);
+      final module = second.index.modules.single;
+      expect(module.version, '2026-09-01.1');
+      expect(module.url, '$_release/build-2026-12-01/aaa-2026-09-01.1.hb');
+      expect(second.report.waiting, isEmpty);
+      expect(
+        second.report.toMarkdown(),
+        contains('- Rebuild before 2026-12-01: 1 rebuilt, 0 left\n'),
+      );
+    },
+  );
+
   test('an entry built on or after the date is untouched', () async {
     final first = await run([offer('aaa')]);
 
