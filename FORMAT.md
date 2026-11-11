@@ -103,16 +103,17 @@ Notes:
 - `scheme` is the verse numbering of the book, named as the SIL versification
   files: `eng` (English), `org` (original: a psalm title is verse 1), `rso`
   (Russian Synodal, full edition), `rsc` (Russian Synodal, canonical edition).
-- In a Bible whose 2 Chronicles follows `rsc` or `rso`, or whose 2 Chronicles
-  36 has more than 23 verses, 2 Chronicles 36:24–35 is the Prayer of Manasseh;
-  in `rso`, so is 2 Chronicles 37. A reader finds where a Bible keeps the
-  prayer from its books and chapters: with a book `MAN`, the prayer is that
-  book; otherwise, with more than 23 verses in 2 Chronicles 36, it follows
-  verse 23 there; otherwise, with a chapter 37 of 2 Chronicles, it is that
-  chapter; otherwise the Bible has no prayer. Commentaries and cross references
-  find it the same way from the places of their records. Places of the prayer
-  map to and from `MAN` by the `2CH 37 = MAN` lines of the SIL file `rso` (2
-  Chronicles 36:24 is 37:1), whatever the scheme of 2 Chronicles.
+- In a Bible whose 2 Chronicles follows `rsc` or `rso`, or, in a Bible without
+  a book `MAN`, whose 2 Chronicles 36 has more than 23 verses, 2 Chronicles
+  36:24–35 is the Prayer of Manasseh; in `rso`, so is 2 Chronicles 37. A reader
+  finds where a Bible keeps the prayer from its books and chapters: with a book
+  `MAN`, the prayer is that book; otherwise, with more than 23 verses in 2
+  Chronicles 36, it follows verse 23 there; otherwise, with a chapter 37 of 2
+  Chronicles, it is that chapter; otherwise the Bible has no prayer.
+  Commentaries and cross references find it the same way from the places of
+  their records. Places of the prayer map to and from `MAN` by the
+  `2CH 37 = MAN` lines of the SIL file `rso` (2 Chronicles 36:24 is 37:1),
+  whatever the scheme of 2 Chronicles.
 - In `verses`, `chapter` is at most 200 and `verse` at most 1000. A file with a
   larger number in a row of a book from `books` is not a valid module.
 - Merged verses are one row: `verse` is the first verse, `verse_end` the last.
