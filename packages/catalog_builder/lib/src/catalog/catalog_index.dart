@@ -149,6 +149,7 @@ final class IndexModule {
     required this.moduleFormat,
     this.description,
     this.copyright,
+    this.generator,
   });
 
   factory IndexModule._parse(Map<String, Object?> json) {
@@ -182,6 +183,7 @@ final class IndexModule {
       url: _string(json, 'url'),
       version: _string(json, 'version'),
       moduleFormat: _int(json, 'moduleFormat'),
+      generator: _optionalString(json, 'generator'),
     );
   }
 
@@ -245,6 +247,10 @@ final class IndexModule {
   /// Версия формата файла модуля.
   final int moduleFormat;
 
+  /// Какой версией сборщика собран модуль (`catalog_builder 0.3.0`); `null` —
+  /// запись прежнего сборщика, который версию не писал.
+  final String? generator;
+
   Map<String, Object?> _toJson() => {
     'id': id,
     'type': type,
@@ -265,6 +271,7 @@ final class IndexModule {
     'url': url,
     'version': version,
     'moduleFormat': moduleFormat,
+    'generator': ?generator,
   };
 
   @override
@@ -288,10 +295,11 @@ final class IndexModule {
       other.sha256 == sha256 &&
       other.url == url &&
       other.version == version &&
-      other.moduleFormat == moduleFormat;
+      other.moduleFormat == moduleFormat &&
+      other.generator == generator;
 
   @override
-  int get hashCode => Object.hash(id, version, sha256, url);
+  int get hashCode => Object.hash(id, version, sha256, url, generator);
 }
 
 /// Шрифт письменности в указателе.

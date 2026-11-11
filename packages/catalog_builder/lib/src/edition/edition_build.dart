@@ -333,7 +333,7 @@ Future<EditionOutcome> buildEdition(
     catalog: 'hisbible',
     catalogId: edition.id,
     chapterWord: read.ordered(edition.language).chapterLabel,
-    generator: 'catalog_builder $builderVersion',
+    generator: currentGenerator,
   );
 
   final part = File('$outPath.part');

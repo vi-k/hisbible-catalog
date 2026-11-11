@@ -411,6 +411,12 @@ final class _Cli {
           'the same --rebuild-before to continue',
         );
       }
+      if (report.staleLeft > 0) {
+        _out.writeln(
+          'rebuild for $currentGenerator: ${report.staleLeft} left; run '
+          'again to continue',
+        );
+      }
       for (final line in [
         ?report.stopped,
         ?report.withdrawalRefused,

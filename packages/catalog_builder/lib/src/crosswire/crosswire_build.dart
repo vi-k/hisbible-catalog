@@ -218,7 +218,7 @@ CrossWireOutcome buildCrossWire(
     catalog: catalogId == null ? null : 'hisbible',
     catalogId: catalogId,
     numbering: VerseScheme.eng.name,
-    generator: 'catalog_builder $builderVersion',
+    generator: currentGenerator,
   );
   var comments = 0;
   var bookArticles = 0;

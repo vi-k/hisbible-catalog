@@ -178,7 +178,7 @@ OpenBibleOutcome buildOpenBible(
     version: version,
     created: isoDate(now),
     numbering: VerseScheme.eng.name,
-    generator: 'catalog_builder $builderVersion',
+    generator: currentGenerator,
   );
   final partPath = '$outPath.part';
   final part = File(partPath);

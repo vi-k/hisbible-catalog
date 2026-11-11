@@ -29,6 +29,7 @@ void main() {
         'build-2026-11-01/russyn-2025-03-04.hb',
     version: '2025-03-04',
     moduleFormat: 1,
+    generator: 'catalog_builder 0.3.0',
   );
   const arb = IndexModule(
     id: 'arb-vd',
@@ -125,6 +126,7 @@ void main() {
       'url',
       'version',
       'moduleFormat',
+      'generator',
     ]);
     final first = modules.first! as Map<String, Object?>;
     expect(first['direction'], 'rtl');
@@ -133,6 +135,28 @@ void main() {
       first.containsKey('description'),
       isFalse,
       reason: 'an empty field is not written',
+    );
+  });
+
+  test('index round trips generator', () {
+    final parsed = CatalogIndex.parse(index.toJson());
+
+    expect(parsed.modules.last.generator, 'catalog_builder 0.3.0');
+    expect(parsed.modules.first.generator, isNull);
+    final root = jsonDecode(index.toJson()) as Map<String, Object?>;
+    final modules = root['modules']! as List<Object?>;
+    expect(
+      (modules.first! as Map<String, Object?>).containsKey('generator'),
+      isFalse,
+    );
+    expect(
+      parsed.modules.last,
+      isNot(
+        CatalogIndex.parse(index.toJson().replaceAll('0.3.0', '0.2.0'))
+            .modules
+            .last,
+      ),
+      reason: 'the generator is part of equality',
     );
   });
 

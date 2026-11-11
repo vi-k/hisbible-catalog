@@ -6,7 +6,7 @@ import 'package:hisbible_format/hisbible_format.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
-import 'catalog_run_test.dart' show FakeFetcher, FakePublisher;
+import 'catalog_run_test.dart' show FakeFetcher, FakePublisher, regenerated;
 
 const _release = 'https://github.com/vi-k/hisbible-catalog/releases/download';
 
@@ -364,6 +364,27 @@ void main() {
       '$_release/build-2026-12-01/russyn-2026-12-01.hb',
     );
     expect(second.report.built, ['russyn']);
+  });
+
+  test('an edition of another builder version is rebuilt', () async {
+    final first = await run();
+    expect(entry(first).generator, currentGenerator);
+
+    for (final generator in ['catalog_builder 0.2.0', null]) {
+      final second = await run(
+        after: regenerated(first, generator),
+        now: DateTime.utc(2026, 12),
+      );
+
+      expect(second.report.built, ['russyn'], reason: '$generator');
+      expect(entry(second).version, '2026-12-01');
+      expect(entry(second).generator, currentGenerator);
+    }
+
+    final same = await run(after: first, now: DateTime.utc(2026, 12));
+    expect(same.report.built, isEmpty);
+    expect(same.report.unchanged, ['russyn']);
+    expect(entry(same), entry(first));
   });
 
   test('a failed edition keeps the previous entry', () async {

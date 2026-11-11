@@ -99,6 +99,17 @@ without rebuilding a module twice. Modules not reached are not an error: the
 run exits normally, and the report says how many were rebuilt and how many are
 left (a module that fails to build stays in "Failed" and in "left").
 
+The builder also writes its version (`generator`, for example
+`catalog_builder 0.3.0`) into the index entry of each module it builds. The
+constant `builderVersion` grows in the same change that alters what the builder
+writes into a module, and the run itself rebuilds the modules built by another
+version: it queues them like `--rebuild-before` does, after explicit ids and new
+or updated translations, and within `--limit` and the deadline, so they never
+starve new work. Editions and commentaries of another version are rebuilt first,
+like a forced rebuild. The report says how many were rebuilt and how many are
+left ("Rebuild for catalog_builder 0.3.0: N rebuilt, M left"); run again to
+continue.
+
 A rebuilt module is published as the next revision of its version: `2025-03-04`
 becomes `2025-03-04.1`, then `2025-03-04.2` (see "Versions" in `FORMAT.md`).
 The app offers it as an update to everyone who installed the module. The run

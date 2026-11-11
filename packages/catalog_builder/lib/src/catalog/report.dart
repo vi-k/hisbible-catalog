@@ -1,3 +1,5 @@
+import 'package:catalog_builder/src/build/module_build.dart';
+
 /// Отчёт прогона сборки каталога, `out/report.md`.
 final class BuildReport {
   /// Создаёт отчёт прогона [date].
@@ -19,6 +21,8 @@ final class BuildReport {
     this.rebuildBefore,
     this.agedRebuilt = 0,
     this.agedLeft = 0,
+    this.staleRebuilt = 0,
+    this.staleLeft = 0,
     this.xtLinked = 0,
     this.xtByHref = 0,
     this.xtUnresolved = 0,
@@ -80,6 +84,14 @@ final class BuildReport {
   /// собрались. Прогон с тем же ключом продолжит с них.
   final int agedLeft;
 
+  /// Сколько модулей прогон пересобрал, потому что их собрала другая версия
+  /// сборщика (`generator`).
+  final int staleRebuilt;
+
+  /// Сколько таких модулей осталось: не дошли или не собрались. Они ждут
+  /// следующего прогона с прежней записью, это не ошибка.
+  final int staleLeft;
+
   /// Сколько `\xt` (элементов, не ссылок) собранных за прогон модулей стали
   /// ссылками, в том числе по `link-href`; частично разобранный `\xt`
   /// считается разобранным.
@@ -133,6 +145,12 @@ final class BuildReport {
     if (rebuildBefore case final date?) {
       out.writeln(
         '- Rebuild before $date: $agedRebuilt rebuilt, $agedLeft left',
+      );
+    }
+    if (staleRebuilt + staleLeft > 0) {
+      out.writeln(
+        '- Rebuild for $currentGenerator: $staleRebuilt rebuilt, '
+        '$staleLeft left',
       );
     }
     if (built.isNotEmpty) {

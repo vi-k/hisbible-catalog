@@ -11,7 +11,11 @@ import 'package:crypto/crypto.dart' as crypto;
 import 'package:hisbible_format/hisbible_format.dart';
 
 /// Версия сборки в ключе `generator`; равна версии пакета в `pubspec.yaml`.
-const builderVersion = '0.2.0';
+const builderVersion = '0.3.0';
+
+/// Что сборщик пишет в `generator` модуля и записи указателя; запись другого
+/// `generator` прогон пересобирает.
+const currentGenerator = 'catalog_builder $builderVersion';
 
 /// Итог сборки одного модуля.
 sealed class BuildOutcome {
@@ -138,7 +142,7 @@ BuildOutcome buildModule(
     catalog: 'hisbible',
     catalogId: t.translationId,
     chapterWord: books.chapterLabel,
-    generator: 'catalog_builder $builderVersion',
+    generator: currentGenerator,
   );
 
   final partPath = '$outPath.part';

@@ -274,6 +274,11 @@ Future<CatalogRun> runCatalogBuild({
   // Взятые переводы, чей модуль собран до `rebuildBefore`: идут последними,
   // ждут своей очереди без ошибки и не попадают в `rebuildMissed`.
   final aged = <EbibleTranslation>[];
+  // Модули, собранные другой версией сборщика (`generator`): встают в ту же
+  // очередь [aged]; издания и толкования CrossWire сюда же, но в очередь
+  // не идут — собираются первыми, как при `forced`.
+  final staleIds = <String>{};
+  final agedIds = <String>{};
   for (final id in taken.keys.toList()..sort()) {
     final t = taken[id]!;
     final old = before[id];
@@ -284,9 +289,15 @@ Future<CatalogRun> runCatalogBuild({
       requested.add(t);
     } else if (current &&
         copied &&
-        rebuildBefore != null &&
-        _builtBefore(old.url, rebuildBefore)) {
+        ((rebuildBefore != null && _builtBefore(old.url, rebuildBefore)) ||
+            old.generator != currentGenerator)) {
       aged.add(t);
+      if (rebuildBefore != null && _builtBefore(old.url, rebuildBefore)) {
+        agedIds.add(id);
+      }
+      if (old.generator != currentGenerator) {
+        staleIds.add(id);
+      }
     } else if (current && copied) {
       modules[id] = old;
       unchanged.add(id);
@@ -297,6 +308,13 @@ Future<CatalogRun> runCatalogBuild({
   final crosswireIds = {
     for (final module in crosswire.keys) crosswireCatalogId(module),
   };
+  // Издание и толкование CrossWire чужой версии сборщика: стоят в `staleIds`
+  // и собираются как `forced`.
+  for (final id in [...editionIds, ...crosswireIds]) {
+    if (before[id]?.generator != currentGenerator && before[id] != null) {
+      staleIds.add(id);
+    }
+  }
   for (final id in rebuild.toList()..sort()) {
     if (!taken.containsKey(id) &&
         !crosswireIds.contains(id) &&
@@ -392,6 +410,7 @@ Future<CatalogRun> runCatalogBuild({
     }
     final forced =
         rebuild.contains(id) ||
+        staleIds.contains(id) ||
         (rebuildBefore != null &&
             old != null &&
             _builtBefore(old.url, rebuildBefore));
@@ -457,6 +476,7 @@ Future<CatalogRun> runCatalogBuild({
         old,
         rebuild:
             rebuild.contains(id) ||
+            staleIds.contains(id) ||
             (rebuildBefore != null &&
                 old != null &&
                 _builtBefore(old.url, rebuildBefore)),
@@ -473,7 +493,6 @@ Future<CatalogRun> runCatalogBuild({
   }
 
   var attempts = 0;
-  final agedIds = {for (final t in aged) t.translationId};
   var agedRebuilt = 0;
   for (final t in [...requested, ...fresh, ...retries, ...aged]) {
     final id = t.translationId;
@@ -483,7 +502,7 @@ Future<CatalogRun> runCatalogBuild({
       if (old != null) {
         modules[id] = old;
       }
-      if (!agedIds.contains(id)) {
+      if (!agedIds.contains(id) && !staleIds.contains(id)) {
         waiting.add(id);
       }
       continue;
@@ -496,7 +515,10 @@ Future<CatalogRun> runCatalogBuild({
         _versionOf(
           t,
           old,
-          rebuild: rebuild.contains(id) || agedIds.contains(id),
+          rebuild:
+              rebuild.contains(id) ||
+              agedIds.contains(id) ||
+              staleIds.contains(id),
         ),
       );
     } on Object catch (e) {
@@ -585,7 +607,9 @@ Future<CatalogRun> runCatalogBuild({
       withdrawalRefused: withdrawalRefused,
       rebuildBefore: rebuildBefore,
       agedRebuilt: agedRebuilt,
-      agedLeft: aged.length - agedRebuilt,
+      agedLeft: agedIds.length - agedRebuilt,
+      staleRebuilt: staleIds.where(built.contains).length,
+      staleLeft: staleIds.where((id) => !built.contains(id)).length,
       xtLinked: run.xtLinked,
       xtByHref: run.xtByHref,
       xtUnresolved: run.xtUnresolved,
@@ -1022,6 +1046,7 @@ final class _Run {
         url: url.toString(),
         version: version,
         moduleFormat: formatVersion,
+        generator: currentGenerator,
       ),
       const <String>[],
     );
@@ -1091,6 +1116,7 @@ final class _Run {
         url: url.toString(),
         version: version,
         moduleFormat: formatVersion,
+        generator: currentGenerator,
       ),
       const <String>[],
       outcome,
@@ -1167,6 +1193,7 @@ IndexModule _entry(EbibleTranslation t, Built built, Uri url, String version) {
     url: url.toString(),
     version: version,
     moduleFormat: formatVersion,
+    generator: currentGenerator,
   );
 }
 

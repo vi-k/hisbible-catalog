@@ -7,7 +7,7 @@ import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import '../crosswire/zcom_fixture.dart';
-import 'catalog_run_test.dart' show FakeFetcher, FakePublisher;
+import 'catalog_run_test.dart' show FakeFetcher, FakePublisher, regenerated;
 
 const _release = 'https://github.com/vi-k/hisbible-catalog/releases/download';
 
@@ -302,6 +302,35 @@ void main() {
       now: DateTime.utc(2026, 12, 21),
     );
     expect(again.report.unchanged, [id]);
+  });
+
+  test('a module of another builder version is rebuilt', () async {
+    final zip = _clarke();
+    final first = await run(zip: zip, locked: _locked(zip));
+    expect(entry(first).generator, currentGenerator);
+
+    for (final generator in ['catalog_builder 0.2.0', null]) {
+      final second = await run(
+        zip: zip,
+        locked: _locked(zip),
+        after: regenerated(first, generator),
+        now: DateTime.utc(2026, 12),
+      );
+
+      expect(second.report.built, [id], reason: '$generator');
+      expect(entry(second).version, '2021-10-19.1');
+      expect(entry(second).generator, currentGenerator);
+      expect(second.report.staleRebuilt, 1);
+    }
+
+    final same = await run(
+      zip: zip,
+      locked: _locked(zip),
+      after: first,
+      now: DateTime.utc(2026, 12),
+    );
+    expect(same.report.unchanged, [id]);
+    expect(entry(same), entry(first));
   });
 
   test('a module taken out of the lock is withdrawn', () async {

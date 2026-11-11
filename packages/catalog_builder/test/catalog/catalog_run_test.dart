@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:archive/archive.dart';
@@ -8,6 +9,28 @@ import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 const _release = 'https://github.com/vi-k/hisbible-catalog/releases/download';
+
+// Итог прогона [run] с `generator` у каждой записи указателя, заменённым
+// на [generator] (`null` — ключа нет): модули, собранные другим сборщиком.
+CatalogRun regenerated(CatalogRun run, String? generator) {
+  final root = jsonDecode(run.index.toJson()) as Map<String, Object?>;
+  for (final module in root['modules']! as List<Object?>) {
+    final map = module! as Map<String, Object?>;
+    if (generator == null) {
+      map.remove('generator');
+    } else {
+      map['generator'] = generator;
+    }
+  }
+
+  return CatalogRun(
+    index: CatalogIndex.parse(jsonEncode(root)),
+    lock: run.lock,
+    report: run.report,
+    deletions: run.deletions,
+    editionDigests: run.editionDigests,
+  );
+}
 
 void main() {
   late Directory work;
@@ -379,6 +402,106 @@ void main() {
       expect(catalogExitCode(second.report), 0);
       expect(second.index.modules.first, first.index.modules.first);
       expect(second.report.toMarkdown(), contains('1 rebuilt, 1 left'));
+    },
+  );
+
+  test(
+    'a module of another builder version is rebuilt, last in line',
+    () async {
+      List<EbibleTranslation> all() => [
+        offer('aaa', date: '2024-05-01'),
+        offer('bbb', date: '2024-05-01'),
+        offer('ccc', date: '2024-05-01'),
+      ];
+      final first = await run(all());
+      expect(
+        first.index.modules.map((m) => m.generator),
+        everyElement(currentGenerator),
+      );
+      final old = regenerated(first, 'catalog_builder 0.2.0');
+      final without = regenerated(first, null);
+
+      for (final after in [old, without]) {
+        final second = await run(
+          [...all(), offer('ddd', date: '2024-05-01')],
+          after: after,
+          now: DateTime.utc(2026, 12),
+          limit: 2,
+        );
+        // Новый перевод идёт раньше старых, потом старый по порядку.
+        expect(second.report.built, ['aaa', 'ddd']);
+        expect(second.report.waiting, isEmpty);
+        expect(second.report.failed, isEmpty);
+        expect(second.report.rebuildMissed, isEmpty);
+        expect(second.report.staleRebuilt, 1);
+        expect(second.report.staleLeft, 2);
+        expect(catalogExitCode(second.report), 0);
+        final byId = {for (final m in second.index.modules) m.id: m};
+        expect(byId['aaa']!.version, '2024-05-01.1');
+        expect(byId['aaa']!.generator, currentGenerator);
+        expect(byId['ddd']!.version, '2024-05-01');
+        // Не дошедшие остаются прежней записью.
+        expect(byId['bbb'], after.index.modules[1]);
+        expect(byId['ccc'], after.index.modules[2]);
+        expect(
+          second.report.toMarkdown(),
+          contains('- Rebuild for $currentGenerator: 1 rebuilt, 2 left\n'),
+        );
+
+        // Следующий прогон продолжает с оставшихся и не трогает сделанные.
+        final third = await run(
+          [...all(), offer('ddd', date: '2024-05-01')],
+          after: second,
+          now: DateTime.utc(2026, 12, 2),
+        );
+        expect(third.report.built, ['bbb', 'ccc']);
+        expect(third.report.unchanged, ['aaa', 'ddd']);
+        expect(third.report.staleLeft, 0);
+        expect(
+          third.report.toMarkdown(),
+          contains('- Rebuild for $currentGenerator: 2 rebuilt, 0 left\n'),
+        );
+      }
+    },
+  );
+
+  test('a module of the current builder version is unchanged', () async {
+    final first = await run([offer('aaa')]);
+
+    final second = await run(
+      [offer('aaa')],
+      after: first,
+      now: DateTime.utc(2026, 12),
+    );
+
+    expect(second.report.unchanged, ['aaa']);
+    expect(second.report.built, isEmpty);
+    expect(second.index, first.index);
+    expect(second.report.toMarkdown(), isNot(contains('Rebuild for')));
+  });
+
+  test(
+    'a stale module that fails to build keeps its entry and is left',
+    () async {
+      final first = regenerated(
+        await run([offer('aaa'), offer('bbb')]),
+        'catalog_builder 0.2.0',
+      );
+      publisher.releases['sources-2026-11-01']!['aaa-2026-09-01_usfm.zip'] = [
+        1,
+      ];
+
+      final second = await run(
+        [offer('aaa'), offer('bbb')],
+        after: first,
+        now: DateTime.utc(2026, 12),
+      );
+
+      expect(second.report.built, ['bbb']);
+      expect(second.report.failed['aaa'], [contains('sha256')]);
+      expect(second.report.staleRebuilt, 1);
+      expect(second.report.staleLeft, 1);
+      expect(second.index.modules.first, first.index.modules.first);
     },
   );
 
