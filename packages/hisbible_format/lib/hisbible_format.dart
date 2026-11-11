@@ -19,6 +19,7 @@ export 'src/module/schema.dart'
         BookKind,
         FootnoteKind,
         HeadingKind,
+        IntroKind,
         WritingDirection,
         formatApplicationId,
         formatVersion,

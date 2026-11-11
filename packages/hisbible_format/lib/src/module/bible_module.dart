@@ -115,6 +115,34 @@ final class Heading {
   String toString() => 'Heading($verse, $order, ${kind.name}, $level, $text)';
 }
 
+/// Часть вступления книги.
+final class Intro {
+  /// Создаёт часть вступления.
+  const Intro(this.position, this.kind, this.text);
+
+  /// Номер части в книге, с 0.
+  final int position;
+
+  /// Вид части.
+  final IntroKind kind;
+
+  /// Текст части в разметке формата.
+  final String text;
+
+  @override
+  bool operator ==(Object other) =>
+      other is Intro &&
+      other.position == position &&
+      other.kind == kind &&
+      other.text == text;
+
+  @override
+  int get hashCode => Object.hash(position, kind, text);
+
+  @override
+  String toString() => 'Intro($position, ${kind.name}, $text)';
+}
+
 /// Сноска к стиху.
 final class Footnote {
   /// Создаёт сноску.
@@ -177,6 +205,7 @@ final class BibleModule {
     this._codes,
     this._lastVerses,
     this.hasParagraphMarks,
+    this._hasIntros,
   ) : _byNumber = {for (final book in books) book.number: book};
 
   /// Открывает Библию; негодный файл — [ModuleOpenException] с причиной.
@@ -204,6 +233,7 @@ final class BibleModule {
         {for (final MapEntry(:key, :value) in codes.entries) value: key},
         lastVerses,
         readMetaValues(db)['paragraphs'] == '1',
+        hasModuleTable(db, introsTable.name),
       );
       done = true;
 
@@ -222,6 +252,8 @@ final class BibleModule {
   final Map<int, String> _codes;
   final Map<int, Map<int, int>> _lastVerses;
   final Map<int, ModuleBook> _byNumber;
+  // Есть ли в файле необязательная таблица `intros`.
+  final bool _hasIntros;
   bool _closed = false;
 
   /// Описание модуля из `meta`.
@@ -283,6 +315,31 @@ final class BibleModule {
               i + 1 < rows.length ? rows[i + 1].columnAt(0) : null,
             ),
           ),
+    ];
+  }
+
+  /// Вступление книги по `position`; незнакомый вид пропускается.
+  ///
+  /// Пусто, если в файле нет таблицы `intros` или вступления у книги.
+  List<Intro> intros(int book) {
+    final code = _codes[book];
+    if (!_hasIntros || code == null) {
+      return const [];
+    }
+
+    return [
+      for (final row in _db.select(
+        'SELECT position, kind, text FROM intros WHERE book = ? '
+        'ORDER BY position',
+        [code],
+      ))
+        if ((
+              row.columnAt(0),
+              introKindOfValue(row.columnAt(1)),
+              row.columnAt(2),
+            )
+            case (final int position, final IntroKind kind, final String text))
+          Intro(position, kind, text),
     ];
   }
 

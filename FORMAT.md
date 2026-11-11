@@ -53,6 +53,13 @@ CREATE TABLE headings (
   text TEXT NOT NULL,            -- markup without <p/> and <l/>
   PRIMARY KEY (book, chapter, verse, position)
 ) WITHOUT ROWID;
+CREATE TABLE intros (            -- optional, bible only
+  book TEXT NOT NULL,
+  position INTEGER NOT NULL,     -- order in the book, from 0
+  kind TEXT NOT NULL,            -- title | paragraph
+  text TEXT NOT NULL,            -- markup
+  PRIMARY KEY (book, position)
+) WITHOUT ROWID;
 CREATE TABLE footnotes (
   id INTEGER PRIMARY KEY,        -- what <f id> refers to
   book TEXT NOT NULL, chapter INTEGER NOT NULL, verse INTEGER NOT NULL,
@@ -82,7 +89,7 @@ Tables by module type:
 
 | type | tables |
 |---|---|
-| `bible` | `meta`, `books`, `verses`, `headings`, `footnotes` |
+| `bible` | `meta`, `books`, `verses`, `headings`, `footnotes`; optionally `intros` |
 | `commentaries` | `meta`, `comments` |
 | `crossreferences` | `meta`, `crossrefs` |
 
@@ -106,6 +113,12 @@ Notes:
 - Heading kinds: `major` is a heading above several sections, `section` a
   section heading, `title` a title that is part of the text, such as a psalm
   title. Headings above one verse go in `position` order.
+- `intros` holds book introductions and exists only when some book has one. A
+  part is a `title` or a `paragraph`; the parts of a book go in `position`
+  order and stand before the first chapter of the book. A reader skips a part of
+  a kind it does not know, and a reader of an earlier version ignores the table.
+  Footnotes of an introduction are in `footnotes` with `chapter` 0 and `verse`
+  0; the `<f id>` in the text of a part refers to them like any other.
 - A comment covers the place from `chapter`:`verse` to `chapter_end`:
   `verse_end`; without `chapter_end` it ends in the same chapter, without
   `verse_end` it is one verse. A reader finds comments by the chapter where

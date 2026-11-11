@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:hisbible_format/hisbible_format.dart';
+import 'package:hisbible_format/testing.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:test/test.dart';
 
@@ -203,6 +204,37 @@ void main() {
       ..addVerse(10, 1, 1, 'In the beginning')
       ..abort();
     expect(File(path).existsSync(), isFalse);
+  });
+
+  test('intros are read in order and empty without the table', () {
+    writeBibleFixture(
+      path,
+      books: const [FixtureBook(500, 'Ман', title: 'Молитва Манассии')],
+      verses: const {(500, 1, 1): 'Господи'},
+      intros: const [
+        (500, IntroKind.title, 'Т'),
+        (500, IntroKind.paragraph, 'А <f id="7" c="*"/>'),
+      ],
+      footnotes: const [Footnote(7, 500, 0, 0, FootnoteKind.note, '*', 'С')],
+    );
+
+    final module = BibleModule.open(path);
+    addTearDown(module.close);
+    expect(module.intros(500), const [
+      Intro(0, IntroKind.title, 'Т'),
+      Intro(1, IntroKind.paragraph, 'А <f id="7" c="*"/>'),
+    ]);
+    expect(module.intros(10), isEmpty);
+    expect(module.footnotes(500, 0), const [
+      Footnote(7, 500, 0, 0, FootnoteKind.note, '*', 'С'),
+    ]);
+
+    // Модуль без таблицы `intros` читается, вступлений в нём нет.
+    final plainPath = '${dir.path}/plain.hb';
+    writeSample(plainPath);
+    final plain = BibleModule.open(plainPath);
+    addTearDown(plain.close);
+    expect(plain.intros(10), isEmpty);
   });
 
   test('replaceFootnotes swaps footnotes of a copy', () {

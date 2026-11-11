@@ -11,7 +11,7 @@ import 'package:hisbible_format/hisbible_format.dart';
 /// Книга для [writeBibleFixture].
 final class FixtureBook {
   /// Создаёт книгу; [longName] по умолчанию равен [shortName].
-  const FixtureBook(this.number, this.shortName, {this.longName});
+  const FixtureBook(this.number, this.shortName, {this.longName, this.title});
 
   /// Номер книги справочника.
   final int number;
@@ -21,6 +21,9 @@ final class FixtureBook {
 
   /// Полное название; `null` — как короткое.
   final String? longName;
+
+  /// Полное заглавие книги; `null` — без заглавия.
+  final String? title;
 }
 
 /// Описание модуля, которое [writeBibleFixture] берёт по умолчанию.
@@ -37,6 +40,8 @@ const ModuleMeta fixtureMeta = ModuleMeta(
 /// Стихи `(книга, глава, стих)` и их тексты в разметке формата идут
 /// в порядке карты, заголовки — `(книга, глава, стих, порядок, текст)`:
 /// вид [HeadingKind.section], уровень 1, над одним стихом — по порядку.
+/// Вступления — `(книга, вид, текст)` по порядку внутри книги, сноски —
+/// готовые [Footnote].
 /// Схема книги берётся из [schemes], а без неё распознаётся по последним
 /// стихам глав, как у модулей без схемы; книга без кода SIL —
 /// [VerseScheme.eng]. Существующий файл заменяется, папки создаются.
@@ -47,6 +52,8 @@ void writeBibleFixture(
   required Map<(int, int, int), String> verses,
   List<(int, int, int, int, String)> headings = const [],
   Map<int, VerseScheme> schemes = const {},
+  List<(int, IntroKind, String)> intros = const [],
+  List<Footnote> footnotes = const [],
 }) {
   final moduleMeta = meta ?? fixtureMeta;
   final lastVerses = <int, Map<int, int>>{};
@@ -68,6 +75,7 @@ void writeBibleFixture(
         number: book.number,
         shortName: book.shortName,
         longName: book.longName ?? book.shortName,
+        title: book.title,
         scheme: schemes[book.number] ?? detected.of(book.number),
       );
     }
@@ -84,6 +92,20 @@ void writeBibleFixture(
       });
     for (final (_, (book, chapter, verse, _, text)) in indexed) {
       writer.addHeading(book, chapter, verse, HeadingKind.section, 1, text);
+    }
+    for (final (book, kind, text) in intros) {
+      writer.addIntro(book, kind, text);
+    }
+    for (final footnote in footnotes) {
+      writer.addFootnote(
+        footnote.id,
+        footnote.book,
+        footnote.chapter,
+        footnote.verse,
+        footnote.kind,
+        footnote.caller,
+        footnote.text,
+      );
     }
     writer.finish();
   } on Object {

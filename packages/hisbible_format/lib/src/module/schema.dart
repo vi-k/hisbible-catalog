@@ -47,6 +47,15 @@ enum HeadingKind {
   title,
 }
 
+/// Вид части вступления книги.
+enum IntroKind {
+  /// Заглавие вступления.
+  title,
+
+  /// Абзац вступления.
+  paragraph,
+}
+
 /// Вид сноски.
 enum FootnoteKind {
   /// Примечание.
@@ -129,6 +138,23 @@ CREATE TABLE headings (
   level INTEGER NOT NULL,
   text TEXT NOT NULL,
   PRIMARY KEY (book, chapter, verse, position)
+) WITHOUT ROWID''',
+);
+
+/// Таблица `intros`: вступления книг.
+///
+/// Необязательная, только у Библии: в [tablesOf] её нет, писатель создаёт её
+/// при первом вступлении, читатель смотрит, есть ли она в файле.
+const SchemaTable introsTable = (
+  name: 'intros',
+  columns: ['book', 'position', 'kind', 'text'],
+  create: '''
+CREATE TABLE intros (
+  book TEXT NOT NULL,
+  position INTEGER NOT NULL,
+  kind TEXT NOT NULL,
+  text TEXT NOT NULL,
+  PRIMARY KEY (book, position)
 ) WITHOUT ROWID''',
 );
 
@@ -258,6 +284,17 @@ HeadingKind? headingKindOfValue(Object? value) {
 /// Вид сноски по значению столбца `kind` или `null`.
 FootnoteKind? footnoteKindOfValue(Object? value) {
   for (final kind in FootnoteKind.values) {
+    if (kind.name == value) {
+      return kind;
+    }
+  }
+
+  return null;
+}
+
+/// Вид части вступления по значению столбца `kind` или `null`.
+IntroKind? introKindOfValue(Object? value) {
+  for (final kind in IntroKind.values) {
     if (kind.name == value) {
       return kind;
     }

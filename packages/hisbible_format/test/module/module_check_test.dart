@@ -45,6 +45,42 @@ void main() {
     expect(meta.language, 'ru');
   });
 
+  test('a module with intros passes the check', () {
+    final path = '${dir.path}/intros.hb';
+    writeBibleFixture(
+      path,
+      books: const [FixtureBook(10, 'Быт')],
+      verses: const {(10, 1, 1): 'В начале'},
+      intros: const [(10, IntroKind.paragraph, 'Вступление')],
+    );
+    expect(checkModuleFile(path), isNull);
+    expect(openProblem(path), isNull);
+
+    // Незнакомый вид части вступления при чтении пропускается.
+    sqlite3.open(path)
+      ..execute("INSERT INTO intros VALUES ('GEN', 1, 'epigraph', 'Э')")
+      ..execute("INSERT INTO intros VALUES ('GEN', 2, 'title', 'Т')")
+      ..close();
+    final module = BibleModule.open(path);
+    addTearDown(module.close);
+    expect(module.intros(10), const [
+      Intro(0, IntroKind.paragraph, 'Вступление'),
+      Intro(2, IntroKind.title, 'Т'),
+    ]);
+
+    // Таблица `intros` без столбца — негодный файл.
+    final broken = '${dir.path}/broken-intros.hb';
+    writeBibleFixture(
+      broken,
+      books: const [FixtureBook(10, 'Быт')],
+      verses: const {(10, 1, 1): 'В начале'},
+    );
+    sqlite3.open(broken)
+      ..execute('CREATE TABLE intros (book TEXT, position INTEGER)')
+      ..close();
+    expect(checkModuleFile(broken), const MissingColumn('intros', 'kind'));
+  });
+
   test('rejects foreign and newer files', () {
     final text = '${dir.path}/text.hb';
     File(text).writeAsStringSync('not a database at all, just some text\n');

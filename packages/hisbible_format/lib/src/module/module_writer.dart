@@ -11,7 +11,7 @@ import 'package:sqlite3/sqlite3.dart';
 
 /// Пишет файл модуля HisBible.
 ///
-/// Книги, стихи, заголовки и сноски (Библия), толкования или ссылки
+/// Книги, стихи, заголовки, вступления и сноски (Библия), толкования или ссылки
 /// добавляются в одной транзакции; файл готов после [finish]. Запись другого
 /// типа, чем у модуля, — [StateError]. Номера книг — номера справочника,
 /// в файл идут их коды ([BookCatalog.codeOf]). Ошибка записи —
@@ -59,6 +59,9 @@ final class ModuleWriter {
   final Map<String, PreparedStatement> _statements = {};
   // Следующий номер заголовка над каждым стихом.
   final Map<(String, int, int), int> _headingPositions = {};
+  // Следующий номер части вступления в каждой книге.
+  final Map<String, int> _introPositions = {};
+  bool _introsCreated = false;
   int _bookPosition = 0;
   bool _paragraphs = false;
   bool _closed = false;
@@ -119,6 +122,23 @@ final class ModuleWriter {
     _headingPositions[key] = position + 1;
     _statement('INSERT INTO headings VALUES (?, ?, ?, ?, ?, ?, ?)')
         .execute([code, chapter, verse, position, kind.name, level, text]);
+  }
+
+  /// Добавляет часть вступления книги [book]; порядок внутри книги — порядок
+  /// вызовов, с 0.
+  ///
+  /// Таблицу `intros` файл получает при первом вступлении.
+  void addIntro(int book, IntroKind kind, String text) {
+    _checkType(ModuleType.bible);
+    if (!_introsCreated) {
+      _db.execute(introsTable.create);
+      _introsCreated = true;
+    }
+    final code = BookCatalog.codeOf(book);
+    final position = _introPositions[code] ?? 0;
+    _introPositions[code] = position + 1;
+    _statement('INSERT INTO intros VALUES (?, ?, ?, ?)')
+        .execute([code, position, kind.name, text]);
   }
 
   /// Добавляет сноску [id] к стиху; на неё ссылается `<f id>` в тексте.
