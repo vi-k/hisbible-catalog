@@ -173,4 +173,29 @@ void main() {
       module.close();
     }
   });
+
+  test("a footnote in a heading takes the heading's place", () {
+    final books = readUsfmBooks([
+      _file(
+        'a.usfm',
+        '\\id 2CH\n\\c 36\n\\p\n\\v 23 А\n'
+            '\\s1 Молитва\\f * \\ft П.\\f*\n\\v 24 Б\n',
+      ),
+    ]);
+    final path = '${dir.path}/h.hb';
+
+    writeUsfmModule(path, _meta('ru'), books);
+
+    final module = BibleModule.open(path);
+    try {
+      final note = module.footnotes(140, 36).single;
+      expect((note.chapter, note.verse, note.caller), (36, 24, '*'));
+      expect(note.text, 'П.');
+      final heading = module.headings(140, 36).single;
+      expect(heading.verse, 24);
+      expect(heading.text, contains('<f id="${note.id}"'));
+    } finally {
+      module.close();
+    }
+  });
 }

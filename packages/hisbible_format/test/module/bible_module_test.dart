@@ -237,6 +237,47 @@ void main() {
     expect(plain.intros(10), isEmpty);
   });
 
+  test('schemes name the home of the prayer of manasseh', () {
+    ManassehHome home(String name, Map<(int, int, int), String> verses) {
+      final file = '${dir.path}/$name.hb';
+      writeBibleFixture(
+        file,
+        books: [
+          for (final book in {for (final (b, _, _) in verses.keys) b})
+            FixtureBook(book, '$book'),
+        ],
+        verses: verses,
+      );
+      final module = BibleModule.open(file);
+      addTearDown(module.close);
+
+      return module.schemes.manasseh;
+    }
+
+    expect(
+      home('ch36', {(140, 36, 1): 'а', (140, 36, 35): 'б'}),
+      ManassehHome.chronicles36,
+    );
+    expect(
+      home('book', {
+        (140, 36, 1): 'а',
+        (140, 36, 35): 'б',
+        (145, 1, 1): 'в',
+        (145, 1, 15): 'г',
+      }),
+      ManassehHome.book,
+    );
+    expect(
+      home('ch37', {(140, 36, 23): 'а', (140, 37, 1): 'б', (140, 37, 12): 'в'}),
+      ManassehHome.chronicles37,
+    );
+    expect(
+      home('none', {(140, 36, 1): 'а', (140, 36, 23): 'б'}),
+      ManassehHome.book,
+    );
+    expect(home('no2ch', {(10, 1, 1): 'а'}), ManassehHome.book);
+  });
+
   test('replaceFootnotes swaps footnotes of a copy', () {
     writeSample(path);
     final copy = '${dir.path}/copy.hb';

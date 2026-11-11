@@ -196,6 +196,10 @@ final class Footnote {
       'Footnote($id, $book $chapter:$verse, ${kind.name}, $caller, $text)';
 }
 
+// Номера книг справочника: 2 Паралипоменон и Молитва Манассии.
+const _chroniclesBook = 140;
+const _manassehBook = 145;
+
 /// Открытый модуль Библии формата HisBible; файл читается только на чтение.
 final class BibleModule {
   BibleModule._(
@@ -269,9 +273,30 @@ final class BibleModule {
   ModuleBook? book(int number) => _byNumber[number];
 
   /// Схемы нумерации книг из `books.scheme`; [BookSchemes.uncertain] пуст.
+  ///
+  /// Дом Молитвы Манассии [BookSchemes.manasseh]: есть книга 145 —
+  /// [ManassehHome.book]; иначе у 2 Пар 36 больше 23 стихов —
+  /// [ManassehHome.chronicles36]; иначе есть 2 Пар 37 —
+  /// [ManassehHome.chronicles37]; иначе [ManassehHome.book].
   BookSchemes get schemes => BookSchemes(
     schemes: {for (final book in books) book.number: book.scheme},
+    manasseh: _manasseh,
   );
+
+  // Дом Молитвы Манассии по книгам и главам модуля; правило — у [schemes].
+  ManassehHome get _manasseh {
+    if (_byNumber.containsKey(_manassehBook)) {
+      return ManassehHome.book;
+    }
+    final chronicles = _lastVerses[_chroniclesBook] ?? const {};
+    if ((chronicles[36] ?? 0) > 23) {
+      return ManassehHome.chronicles36;
+    }
+
+    return chronicles.containsKey(37)
+        ? ManassehHome.chronicles37
+        : ManassehHome.book;
+  }
 
   /// Есть ли в стихах `<p/>`: ключ `meta` `paragraphs` равен `1`.
   ///

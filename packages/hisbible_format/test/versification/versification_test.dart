@@ -131,7 +131,7 @@ PSA 6:5a-6b = PSA 6:7
 PSA 7:1 = ESG 1:1
 PSA 7:2 = PS2 1:1
 EZA 1:1 = PSA 7:3
-2CH 36:24 = MAN 1:1
+2CH 37:1 = MAN 1:1
 SUS 1:2 = DAG 13:2
 BEL 1:3 = DAG 14:3
 2CH 2:1 = 2CH 1:18
@@ -146,7 +146,9 @@ BEL 1:3 = DAG 14:3
     expect(v.toCanonical(r(230, 7, 1), VerseScheme.rso), r(230, 7, 1));
     expect(v.toCanonical(r(230, 7, 2), VerseScheme.rso), r(230, 7, 2));
     expect(v.fromCanonical(r(230, 7, 3), VerseScheme.rso), r(230, 7, 3));
-    expect(v.toCanonical(r(140, 36, 24), VerseScheme.rso), r(140, 36, 24));
+    // Строка 2CH ↔ MAN идёт в карту молитвы, а не в таблицы схемы.
+    expect(v.toCanonical(r(140, 37, 1), VerseScheme.rso), r(145, 1, 1));
+    expect(v.fromCanonical(r(145, 1, 1), VerseScheme.rso), r(145, 1, 1));
     expect(v.toCanonical(r(325, 1, 2), VerseScheme.rso), r(325, 1, 2));
     expect(v.toCanonical(r(345, 1, 3), VerseScheme.rso), r(345, 1, 3));
     // Пара книг отбрасывается, только если книги разные.
@@ -173,11 +175,50 @@ BEL 1:3 = DAG 14:3
       },
       {r(140, 2, 1): r(140, 1, 18), r(140, 14, 1): r(140, 13, 23)},
     );
-    // Строки 2CH ↔ MAN по-прежнему отброшены: Молитва Манассии — книга 145.
-    mapsTo(
-      VerseScheme.rso,
-      {r(140, 37, 1): r(140, 37, 1)},
-      {r(145, 1, 1): r(145, 1, 1)},
+    // Строки 2CH ↔ MAN в таблицы схемы не идут: без «дома» молитвы место
+    // книги 145 остаётся в ней, а у схемы без карты молитвы глава 37 — своя.
+    expect(vs.fromCanonical(r(145, 1, 1), VerseScheme.rso), r(145, 1, 1));
+    expect(vs.toCanonical(r(140, 37, 1), VerseScheme.org), r(140, 37, 1));
+  });
+
+  test('prayer of manasseh in 2 chronicles goes to the book and back', () {
+    for (final scheme in [VerseScheme.rsc, VerseScheme.rso]) {
+      mapsTo(scheme, {
+        r(140, 36, 24): r(145, 1, 1),
+        r(140, 36, 35): r(145, 1, 15),
+        r(140, 36, 23): r(140, 36, 23),
+      });
+    }
+    expect(vs.toCanonical(r(140, 37, 1), VerseScheme.rso), r(145, 1, 1));
+
+    VerseRef back(VerseRef ref, VerseScheme to, ManassehHome home) =>
+        vs.fromCanonical(ref, to, manasseh: home);
+    expect(
+      back(r(145, 1, 1), VerseScheme.rsc, ManassehHome.chronicles36),
+      r(140, 36, 24),
+    );
+    // Обратно — первый подходящий стих, как у прочих мест.
+    expect(
+      back(r(145, 1, 15), VerseScheme.rsc, ManassehHome.chronicles36),
+      r(140, 36, 34),
+    );
+    expect(
+      back(r(145, 1, 1), VerseScheme.rsc, ManassehHome.chronicles37),
+      r(140, 37, 1),
+    );
+    expect(
+      back(r(145, 1, 1), VerseScheme.rsc, ManassehHome.book),
+      r(145, 1, 1),
+    );
+    // Схема книги, которой у модуля нет, роли не играет.
+    expect(
+      back(r(145, 1, 1), VerseScheme.eng, ManassehHome.chronicles36),
+      r(140, 36, 24),
+    );
+    // Прочие места дом молитвы не трогает.
+    expect(
+      back(r(140, 36, 23), VerseScheme.rsc, ManassehHome.chronicles36),
+      r(140, 36, 23),
     );
   });
 
