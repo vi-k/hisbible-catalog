@@ -106,11 +106,11 @@
       "fetched": "2026-10-26"
     },
     "adz": {
-      "updateDate": "2026-11-07",
-      "sha256": "05c9c3e0b6de4979a0d930fefbba2b38a8180faf0744227d39e14abac0c0c474",
-      "release": "sources-2026-11-11",
-      "asset": "adz-2026-11-07_usfm.zip",
-      "fetched": "2026-11-11"
+      "updateDate": "2026-11-13",
+      "sha256": "710585f02df40ecdcfaf66c0cd5506a7f1b1709d738b86c204054606473ca7a2",
+      "release": "sources-2026-11-13",
+      "asset": "adz-2026-11-13_usfm.zip",
+      "fetched": "2026-11-13"
     },
     "aeb": {
       "updateDate": "2025-04-26",
@@ -2213,11 +2213,11 @@
       "fetched": "2026-10-26"
     },
     "eng-web": {
-      "updateDate": "2026-10-30",
-      "sha256": "05b0440bd8994dd4da7cc53dd8167a759ed7c09617e4a562c64eb9b3343589c8",
-      "release": "sources-2026-10-30",
-      "asset": "eng-web-2026-10-30_usfm.zip",
-      "fetched": "2026-10-30"
+      "updateDate": "2026-11-13",
+      "sha256": "107c0c220a67b9e43baa18e849e19076d41b8e169a0c71d4b9fd2d77db94c152",
+      "release": "sources-2026-11-13",
+      "asset": "eng-web-2026-11-13_usfm.zip",
+      "fetched": "2026-11-13"
     },
     "eng-web-c": {
       "updateDate": "2026-10-30",
@@ -2283,11 +2283,11 @@
       "fetched": "2026-10-26"
     },
     "engasvbt": {
-      "updateDate": "2026-10-30",
-      "sha256": "4f3157dbfb93a4c8907e250f6758394af67b3c5f440b0d0ccf86a8c946aab4f8",
-      "release": "sources-2026-10-30",
-      "asset": "engasvbt-2026-10-30_usfm.zip",
-      "fetched": "2026-10-30"
+      "updateDate": "2026-11-13",
+      "sha256": "92e34fd641501eb26ba655622e3c14a4cdb3d60e118c98ca2de82679427994bb",
+      "release": "sources-2026-11-13",
+      "asset": "engasvbt-2026-11-13_usfm.zip",
+      "fetched": "2026-11-13"
     },
     "engbarkly": {
       "updateDate": "2026-04-14",
@@ -2444,11 +2444,11 @@
       "fetched": "2026-10-26"
     },
     "engtcent": {
-      "updateDate": "2026-10-30",
-      "sha256": "9ac1afef4e03cfa899eb7dda26fd3754a36c9a806d2618e2c64fcf5f232878fc",
-      "release": "sources-2026-10-30",
-      "asset": "engtcent-2026-10-30_usfm.zip",
-      "fetched": "2026-10-30"
+      "updateDate": "2026-11-13",
+      "sha256": "b34a26bc23d2ec1bbd291f161d1b02a33602a6b15b709fb1a1457690bd000296",
+      "release": "sources-2026-11-13",
+      "asset": "engtcent-2026-11-13_usfm.zip",
+      "fetched": "2026-11-13"
     },
     "engtnt": {
       "updateDate": "2020-12-20",
@@ -2479,11 +2479,11 @@
       "fetched": "2026-10-26"
     },
     "engwebu": {
-      "updateDate": "2026-10-30",
-      "sha256": "6408bba4ee3428d94472092069a7222680abf2382c6f93ee15cec0f0f4cc06fb",
-      "release": "sources-2026-10-30",
-      "asset": "engwebu-2026-10-30_usfm.zip",
-      "fetched": "2026-10-30"
+      "updateDate": "2026-11-13",
+      "sha256": "5953c94000d7e155d8995744ce587ec4ba925737bb21fd611d4121fef16007a2",
+      "release": "sources-2026-11-13",
+      "asset": "engwebu-2026-11-13_usfm.zip",
+      "fetched": "2026-11-13"
     },
     "engwmb": {
       "updateDate": "2026-10-30",
@@ -2990,11 +2990,11 @@
       "fetched": "2026-10-30"
     },
     "grctcgnt": {
-      "updateDate": "2026-10-30",
-      "sha256": "d35cd2d33e4f9dad5aeecf5299dae0d6299be2cff1603fb022635f3b9a4eb85b",
-      "release": "sources-2026-10-30",
-      "asset": "grctcgnt-2026-10-30_usfm.zip",
-      "fetched": "2026-10-30"
+      "updateDate": "2026-11-13",
+      "sha256": "1e319d0c705f662929c78f093a1b83220d7daf492e5c62834a5e51ecf0ff0b8a",
+      "release": "sources-2026-11-13",
+      "asset": "grctcgnt-2026-11-13_usfm.zip",
+      "fetched": "2026-11-13"
     },
     "grctr": {
       "updateDate": "2026-10-30",
@@ -3130,11 +3130,11 @@
       "fetched": "2026-10-26"
     },
     "gvs": {
-      "updateDate": "2026-11-10",
-      "sha256": "f2aeaad20beba2247214a4c0e25cfd2d10f0a84148ac7d3de4c82e9daaac8c3e",
-      "release": "sources-2026-11-11",
-      "asset": "gvs-2026-11-10_usfm.zip",
-      "fetched": "2026-11-11"
+      "updateDate": "2026-11-13",
+      "sha256": "56750c39962d922d6f77dc1a57718e39bb20ae33c1a54c9c7894e21c9325933c",
+      "release": "sources-2026-11-13",
+      "asset": "gvs-2026-11-13_usfm.zip",
+      "fetched": "2026-11-13"
     },
     "gwiNT": {
       "updateDate": "2014-04-25",
@@ -3382,11 +3382,11 @@
       "fetched": "2026-10-26"
     },
     "hrebt": {
-      "updateDate": "2026-11-02",
-      "sha256": "07d8ca9ab6be980f8f0a7a216f11142e6309f6f86ace2713326c0a8145e14ca6",
-      "release": "sources-2026-11-11",
-      "asset": "hrebt-2026-11-02_usfm.zip",
-      "fetched": "2026-11-11"
+      "updateDate": "2026-11-11",
+      "sha256": "0a37377ca3b24c9e47d5dc553f61c15bbbd7a6eff0cf7400dbbd0e782e0d9465",
+      "release": "sources-2026-11-13",
+      "asset": "hrebt-2026-11-11_usfm.zip",
+      "fetched": "2026-11-13"
     },
     "hru": {
       "updateDate": "2025-05-03",
@@ -4215,11 +4215,11 @@
       "fetched": "2026-10-26"
     },
     "kqf": {
-      "updateDate": "2026-10-20",
-      "sha256": "61183241a105145dd790d0327c7acfc3ddf41b56120b0a9a59e354807e57ae64",
-      "release": "sources-2026-10-26",
-      "asset": "kqf-2026-10-20_usfm.zip",
-      "fetched": "2026-10-26"
+      "updateDate": "2026-11-13",
+      "sha256": "5d15c9c58e93a054d11cb101dafa5c76406b2f25139d7c1fc7d2e35bbb6dae7e",
+      "release": "sources-2026-11-13",
+      "asset": "kqf-2026-11-13_usfm.zip",
+      "fetched": "2026-11-13"
     },
     "kql": {
       "updateDate": "2025-05-07",
@@ -4838,11 +4838,11 @@
       "fetched": "2026-10-26"
     },
     "met": {
-      "updateDate": "2026-11-08",
-      "sha256": "8bdee8497dbb224b749e0b29d773276d23360249863b65cceae3fbb7e66d6932",
-      "release": "sources-2026-11-11",
-      "asset": "met-2026-11-08_usfm.zip",
-      "fetched": "2026-11-11"
+      "updateDate": "2026-11-12",
+      "sha256": "10531fa96c78c55f55f9ccd1123b357122ba49f5c0e854ba5c7b5e2d9389331b",
+      "release": "sources-2026-11-13",
+      "asset": "met-2026-11-12_usfm.zip",
+      "fetched": "2026-11-13"
     },
     "meu": {
       "updateDate": "2020-10-09",
@@ -5013,11 +5013,11 @@
       "fetched": "2026-10-26"
     },
     "mkj": {
-      "updateDate": "2026-11-09",
-      "sha256": "e532cd20f778025ec624d98e29fe5ed4dcdc15394b10db9811bd77876a8b2de4",
-      "release": "sources-2026-11-11",
-      "asset": "mkj-2026-11-09_usfm.zip",
-      "fetched": "2026-11-11"
+      "updateDate": "2026-11-12",
+      "sha256": "34a78be553f318207fb5759b2312da42d9ca3da41a9ce318d55024ba9909d314",
+      "release": "sources-2026-11-13",
+      "asset": "mkj-2026-11-12_usfm.zip",
+      "fetched": "2026-11-13"
     },
     "mkl": {
       "updateDate": "2014-10-02",
@@ -5797,11 +5797,11 @@
       "fetched": "2026-10-26"
     },
     "nrz": {
-      "updateDate": "2026-11-04",
-      "sha256": "f2312338e58a75526063e86c84872df27f9bfc25d103c78c19a788116320ccd2",
-      "release": "sources-2026-11-11",
-      "asset": "nrz-2026-11-04_usfm.zip",
-      "fetched": "2026-11-11"
+      "updateDate": "2026-11-10",
+      "sha256": "e4ac198e94e688a08c91d233804d57b4e69ac5e7dc758d5dd8bd21ca28d939bf",
+      "release": "sources-2026-11-13",
+      "asset": "nrz-2026-11-10_usfm.zip",
+      "fetched": "2026-11-13"
     },
     "nsn": {
       "updateDate": "2012-01-19",
@@ -5811,11 +5811,11 @@
       "fetched": "2026-10-26"
     },
     "nss": {
-      "updateDate": "2026-10-28",
-      "sha256": "22df7c8db7929c099228a450439f8fbf76c8b35407a71f5587bc7b5a8480700f",
-      "release": "sources-2026-10-30",
-      "asset": "nss-2026-10-28_usfm.zip",
-      "fetched": "2026-10-30"
+      "updateDate": "2026-11-10",
+      "sha256": "2f25d7474e5eb9f58ffc3f2e3d08b81d1d328aeccfdd9bd81299d6212d5628b4",
+      "release": "sources-2026-11-13",
+      "asset": "nss-2026-11-10_usfm.zip",
+      "fetched": "2026-11-13"
     },
     "ntj": {
       "updateDate": "2021-11-12",
@@ -6630,11 +6630,11 @@
       "fetched": "2026-10-26"
     },
     "ronBayash": {
-      "updateDate": "2026-11-09",
-      "sha256": "7c0a4760003ef6662c3c675586c8bb5dff0d7b2cc80825f1f597f6c74c563c60",
-      "release": "sources-2026-11-11",
-      "asset": "ronBayash-2026-11-09_usfm.zip",
-      "fetched": "2026-11-11"
+      "updateDate": "2026-11-12",
+      "sha256": "405db72a7c940c993184f69a1cde30a5e279c562bb0e92747b8866154d7f59a0",
+      "release": "sources-2026-11-13",
+      "asset": "ronBayash-2026-11-12_usfm.zip",
+      "fetched": "2026-11-13"
     },
     "ronbl": {
       "updateDate": "2026-10-28",
@@ -6700,11 +6700,11 @@
       "fetched": "2026-10-26"
     },
     "rusfb": {
-      "updateDate": "2026-11-10",
-      "sha256": "678eb2fe9384312c9b0651f833a3c0f93dd666b62ae7738089c17ee002e76472",
-      "release": "sources-2026-11-11",
-      "asset": "rusfb-2026-11-10_usfm.zip",
-      "fetched": "2026-11-11"
+      "updateDate": "2026-11-13",
+      "sha256": "f9411f4d9bc1bca76ccbc997bef5b8ef469ebc4bd14d79f6072ed40784d1662b",
+      "release": "sources-2026-11-13",
+      "asset": "rusfb-2026-11-13_usfm.zip",
+      "fetched": "2026-11-13"
     },
     "rwo-karo": {
       "updateDate": "2016-09-22",
@@ -7519,11 +7519,11 @@
       "fetched": "2026-11-11"
     },
     "tdt": {
-      "updateDate": "2026-11-10",
-      "sha256": "c1b1d87c71b7783ce4a0f4d6db44276b7e723b42d486c3de8e824823dd9761ed",
-      "release": "sources-2026-11-11",
-      "asset": "tdt-2026-11-10_usfm.zip",
-      "fetched": "2026-11-11"
+      "updateDate": "2026-11-11",
+      "sha256": "b44018562e90d8d1b4376aff7429caa4b1b76de149c8c1900a97d1cbf711da42",
+      "release": "sources-2026-11-13",
+      "asset": "tdt-2026-11-11_usfm.zip",
+      "fetched": "2026-11-13"
     },
     "tdx": {
       "updateDate": "2024-12-05",
