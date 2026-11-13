@@ -27,8 +27,12 @@ and not changes to the base text.
 
 ## Changes to the base text
 
-Every change to the words of the base text has a row in `CHANGES.md`: the
-place, the base reading, the accepted reading and the reason.
+Every change to the words or punctuation of the base text has a row in
+`CHANGES.md`: the place, the base reading, the accepted reading and the
+reason. Typesetting errors of the base (a space before a punctuation mark,
+a dash instead of a hyphen inside a word) are corrected; the punctuation of
+a verse follows the edition of the Moscow Patriarchate where it is
+confirmed by a second witness.
 
 `spelling.tsv` is the table of old and new spellings: old word, tab, new word.
 The builder applies it to the text, carrying the capital letter over.
