@@ -18,7 +18,8 @@ and the cross-references come from that edition. The spelling is modern.
 - Footnotes are the notes of the edition.
 - Cross-references are the parallel passages of the edition. A verse lists
   them in the order of the books, and by chapter and verse within a book, as
-  the printed Synodal Bible does.
+  the printed Synodal Bible does; a book is named only before its first
+  passage.
 - The Prayer of Manasseh stands in 2 Chronicles 36:24-35, as in the edition of
   the Moscow Patriarchate, under its own heading with a footnote.
 - The prologue of Sirach is the introduction of the book, not a heading of 1:1.
