@@ -1,136 +1,88 @@
 {
   "deletions": [
     {
-      "release": "build-2026-11-12",
-      "asset": "russyn-2026-11-12.hb"
+      "release": "build-2026-11-13",
+      "asset": "russyn-2026-11-13.hb"
     },
     {
       "release": "sources-2026-11-11",
-      "asset": "adz-2026-11-07_usfm.zip"
+      "asset": "eng-kjv-2026-11-09_usfm.zip"
     },
     {
       "release": "build-2026-11-12",
-      "asset": "adz-2026-11-07.1.hb"
-    },
-    {
-      "release": "sources-2026-10-30",
-      "asset": "eng-web-2026-10-30_usfm.zip"
-    },
-    {
-      "release": "build-2026-11-12",
-      "asset": "eng-web-2026-10-30.2.hb"
-    },
-    {
-      "release": "sources-2026-10-30",
-      "asset": "engasvbt-2026-10-30_usfm.zip"
-    },
-    {
-      "release": "build-2026-11-12",
-      "asset": "engasvbt-2026-10-30.2.hb"
-    },
-    {
-      "release": "sources-2026-10-30",
-      "asset": "engtcent-2026-10-30_usfm.zip"
-    },
-    {
-      "release": "build-2026-11-12",
-      "asset": "engtcent-2026-10-30.2.hb"
-    },
-    {
-      "release": "sources-2026-10-30",
-      "asset": "engwebu-2026-10-30_usfm.zip"
-    },
-    {
-      "release": "build-2026-11-12",
-      "asset": "engwebu-2026-10-30.2.hb"
-    },
-    {
-      "release": "sources-2026-10-30",
-      "asset": "grctcgnt-2026-10-30_usfm.zip"
-    },
-    {
-      "release": "build-2026-11-12",
-      "asset": "grctcgnt-2026-10-30.2.hb"
+      "asset": "eng-kjv-2026-11-09.1.hb"
     },
     {
       "release": "sources-2026-11-11",
-      "asset": "gvs-2026-11-10_usfm.zip"
+      "asset": "eng-kjv2006-2026-11-09_usfm.zip"
     },
     {
       "release": "build-2026-11-12",
-      "asset": "gvs-2026-11-10.1.hb"
-    },
-    {
-      "release": "sources-2026-11-11",
-      "asset": "hrebt-2026-11-02_usfm.zip"
-    },
-    {
-      "release": "build-2026-11-12",
-      "asset": "hrebt-2026-11-02.1.hb"
+      "asset": "eng-kjv2006-2026-11-09.1.hb"
     },
     {
       "release": "sources-2026-10-26",
-      "asset": "kqf-2026-10-20_usfm.zip"
+      "asset": "jpnm-2026-08-19_usfm.zip"
     },
     {
       "release": "build-2026-11-12",
-      "asset": "kqf-2026-10-20.2.hb"
+      "asset": "jpnm-2026-08-19.2.hb"
+    },
+    {
+      "release": "sources-2026-11-13",
+      "asset": "nrz-2026-11-10_usfm.zip"
+    },
+    {
+      "release": "build-2026-11-13",
+      "asset": "nrz-2026-11-10.hb"
     },
     {
       "release": "sources-2026-11-11",
-      "asset": "met-2026-11-08_usfm.zip"
-    },
-    {
-      "release": "build-2026-11-12",
-      "asset": "met-2026-11-08.1.hb"
-    },
-    {
-      "release": "sources-2026-11-11",
-      "asset": "mkj-2026-11-09_usfm.zip"
-    },
-    {
-      "release": "build-2026-11-12",
-      "asset": "mkj-2026-11-09.1.hb"
-    },
-    {
-      "release": "sources-2026-11-11",
-      "asset": "nrz-2026-11-04_usfm.zip"
-    },
-    {
-      "release": "build-2026-11-12",
-      "asset": "nrz-2026-11-04.1.hb"
-    },
-    {
-      "release": "sources-2026-10-30",
-      "asset": "nss-2026-10-28_usfm.zip"
-    },
-    {
-      "release": "build-2026-11-12",
-      "asset": "nss-2026-10-28.2.hb"
-    },
-    {
-      "release": "sources-2026-11-11",
-      "asset": "ronBayash-2026-11-09_usfm.zip"
+      "asset": "rmyArli-2026-11-05_usfm.zip"
     },
     {
       "release": "build-2026-11-12-2",
-      "asset": "ronBayash-2026-11-09.1.hb"
+      "asset": "rmyArli-2026-11-05.1.hb"
+    },
+    {
+      "release": "sources-2026-11-13",
+      "asset": "ronBayash-2026-11-12_usfm.zip"
+    },
+    {
+      "release": "build-2026-11-13",
+      "asset": "ronBayash-2026-11-12.hb"
+    },
+    {
+      "release": "sources-2026-11-13",
+      "asset": "rusfb-2026-11-13_usfm.zip"
+    },
+    {
+      "release": "build-2026-11-13",
+      "asset": "rusfb-2026-11-13.hb"
     },
     {
       "release": "sources-2026-11-11",
-      "asset": "rusfb-2026-11-10_usfm.zip"
+      "asset": "tczchongthu-2026-11-08_usfm.zip"
     },
     {
       "release": "build-2026-11-12-2",
-      "asset": "rusfb-2026-11-10.1.hb"
+      "asset": "tczchongthu-2026-11-08.1.hb"
+    },
+    {
+      "release": "sources-2026-11-13",
+      "asset": "tdt-2026-11-11_usfm.zip"
+    },
+    {
+      "release": "build-2026-11-13",
+      "asset": "tdt-2026-11-11.hb"
     },
     {
       "release": "sources-2026-11-11",
-      "asset": "tdt-2026-11-10_usfm.zip"
+      "asset": "turytc-2026-11-09_usfm.zip"
     },
     {
       "release": "build-2026-11-12-2",
-      "asset": "tdt-2026-11-10.1.hb"
+      "asset": "turytc-2026-11-09.1.hb"
     }
   ]
 }
