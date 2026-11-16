@@ -179,7 +179,7 @@ void main() {
       const TextRun('five'),
       const LineBreak(),
       const TextRun('six'),
-      const ParagraphBreak(),
+      const ParagraphBreak(continues: true),
       const TextRun('seven eight'),
     ]);
   });

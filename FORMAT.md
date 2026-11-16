@@ -262,6 +262,7 @@ tags. Everything outside tags is text as is; whitespace is significant.
 | tag | meaning |
 |---|---|
 | `<p/>` | paragraph break |
+| `<p m="1"/>` | paragraph break where the paragraph goes on with the sentence before it, after a quotation or poetry lines (USFM `\m`); it is printed without a first-line indent |
 | `<l/>`, `<l i="1"/>` … `<l i="4"/>` | new poetry line with indent 0..4 |
 | `<wj>…</wj>` | words of Christ |
 | `<add>…</add>` | words added by the translators |

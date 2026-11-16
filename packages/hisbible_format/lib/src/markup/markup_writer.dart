@@ -55,8 +55,8 @@ void _write(List<MarkupNode> nodes, StringBuffer out) {
       case LineBreak(:final indent):
         final clamped = indent.clamp(0, 4);
         out.write(clamped == 0 ? '<l/>' : '<l i="$clamped"/>');
-      case ParagraphBreak():
-        out.write('<p/>');
+      case ParagraphBreak(:final continues):
+        out.write(continues ? '<p m="1"/>' : '<p/>');
     }
   }
 }

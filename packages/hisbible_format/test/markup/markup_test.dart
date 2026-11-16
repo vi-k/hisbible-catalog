@@ -21,6 +21,26 @@ void main() {
     );
   });
 
+  test('a paragraph going on is written with m and read by older readers', () {
+    expect(
+      writeMarkup([
+        const TextRun('a'),
+        const ParagraphBreak(continues: true),
+        const TextRun('b'),
+      ]),
+      'a<p m="1"/>b',
+    );
+    // Читатель, который атрибута не знает, видит обычный разрыв абзаца.
+    expect(parseMarkup('<p m="0"/><p x="1"/>'), [
+      const ParagraphBreak(),
+      const ParagraphBreak(),
+    ]);
+    expect(
+      const ParagraphBreak(continues: true),
+      isNot(const ParagraphBreak()),
+    );
+  });
+
   test('writes plain line break and bare tagged word', () {
     expect(
       writeMarkup([
@@ -34,6 +54,7 @@ void main() {
   test('round trips every node', () {
     final nodes = <MarkupNode>[
       const ParagraphBreak(),
+      const ParagraphBreak(continues: true),
       for (final style in MarkupStyle.values)
         StyledSpan(style, [TextRun('t "$style" <&>')]),
       const StyledSpan(MarkupStyle.quote, [

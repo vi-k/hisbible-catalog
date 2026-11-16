@@ -110,7 +110,7 @@ class _Parser {
     }
     switch (name) {
       case 'p':
-        _add(const ParagraphBreak());
+        _add(ParagraphBreak(continues: attributes['m'] == '1'));
       case 'l':
         final indent = int.tryParse(attributes['i'] ?? '') ?? 0;
         _add(LineBreak(indent: indent.clamp(0, 4)));

@@ -164,6 +164,9 @@ enum _Paragraph {
   // Разрыв абзаца.
   paragraph,
 
+  // Абзац, который продолжает прошлый после цитаты или стихов (`\m`).
+  flush,
+
   // Продолжение абзаца без разрыва (`\nb`).
   continuation,
 
@@ -187,8 +190,10 @@ final _numbered = RegExp(r'^(pi|q|qm|li|s|ms|mt|mte)(\d*)$');
       return (_Paragraph.chapter, null);
     case 'v':
       return (_Paragraph.verse, null);
-    case 'p' || 'm' || 'pm' || 'b':
+    case 'p' || 'pm' || 'b':
       return (_Paragraph.paragraph, null);
+    case 'm':
+      return (_Paragraph.flush, null);
     case 'nb':
       return (_Paragraph.continuation, null);
     case 'qr' || 'qc':
@@ -1050,6 +1055,8 @@ final class _Parser {
         _awaitNumber = _Paragraph.verse;
       case _Paragraph.paragraph:
         _breakParagraph(const ParagraphBreak());
+      case _Paragraph.flush:
+        _breakParagraph(const ParagraphBreak(continues: true));
       case _Paragraph.line:
         _breakParagraph(LineBreak(indent: digit ?? 1));
       case _Paragraph.continuation:
