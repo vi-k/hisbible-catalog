@@ -278,6 +278,34 @@ void main() {
     expect(home('no2ch', {(10, 1, 1): 'а'}), ManassehHome.book);
   });
 
+  test('verse labels are read by chapter and empty without the table', () {
+    writeBibleFixture(
+      path,
+      books: const [FixtureBook(140, '2 Пар')],
+      verses: const {
+        (140, 36, 23): 'а',
+        (140, 36, 24): 'б',
+        (140, 36, 25): 'в',
+        (140, 35, 1): 'г',
+      },
+      verseLabels: const [(140, 36, 25, ''), (140, 36, 24, 'а')],
+    );
+
+    final module = BibleModule.open(path);
+    addTearDown(module.close);
+    expect(module.verseLabels(140, 36), const {24: 'а', 25: ''});
+    expect(module.verseLabels(140, 36).keys, [24, 25]);
+    expect(module.verseLabels(140, 35), isEmpty);
+    expect(module.verseLabels(10, 1), isEmpty);
+
+    // Модуль без таблицы `verse_labels` читается, меток в нём нет.
+    final plainPath = '${dir.path}/plain.hb';
+    writeSample(plainPath);
+    final plain = BibleModule.open(plainPath);
+    addTearDown(plain.close);
+    expect(plain.verseLabels(10, 1), isEmpty);
+  });
+
   test('replaceFootnotes swaps footnotes of a copy', () {
     writeSample(path);
     final copy = '${dir.path}/copy.hb';

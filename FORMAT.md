@@ -60,6 +60,11 @@ CREATE TABLE intros (            -- optional, bible only
   text TEXT NOT NULL,            -- markup
   PRIMARY KEY (book, position)
 ) WITHOUT ROWID;
+CREATE TABLE verse_labels (      -- optional, bible only
+  book TEXT NOT NULL, chapter INTEGER NOT NULL, verse INTEGER NOT NULL,
+  label TEXT NOT NULL,           -- shown at the end of the verse; '' for none
+  PRIMARY KEY (book, chapter, verse)
+) WITHOUT ROWID;
 CREATE TABLE footnotes (
   id INTEGER PRIMARY KEY,        -- what <f id> refers to
   book TEXT NOT NULL, chapter INTEGER NOT NULL, verse INTEGER NOT NULL,
@@ -89,7 +94,7 @@ Tables by module type:
 
 | type | tables |
 |---|---|
-| `bible` | `meta`, `books`, `verses`, `headings`, `footnotes`; optionally `intros` |
+| `bible` | `meta`, `books`, `verses`, `headings`, `footnotes`; optionally `intros`, `verse_labels` |
 | `commentaries` | `meta`, `comments` |
 | `crossreferences` | `meta`, `crossrefs` |
 
@@ -130,6 +135,16 @@ Notes:
   of a kind it does not know, and a reader of an earlier version ignores the
   table. Footnotes of an introduction are in `footnotes` with `chapter` 0 and
   `verse` 0; the `<f id>` in the text of a part refers to them like any other.
+- `verse_labels` holds verses that a printed edition marks otherwise than with
+  a number, and exists only when some verse has a label. A verse with a row
+  here shows no number in the text; a label that is not empty stands at the
+  end of the verse, before the punctuation that ends it, in italics and square
+  brackets. The Synodal edition marks the verses of the Prayer of Manasseh this
+  way: 2 Chronicles 36:24 ends with *[а]* (`праведного [а],`), 36:35 has no
+  number and no label. The verse keeps its number as its place: references,
+  search and the verse list use it. `verse` is the `verse` of a row of
+  `verses`; a label of merged verses is the label of their row. A reader of an
+  earlier version ignores the table and shows the numbers.
 - A comment covers the place from `chapter`:`verse` to `chapter_end`:
   `verse_end`; without `chapter_end` it ends in the same chapter, without
   `verse_end` it is one verse. A reader finds comments by the chapter where

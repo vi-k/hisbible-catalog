@@ -81,6 +81,35 @@ void main() {
     expect(checkModuleFile(broken), const MissingColumn('intros', 'kind'));
   });
 
+  test('a module with verse labels passes the check', () {
+    final path = '${dir.path}/labels.hb';
+    writeBibleFixture(
+      path,
+      books: const [FixtureBook(10, 'Быт')],
+      verses: const {(10, 1, 1): 'В начале'},
+      verseLabels: const [(10, 1, 1, 'а')],
+    );
+    expect(checkModuleFile(path), isNull);
+    expect(openProblem(path), isNull);
+
+    // Таблица `verse_labels` без столбца — негодный файл.
+    final broken = '${dir.path}/broken-labels.hb';
+    writeBibleFixture(
+      broken,
+      books: const [FixtureBook(10, 'Быт')],
+      verses: const {(10, 1, 1): 'В начале'},
+    );
+    sqlite3.open(broken)
+      ..execute(
+        'CREATE TABLE verse_labels (book TEXT, chapter INTEGER, verse INTEGER)',
+      )
+      ..close();
+    expect(
+      checkModuleFile(broken),
+      const MissingColumn('verse_labels', 'label'),
+    );
+  });
+
   test('rejects foreign and newer files', () {
     final text = '${dir.path}/text.hb';
     File(text).writeAsStringSync('not a database at all, just some text\n');

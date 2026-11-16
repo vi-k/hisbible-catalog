@@ -62,6 +62,7 @@ final class ModuleWriter {
   // Следующий номер части вступления в каждой книге.
   final Map<String, int> _introPositions = {};
   bool _introsCreated = false;
+  bool _verseLabelsCreated = false;
   int _bookPosition = 0;
   bool _paragraphs = false;
   bool _closed = false;
@@ -139,6 +140,20 @@ final class ModuleWriter {
     _introPositions[code] = position + 1;
     _statement('INSERT INTO intros VALUES (?, ?, ?, ?)')
         .execute([code, position, kind.name, text]);
+  }
+
+  /// Даёт стиху [verse] главы [chapter] книги [book] метку [label] вместо
+  /// номера; пустая метка — у стиха ни номера, ни метки.
+  ///
+  /// Таблицу `verse_labels` файл получает при первой метке.
+  void addVerseLabel(int book, int chapter, int verse, String label) {
+    _checkType(ModuleType.bible);
+    if (!_verseLabelsCreated) {
+      _db.execute(verseLabelsTable.create);
+      _verseLabelsCreated = true;
+    }
+    _statement('INSERT INTO verse_labels VALUES (?, ?, ?, ?)')
+        .execute([BookCatalog.codeOf(book), chapter, verse, label]);
   }
 
   /// Добавляет сноску [id] к стиху; на неё ссылается `<f id>` в тексте.

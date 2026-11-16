@@ -13,8 +13,8 @@ const int _notADatabase = 26;
 /// Проверяет файл модуля HisBible; `null` — модуль в порядке.
 ///
 /// Проверяются подпись и версия формата, обязательные ключи `meta`, таблицы
-/// типа модуля и их столбцы (у Библии ещё необязательной `intros`, если она
-/// есть), а у Библии — хотя бы один стих книги из
+/// типа модуля и их столбцы (у Библии ещё необязательных `intros`
+/// и `verse_labels`, если они есть), а у Библии — хотя бы один стих книги из
 /// `books`; у толкований и ссылок — хотя бы одна запись с известной книгой.
 /// В файле только таблицы и их индексы, иначе — [UnsupportedSchemaObject]
 /// до любого запроса к `meta`. У Библии глава больше [maxChapterNumber],
@@ -43,13 +43,18 @@ ModuleProblem? checkModuleFile(String path) {
         }
       }
     }
-    // Необязательная таблица: старый читатель её пропускает, а этот
-    // проверяет столбцы, только если она есть.
-    if (meta.type == ModuleType.bible && hasModuleTable(db, introsTable.name)) {
-      final columns = _columnsOf(db, introsTable.name);
-      for (final column in introsTable.columns) {
-        if (!columns.contains(column)) {
-          return MissingColumn(introsTable.name, column);
+    // Необязательные таблицы: старый читатель их пропускает, а этот
+    // проверяет столбцы, только если таблица есть.
+    if (meta.type == ModuleType.bible) {
+      for (final table in [introsTable, verseLabelsTable]) {
+        final columns = _columnsOf(db, table.name);
+        if (columns.isEmpty) {
+          continue;
+        }
+        for (final column in table.columns) {
+          if (!columns.contains(column)) {
+            return MissingColumn(table.name, column);
+          }
         }
       }
     }

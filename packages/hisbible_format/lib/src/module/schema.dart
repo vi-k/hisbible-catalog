@@ -158,6 +158,21 @@ CREATE TABLE intros (
 ) WITHOUT ROWID''',
 );
 
+/// Таблица `verse_labels`: метки стихов вместо номеров.
+///
+/// Необязательная, только у Библии: в [tablesOf] её нет, писатель создаёт её
+/// при первой метке, читатель смотрит, есть ли она в файле.
+const SchemaTable verseLabelsTable = (
+  name: 'verse_labels',
+  columns: ['book', 'chapter', 'verse', 'label'],
+  create: '''
+CREATE TABLE verse_labels (
+  book TEXT NOT NULL, chapter INTEGER NOT NULL, verse INTEGER NOT NULL,
+  label TEXT NOT NULL,
+  PRIMARY KEY (book, chapter, verse)
+) WITHOUT ROWID''',
+);
+
 /// Таблица `footnotes`: сноски стихов.
 const SchemaTable footnotesTable = (
   name: 'footnotes',
