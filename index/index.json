@@ -2,7 +2,7 @@
   "format": 1,
   "catalog": "hisbible",
   "name": "HisBible",
-  "updated": "2026-11-15",
+  "updated": "2026-11-16",
   "modules": [
     {
       "id": "aai",
@@ -24775,10 +24775,10 @@
         "nt": 27,
         "dc": 11
       },
-      "size": 10186752,
-      "sha256": "3b434512ee0892d340ee855cb34362ca5d9e83cef48db3c999c7b0402e976018",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-15/russyn-2026-11-15.hb",
-      "version": "2026-11-15",
+      "size": 10190848,
+      "sha256": "e9bea50506b866c64fdc2c4b8b83f6e6de141b3d3c5f5b7ebedee65e5d1a1c38",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-16/russyn-2026-11-16.hb",
+      "version": "2026-11-16",
       "moduleFormat": 1,
       "generator": "catalog_builder 0.3.0"
     },
