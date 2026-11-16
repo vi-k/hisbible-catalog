@@ -211,6 +211,7 @@ final class BibleModule {
     this.hasParagraphMarks,
     this._hasIntros,
     this._hasVerseLabels,
+    this._hasVerseNumbers,
   ) : _byNumber = {for (final book in books) book.number: book};
 
   /// Открывает Библию; негодный файл — [ModuleOpenException] с причиной.
@@ -240,6 +241,7 @@ final class BibleModule {
         readMetaValues(db)['paragraphs'] == '1',
         hasModuleTable(db, introsTable.name),
         hasModuleTable(db, verseLabelsTable.name),
+        hasModuleTable(db, verseNumbersTable.name),
       );
       done = true;
 
@@ -262,6 +264,8 @@ final class BibleModule {
   final bool _hasIntros;
   // Есть ли в файле необязательная таблица `verse_labels`.
   final bool _hasVerseLabels;
+  // Есть ли в файле необязательная таблица `verse_numbers`.
+  final bool _hasVerseNumbers;
   bool _closed = false;
 
   /// Описание модуля из `meta`.
@@ -393,6 +397,31 @@ final class BibleModule {
           final String label,
         ))
           verse: label,
+    };
+  }
+
+  /// Номера стихов главы, как их печатает издание: стих → номер.
+  ///
+  /// Текст показывает такой номер вместо своего («1–6а» у стихов 1–5); адрес
+  /// стиха прежний. Пусто, если в файле нет таблицы `verse_numbers` или
+  /// номеров у главы.
+  Map<int, String> verseNumbers(int book, int chapter) {
+    final code = _codes[book];
+    if (!_hasVerseNumbers || code == null) {
+      return const {};
+    }
+
+    return {
+      for (final row in _db.select(
+        'SELECT verse, number FROM verse_numbers '
+        'WHERE book = ? AND chapter = ? ORDER BY verse',
+        [code, chapter],
+      ))
+        if ((row.columnAt(0), row.columnAt(1)) case (
+          final int verse,
+          final String number,
+        ))
+          verse: number,
     };
   }
 

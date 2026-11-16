@@ -526,4 +526,25 @@ void main() {
     expect(verses[27]!.label, isNull);
     expect(book.unknownMarkers, isEmpty);
   });
+
+  test('a published verse number is kept and leaves the text', () {
+    final book = parseUsfm(
+      '\\id MAT\n\\c 1\n\\p\n\\v 1-5 \\vp 1–6а\\vp* А\n'
+      '\\p\n\\v 6-11 \\vp 6б–11 \\vp* Б\n'
+      '\\v 12 \\vp\\vp* В\n'
+      '\\v 13 Г\\f + \\vp x\\vp* \\ft note\\f*\n',
+    );
+    final verses = {for (final v in book.verses) v.verse: v};
+    expect(verses[1]!.number, '1–6а');
+    expect(verses[1]!.verseEnd, 5);
+    expect(plainText(verses[1]!.nodes), 'А');
+    expect(verses[6]!.number, '6б–11');
+    expect(plainText(verses[6]!.nodes), 'Б');
+    // Пустая помета номера не даёт.
+    expect(verses[12]!.number, isNull);
+    // В сноске помета не номер стиха.
+    expect(verses[13]!.number, isNull);
+    expect(verses[1]!.label, isNull);
+    expect(book.unknownMarkers, isEmpty);
+  });
 }

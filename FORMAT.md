@@ -65,6 +65,11 @@ CREATE TABLE verse_labels (      -- optional, bible only
   label TEXT NOT NULL,           -- shown at the end of the verse; '' for none
   PRIMARY KEY (book, chapter, verse)
 ) WITHOUT ROWID;
+CREATE TABLE verse_numbers (     -- optional, bible only
+  book TEXT NOT NULL, chapter INTEGER NOT NULL, verse INTEGER NOT NULL,
+  number TEXT NOT NULL,          -- shown instead of the verse number
+  PRIMARY KEY (book, chapter, verse)
+) WITHOUT ROWID;
 CREATE TABLE footnotes (
   id INTEGER PRIMARY KEY,        -- what <f id> refers to
   book TEXT NOT NULL, chapter INTEGER NOT NULL, verse INTEGER NOT NULL,
@@ -94,7 +99,7 @@ Tables by module type:
 
 | type | tables |
 |---|---|
-| `bible` | `meta`, `books`, `verses`, `headings`, `footnotes`; optionally `intros`, `verse_labels` |
+| `bible` | `meta`, `books`, `verses`, `headings`, `footnotes`; optionally `intros`, `verse_labels`, `verse_numbers` |
 | `commentaries` | `meta`, `comments` |
 | `crossreferences` | `meta`, `crossrefs` |
 
@@ -144,6 +149,16 @@ Notes:
   number and no label. The verse keeps its number as its place: references,
   search and the verse list use it. `verse` is the `verse` of a row of
   `verses`; a label of merged verses is the label of their row. A reader of an
+  earlier version ignores the table and shows the numbers.
+- `verse_numbers` holds verse numbers as a printed edition prints them, where
+  they are not the plain number or range, and exists only when some verse has
+  one. The text shows `number` in place of the number of the row. A verse
+  split between two merged ranges is the case: where an edition prints
+  Matthew 1:1–6а and 6б–11, the file has rows 1–5 and 6–11 with numbers
+  `1–6а` and `6б–11`, and the text of 6а stays in the first.
+  The row keeps its numbers as its place: references, search and the verse
+  list use them. `verse` is the `verse` of a row of `verses`. A verse in
+  `verse_labels` shows no number, and its row here is not used. A reader of an
   earlier version ignores the table and shows the numbers.
 - A comment covers the place from `chapter`:`verse` to `chapter_end`:
   `verse_end`; without `chapter_end` it ends in the same chapter, without

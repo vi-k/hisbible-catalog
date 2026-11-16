@@ -41,7 +41,8 @@ const ModuleMeta fixtureMeta = ModuleMeta(
 /// в порядке карты, заголовки — `(книга, глава, стих, порядок, текст)`:
 /// вид [HeadingKind.section], уровень 1, над одним стихом — по порядку.
 /// Вступления — `(книга, вид, текст)` по порядку внутри книги, сноски —
-/// готовые [Footnote], метки стихов — `(книга, глава, стих, метка)`.
+/// готовые [Footnote], метки стихов — `(книга, глава, стих, метка)`, номера
+/// стихов издания — `(книга, глава, стих, номер)`.
 /// Схема книги берётся из [schemes], а без неё распознаётся по последним
 /// стихам глав, как у модулей без схемы; книга без кода SIL —
 /// [VerseScheme.eng]. Существующий файл заменяется, папки создаются.
@@ -55,6 +56,7 @@ void writeBibleFixture(
   List<(int, IntroKind, String)> intros = const [],
   List<Footnote> footnotes = const [],
   List<(int, int, int, String)> verseLabels = const [],
+  List<(int, int, int, String)> verseNumbers = const [],
 }) {
   final moduleMeta = meta ?? fixtureMeta;
   final lastVerses = <int, Map<int, int>>{};
@@ -110,6 +112,9 @@ void writeBibleFixture(
     }
     for (final (book, chapter, verse, label) in verseLabels) {
       writer.addVerseLabel(book, chapter, verse, label);
+    }
+    for (final (book, chapter, verse, number) in verseNumbers) {
+      writer.addVerseNumber(book, chapter, verse, number);
     }
     writer.finish();
   } on Object {

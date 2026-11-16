@@ -63,6 +63,7 @@ final class ModuleWriter {
   final Map<String, int> _introPositions = {};
   bool _introsCreated = false;
   bool _verseLabelsCreated = false;
+  bool _verseNumbersCreated = false;
   int _bookPosition = 0;
   bool _paragraphs = false;
   bool _closed = false;
@@ -154,6 +155,20 @@ final class ModuleWriter {
     }
     _statement('INSERT INTO verse_labels VALUES (?, ?, ?, ?)')
         .execute([BookCatalog.codeOf(book), chapter, verse, label]);
+  }
+
+  /// Даёт стиху [verse] главы [chapter] книги [book] номер [number], как его
+  /// печатает издание («1–6а»): текст показывает его вместо своего номера.
+  ///
+  /// Таблицу `verse_numbers` файл получает при первом номере.
+  void addVerseNumber(int book, int chapter, int verse, String number) {
+    _checkType(ModuleType.bible);
+    if (!_verseNumbersCreated) {
+      _db.execute(verseNumbersTable.create);
+      _verseNumbersCreated = true;
+    }
+    _statement('INSERT INTO verse_numbers VALUES (?, ?, ?, ?)')
+        .execute([BookCatalog.codeOf(book), chapter, verse, number]);
   }
 
   /// Добавляет сноску [id] к стиху; на неё ссылается `<f id>` в тексте.

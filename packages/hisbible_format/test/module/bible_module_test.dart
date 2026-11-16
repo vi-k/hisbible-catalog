@@ -306,6 +306,29 @@ void main() {
     expect(plain.verseLabels(10, 1), isEmpty);
   });
 
+  test('verse numbers are read by chapter and empty without the table', () {
+    writeBibleFixture(
+      path,
+      books: const [FixtureBook(470, 'Мф')],
+      verses: const {(470, 1, 1): 'а', (470, 1, 6): 'б', (470, 2, 1): 'в'},
+      verseNumbers: const [(470, 1, 6, '6б–11'), (470, 1, 1, '1–6а')],
+    );
+
+    final module = BibleModule.open(path);
+    addTearDown(module.close);
+    expect(module.verseNumbers(470, 1), const {1: '1–6а', 6: '6б–11'});
+    expect(module.verseNumbers(470, 1).keys, [1, 6]);
+    expect(module.verseNumbers(470, 2), isEmpty);
+    expect(module.verseNumbers(10, 1), isEmpty);
+
+    // Модуль без таблицы `verse_numbers` читается, номеров в нём нет.
+    final plainPath = '${dir.path}/plain.hb';
+    writeSample(plainPath);
+    final plain = BibleModule.open(plainPath);
+    addTearDown(plain.close);
+    expect(plain.verseNumbers(10, 1), isEmpty);
+  });
+
   test('replaceFootnotes swaps footnotes of a copy', () {
     writeSample(path);
     final copy = '${dir.path}/copy.hb';

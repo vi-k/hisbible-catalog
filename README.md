@@ -220,7 +220,10 @@ and built into a catalog module by the catalog run. It lives in
   the user marker `\zvl` right after its number: `\v 24 \zvl а\zvl*` shows the
   verse without its number and with *[а]* at its end, as the printed edition
   marks it; `\zvl\zvl*` shows neither (the `verse_labels` table of
-  `FORMAT.md`). The verse keeps its number as its place.
+  `FORMAT.md`). The verse keeps its number as its place. A number the edition
+  prints otherwise than the verse or range is the standard `\vp`:
+  `\v 1-5 \vp 1–6а\vp*` is verses 1–5 shown as *1–6а* (the `verse_numbers`
+  table).
 - `spelling.tsv` is the spelling table: one `old<TAB>new` pair per line, in
   lowercase and without stress marks; empty lines and lines starting with `#`
   are skipped. The USFM keeps the spelling of its source, and the builder

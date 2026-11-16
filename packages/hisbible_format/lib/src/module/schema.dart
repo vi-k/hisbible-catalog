@@ -173,6 +173,21 @@ CREATE TABLE verse_labels (
 ) WITHOUT ROWID''',
 );
 
+/// Таблица `verse_numbers`: номера стихов, как их печатает издание.
+///
+/// Необязательная, только у Библии: в [tablesOf] её нет, писатель создаёт её
+/// при первом номере, читатель смотрит, есть ли она в файле.
+const SchemaTable verseNumbersTable = (
+  name: 'verse_numbers',
+  columns: ['book', 'chapter', 'verse', 'number'],
+  create: '''
+CREATE TABLE verse_numbers (
+  book TEXT NOT NULL, chapter INTEGER NOT NULL, verse INTEGER NOT NULL,
+  number TEXT NOT NULL,
+  PRIMARY KEY (book, chapter, verse)
+) WITHOUT ROWID''',
+);
+
 /// Таблица `footnotes`: сноски стихов.
 const SchemaTable footnotesTable = (
   name: 'footnotes',

@@ -362,6 +362,9 @@ void _writeText(
     if (verse.label case final label?) {
       writer.addVerseLabel(number, verse.chapter, verse.verse, label);
     }
+    if (verse.number case final printed?) {
+      writer.addVerseNumber(number, verse.chapter, verse.verse, printed);
+    }
   }
   for (final heading in usfm.headings) {
     if (skipped.headings.contains(heading)) {

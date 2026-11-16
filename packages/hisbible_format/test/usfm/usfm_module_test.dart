@@ -196,6 +196,31 @@ void main() {
     }
   });
 
+  test('published verse numbers are written', () {
+    final books = readUsfmBooks([
+      _file(
+        'a.usfm',
+        '\\id MAT\n\\c 1\n\\p\n\\v 1-5 \\vp 1–6а\\vp* А\n'
+            '\\v 6-11 \\vp 6б–11\\vp* Б\n\\v 12 В\n',
+      ),
+    ]);
+    final path = '${dir.path}/n.hb';
+
+    writeUsfmModule(path, _meta('ru'), books);
+
+    final module = BibleModule.open(path);
+    try {
+      expect(module.verseNumbers(470, 1), const {1: '1–6а', 6: '6б–11'});
+      expect(module.chapter(470, 1).map((v) => (v.verse, v.verseEnd)), [
+        (1, 5),
+        (6, 11),
+        (12, null),
+      ]);
+    } finally {
+      module.close();
+    }
+  });
+
   test("a footnote in a heading takes the heading's place", () {
     final books = readUsfmBooks([
       _file(

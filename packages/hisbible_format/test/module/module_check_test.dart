@@ -110,6 +110,36 @@ void main() {
     );
   });
 
+  test('a module with verse numbers passes the check', () {
+    final path = '${dir.path}/numbers.hb';
+    writeBibleFixture(
+      path,
+      books: const [FixtureBook(10, 'Быт')],
+      verses: const {(10, 1, 1): 'В начале'},
+      verseNumbers: const [(10, 1, 1, '1а')],
+    );
+    expect(checkModuleFile(path), isNull);
+    expect(openProblem(path), isNull);
+
+    // Таблица `verse_numbers` без столбца — негодный файл.
+    final broken = '${dir.path}/broken-numbers.hb';
+    writeBibleFixture(
+      broken,
+      books: const [FixtureBook(10, 'Быт')],
+      verses: const {(10, 1, 1): 'В начале'},
+    );
+    sqlite3.open(broken)
+      ..execute(
+        'CREATE TABLE verse_numbers '
+        '(book TEXT, chapter INTEGER, verse INTEGER)',
+      )
+      ..close();
+    expect(
+      checkModuleFile(broken),
+      const MissingColumn('verse_numbers', 'number'),
+    );
+  });
+
   test('rejects foreign and newer files', () {
     final text = '${dir.path}/text.hb';
     File(text).writeAsStringSync('not a database at all, just some text\n');
