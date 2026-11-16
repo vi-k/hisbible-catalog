@@ -22,7 +22,10 @@ and the cross-references come from that edition. The spelling is modern.
   passage, and a verse of the same chapter follows after a comma without the
   chapter (`Gen 37:5, 9`).
 - The Prayer of Manasseh stands in 2 Chronicles 36:24-35, as in the edition of
-  the Moscow Patriarchate, under its own heading with a footnote.
+  the Moscow Patriarchate, under its own heading with a footnote. As in the
+  printed edition, its verses show no numbers: verses 24-34 end with a letter
+  in italics and square brackets, *[а]* to *[л]*, and verse 35 has none (the
+  `\zvl` marker after the verse number). References keep the numbers 24-35.
 - The prologue of Sirach is the introduction of the book, not a heading of 1:1.
 - The full book titles are those of the edition of the Moscow Patriarchate.
 
