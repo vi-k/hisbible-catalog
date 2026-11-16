@@ -216,7 +216,11 @@ and built into a catalog module by the catalog run. It lives in
   required. The `id` is the name of the folder, and `direction` is `ltr` or
   `rtl`.
 - `usfm/` holds the books, one USFM file each, ending in `.usfm` or `.sfm`;
-  other files there are not read.
+  other files there are not read. Besides standard USFM, a verse may carry
+  the user marker `\zvl` right after its number: `\v 24 \zvl а\zvl*` shows the
+  verse without its number and with *[а]* at its end, as the printed edition
+  marks it; `\zvl\zvl*` shows neither (the `verse_labels` table of
+  `FORMAT.md`). The verse keeps its number as its place.
 - `spelling.tsv` is the spelling table: one `old<TAB>new` pair per line, in
   lowercase and without stress marks; empty lines and lines starting with `#`
   are skipped. The USFM keeps the spelling of its source, and the builder

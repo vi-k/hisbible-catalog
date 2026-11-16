@@ -174,6 +174,28 @@ void main() {
     }
   });
 
+  test('verse labels are written', () {
+    final books = readUsfmBooks([
+      _file(
+        'a.usfm',
+        '\\id 2CH\n\\c 36\n\\p\n\\v 23 А\n'
+            '\\v 24 \\zvl а\\zvl* Б,\n\\v 25 \\zvl\\zvl* В.\n',
+      ),
+    ]);
+    final path = '${dir.path}/l.hb';
+
+    writeUsfmModule(path, _meta('ru'), books);
+
+    final module = BibleModule.open(path);
+    try {
+      expect(module.verseLabels(140, 36), const {24: 'а', 25: ''});
+      expect(module.verseLabels(140, 35), isEmpty);
+      expect(module.chapter(140, 36)[1].text, 'Б,');
+    } finally {
+      module.close();
+    }
+  });
+
   test("a footnote in a heading takes the heading's place", () {
     final books = readUsfmBooks([
       _file(

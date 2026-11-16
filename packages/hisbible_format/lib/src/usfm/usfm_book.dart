@@ -76,6 +76,7 @@ final class UsfmVerse {
     required this.verse,
     required this.nodes,
     this.verseEnd,
+    this.label,
   });
 
   /// Номер главы.
@@ -83,6 +84,10 @@ final class UsfmVerse {
 
   /// Номер стиха.
   final int verse;
+
+  /// Метка вместо номера из `\zvl`; пусто — ни номера, ни метки; `null` —
+  /// стих с номером.
+  final String? label;
 
   /// Последний стих объединённых стихов (`\v 16-17`); `null` — стих один.
   final int? verseEnd;

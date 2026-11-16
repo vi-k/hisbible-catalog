@@ -359,6 +359,9 @@ void _writeText(
       writeMarkup(_shiftNotes(verse.nodes, offset)),
       verseEnd: ends[verse],
     );
+    if (verse.label case final label?) {
+      writer.addVerseLabel(number, verse.chapter, verse.verse, label);
+    }
   }
   for (final heading in usfm.headings) {
     if (skipped.headings.contains(heading)) {

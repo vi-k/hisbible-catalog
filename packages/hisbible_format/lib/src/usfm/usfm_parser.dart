@@ -18,6 +18,11 @@ import 'package:hisbible_format/hisbible_format.dart';
 /// кроме полей книги и вступления ([UsfmBook.intros]), выбрасывается
 /// и не считается. Сноска с текстом, которой некуда встать (на `\mt`,
 /// в поле книги, вне стиха), выбрасывается и считается всегда.
+///
+/// Своя помета `\zvl а\zvl*` в стихе даёт ему метку вместо номера
+/// ([UsfmVerse.label]): простой текст между пометами без пробелов по краям,
+/// `\zvl\zvl*` — пустая метка. Её текст в стих не идёт; любой маркер внутри
+/// неё заканчивает метку. Вне стиха помета выбрасывается с текстом.
 UsfmBook parseUsfm(String text) => _Parser(text).parse();
 
 // ---------------------------------------------------------------------------
@@ -133,6 +138,9 @@ const _plainMarkers = {
 const _droppedCharacterMarkers = {'rq', 'va', 'vp', 'ca', 'fig'};
 
 const _noteMarkers = {'f', 'fe', 'ef', 'x', 'ex'};
+
+// Своя помета метки стиха вместо номера: `\zvl а\zvl*`.
+const _verseLabelMarker = 'zvl';
 
 // Что делает абзацный маркер.
 enum _Paragraph {
@@ -665,6 +673,8 @@ final class _VerseBuilder {
   final int chapter;
   final int verse;
   int? verseEnd;
+  // Метка из `\zvl`; `null` — помета не встретилась.
+  String? label;
   final _Content content = _Content();
 }
 
@@ -795,6 +805,9 @@ final class _Parser {
   bool _chapterHasVerse = false;
   _VerseBuilder? _verse;
 
+  // Метка `\zvl` в работе: стих и её текст до `\zvl*`.
+  (_VerseBuilder, StringBuffer)? _label;
+
   int _callers = 0;
 
   _Content get _current => _note?.content ?? _target;
@@ -814,6 +827,7 @@ final class _Parser {
       }
     }
     _resolvePending();
+    _endLabel();
     _endChapter();
 
     String? field(String name) {
@@ -839,6 +853,7 @@ final class _Parser {
             chapter: verse.chapter,
             verse: verse.verse,
             verseEnd: verse.verseEnd,
+            label: verse.label,
             nodes: verse.content.finish(),
           ),
       ],
@@ -892,6 +907,9 @@ final class _Parser {
     if (cleaned.isEmpty) {
       return;
     }
+    if (_label case (_, final buffer)?) {
+      buffer.write(cleaned);
+    }
     if (_inVerse && !_target.dropping && _hasNonSpace(cleaned)) {
       _flushBreaks();
     }
@@ -900,6 +918,7 @@ final class _Parser {
 
   void _openMarker(String name) {
     _resolvePending();
+    _endLabel();
     if (_noteMarkers.contains(name)) {
       if (_note != null) {
         _closeNote();
@@ -925,6 +944,13 @@ final class _Parser {
         default:
           note.content.open(_FrameKind.plain, name);
       }
+      return;
+    }
+    if (name == _verseLabelMarker) {
+      if (_verse case final verse? when _inVerse && !_target.dropping) {
+        _label = (verse, StringBuffer());
+      }
+      _openCharacter(_FrameKind.drop, name);
       return;
     }
     if (_styles[name] case final style?) {
@@ -973,6 +999,7 @@ final class _Parser {
 
   void _closeMarker(String name) {
     _resolvePending();
+    _endLabel();
     final note = _note;
     if (note == null) {
       // Лишний закрывающий пропускается.
@@ -1184,7 +1211,16 @@ final class _Parser {
     verse.content.reopen(carried);
   }
 
+  // Отдаёт метку в работе её стиху.
+  void _endLabel() {
+    if (_label case (final verse, final buffer)?) {
+      _label = null;
+      verse.label = buffer.toString().trim();
+    }
+  }
+
   void _endChapter() {
+    _endLabel();
     if (_note != null) {
       _closeNote();
     }

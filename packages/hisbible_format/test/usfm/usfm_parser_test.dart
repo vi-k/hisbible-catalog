@@ -504,4 +504,26 @@ void main() {
     expect(book.droppedFragments, 1);
     expect(book.unknownMarkers, isEmpty);
   });
+
+  test('a verse label stands for the number and leaves the text', () {
+    final book = parseUsfm(
+      '\\id 2CH\n\\c 36\n\\p\n\\v 23 А\n'
+      '\\v 24 \\zvl а\\zvl* Господи, \\zvl праведного\\zvl*,\n'
+      '\\v 25 \\zvl\\zvl* Аминь.\n'
+      '\\v 26 \\zvl б \\it в\\it*\\zvl* Г\n'
+      '\\v 27 Д\\f + \\zvl x\\zvl* \\ft note\\f*\n',
+    );
+    final verses = {for (final v in book.verses) v.verse: v};
+    expect(verses[23]!.label, isNull);
+    // Вторая помета в стихе заменяет первую, её текст в стих не идёт.
+    expect(verses[24]!.label, 'праведного');
+    expect(plainText(verses[24]!.nodes), 'Господи, ,');
+    expect(verses[25]!.label, '');
+    expect(plainText(verses[25]!.nodes), 'Аминь.');
+    // Маркер внутри метки её заканчивает.
+    expect(verses[26]!.label, 'б');
+    // В сноске помета не метка стиха.
+    expect(verses[27]!.label, isNull);
+    expect(book.unknownMarkers, isEmpty);
+  });
 }
