@@ -164,6 +164,10 @@ enum _Paragraph {
   // Разрыв абзаца.
   paragraph,
 
+  // Пустая строка (`\b`): разрыв абзаца, и следующий абзац — после
+  // пустой строки.
+  blank,
+
   // Абзац, который продолжает прошлый после цитаты или стихов (`\m`).
   flush,
 
@@ -190,8 +194,10 @@ final _numbered = RegExp(r'^(pi|q|qm|li|s|ms|mt|mte)(\d*)$');
       return (_Paragraph.chapter, null);
     case 'v':
       return (_Paragraph.verse, null);
-    case 'p' || 'pm' || 'b':
+    case 'p' || 'pm':
       return (_Paragraph.paragraph, null);
+    case 'b':
+      return (_Paragraph.blank, null);
     case 'm':
       return (_Paragraph.flush, null);
     case 'nb':
@@ -1055,6 +1061,8 @@ final class _Parser {
         _awaitNumber = _Paragraph.verse;
       case _Paragraph.paragraph:
         _breakParagraph(const ParagraphBreak());
+      case _Paragraph.blank:
+        _breakParagraph(const ParagraphBreak(gap: true));
       case _Paragraph.flush:
         _breakParagraph(const ParagraphBreak(continues: true));
       case _Paragraph.line:
@@ -1113,10 +1121,12 @@ final class _Parser {
     }
     if (node is ParagraphBreak) {
       // Разрыв абзаца заменяет пустые строки перед собой, а в начале главы
-      // ничего не даёт.
+      // ничего не даёт. Пустая строка `\b` перед ним остаётся пометкой:
+      // `\b \p` — абзац после пустой строки.
+      final gap = node.gap || _breaks.any((b) => b is ParagraphBreak && b.gap);
       _breaks.clear();
       if (_chapterHasVerse) {
-        _breaks.add(node);
+        _breaks.add(ParagraphBreak(continues: node.continues, gap: gap));
       }
     } else if (_breaks.isNotEmpty && _breaks.last is LineBreak) {
       _breaks.last = node;

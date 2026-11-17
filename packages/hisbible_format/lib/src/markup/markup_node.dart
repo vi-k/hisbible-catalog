@@ -177,25 +177,33 @@ final class LineBreak extends MarkupNode {
   String toString() => 'LineBreak($indent)';
 }
 
-/// Начало нового абзаца (`<p/>`, `<p m="1"/>`).
+/// Начало нового абзаца (`<p/>`, `<p m="1"/>`, `<p b="1"/>`).
 final class ParagraphBreak extends MarkupNode {
   /// Создаёт разрыв абзаца.
-  const ParagraphBreak({this.continues = false});
+  const ParagraphBreak({this.continues = false, this.gap = false});
 
   /// Абзац продолжает прошлый после цитаты или стихов — USFM `\m`: печатают
   /// его без красной строки.
   final bool continues;
 
+  /// Перед абзацем пустая строка — USFM `\b`: граница раздела в прозе или
+  /// строфы в стихах.
+  final bool gap;
+
   @override
   bool operator ==(Object other) =>
-      other is ParagraphBreak && other.continues == continues;
+      other is ParagraphBreak &&
+      other.continues == continues &&
+      other.gap == gap;
 
   @override
-  int get hashCode => Object.hash(ParagraphBreak, continues);
+  int get hashCode => Object.hash(ParagraphBreak, continues, gap);
 
   @override
-  String toString() =>
-      continues ? 'ParagraphBreak(continues)' : 'ParagraphBreak()';
+  String toString() {
+    final flags = [if (continues) 'continues', if (gap) 'gap'];
+    return 'ParagraphBreak(${flags.join(', ')})';
+  }
 }
 
 bool _sameNodes(List<MarkupNode> a, List<MarkupNode> b) {

@@ -171,7 +171,7 @@ void main() {
       const TextRun('Amen'),
     ]);
     expect(book.verses[1].nodes, [
-      const ParagraphBreak(),
+      const ParagraphBreak(gap: true),
       const TextRun('Three'),
       const ParagraphBreak(),
       const TextRun('four'),
@@ -182,6 +182,31 @@ void main() {
       const ParagraphBreak(continues: true),
       const TextRun('seven eight'),
     ]);
+  });
+
+  test('a blank line marks the paragraph after it', () {
+    final book = parseUsfm(
+      '\\id LUK\n\\c 20\n\\p\n\\v 1 One\n\\b\n\\p\n\\v 2 Two\n'
+      '\\q1 three\n\\b\n\\q1 four\n\\b\n\\m five\n\\p six',
+    );
+    expect(book.verses[1].nodes, [
+      const ParagraphBreak(gap: true),
+      const TextRun('Two'),
+      const LineBreak(indent: 1),
+      const TextRun('three'),
+      const ParagraphBreak(gap: true),
+      const LineBreak(indent: 1),
+      const TextRun('four'),
+      const ParagraphBreak(continues: true, gap: true),
+      const TextRun('five'),
+      const ParagraphBreak(),
+      const TextRun('six'),
+    ]);
+  });
+
+  test('a blank line at the chapter start gives nothing', () {
+    final book = parseUsfm('\\id LUK\n\\c 1\n\\b\n\\p\n\\v 1 One');
+    expect(book.verses[0].nodes, [const TextRun('One')]);
   });
 
   test('notes number in the book and callers in the chapter', () {

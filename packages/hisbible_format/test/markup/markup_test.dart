@@ -41,6 +41,29 @@ void main() {
     );
   });
 
+  test('a paragraph after a blank line keeps its mark', () {
+    expect(
+      writeMarkup([
+        const TextRun('a'),
+        const ParagraphBreak(gap: true),
+        const TextRun('b'),
+        const ParagraphBreak(continues: true, gap: true),
+        const TextRun('c'),
+      ]),
+      'a<p b="1"/>b<p m="1" b="1"/>c',
+    );
+    expect(parseMarkup('<p b="1"/><p m="1" b="1"/><p b="0"/>'), [
+      const ParagraphBreak(gap: true),
+      const ParagraphBreak(continues: true, gap: true),
+      const ParagraphBreak(),
+    ]);
+    expect(const ParagraphBreak(gap: true), isNot(const ParagraphBreak()));
+    expect(
+      const ParagraphBreak(continues: true, gap: true).toString(),
+      'ParagraphBreak(continues, gap)',
+    );
+  });
+
   test('writes plain line break and bare tagged word', () {
     expect(
       writeMarkup([
@@ -55,6 +78,8 @@ void main() {
     final nodes = <MarkupNode>[
       const ParagraphBreak(),
       const ParagraphBreak(continues: true),
+      const ParagraphBreak(gap: true),
+      const ParagraphBreak(continues: true, gap: true),
       for (final style in MarkupStyle.values)
         StyledSpan(style, [TextRun('t "$style" <&>')]),
       const StyledSpan(MarkupStyle.quote, [
