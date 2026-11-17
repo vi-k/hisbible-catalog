@@ -25,7 +25,8 @@ export 'src/module/schema.dart'
         formatVersion,
         maxChapterNumber,
         maxVerseEndSpan,
-        maxVerseNumber;
+        maxVerseNumber,
+        prefaceBookCode;
 export 'src/module_type.dart';
 export 'src/problems.dart';
 export 'src/refs/ref_range.dart';

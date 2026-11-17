@@ -40,7 +40,8 @@ const ModuleMeta fixtureMeta = ModuleMeta(
 /// Стихи `(книга, глава, стих)` и их тексты в разметке формата идут
 /// в порядке карты, заголовки — `(книга, глава, стих, порядок, текст)`:
 /// вид [HeadingKind.section], уровень 1, над одним стихом — по порядку.
-/// Вступления — `(книга, вид, текст)` по порядку внутри книги, сноски —
+/// Вступления — `(книга, вид, текст)` по порядку внутри книги, предисловие
+/// модуля — `(вид, текст)` по порядку, сноски —
 /// готовые [Footnote], метки стихов — `(книга, глава, стих, метка)`, номера
 /// стихов издания — `(книга, глава, стих, номер)`.
 /// Схема книги берётся из [schemes], а без неё распознаётся по последним
@@ -54,6 +55,7 @@ void writeBibleFixture(
   List<(int, int, int, int, String)> headings = const [],
   Map<int, VerseScheme> schemes = const {},
   List<(int, IntroKind, String)> intros = const [],
+  List<(IntroKind, String)> preface = const [],
   List<Footnote> footnotes = const [],
   List<(int, int, int, String)> verseLabels = const [],
   List<(int, int, int, String)> verseNumbers = const [],
@@ -98,6 +100,9 @@ void writeBibleFixture(
     }
     for (final (book, kind, text) in intros) {
       writer.addIntro(book, kind, text);
+    }
+    for (final (kind, text) in preface) {
+      writer.addPreface(kind, text);
     }
     for (final footnote in footnotes) {
       writer.addFootnote(

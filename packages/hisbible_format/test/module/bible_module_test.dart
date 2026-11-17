@@ -235,6 +235,29 @@ void main() {
     final plain = BibleModule.open(plainPath);
     addTearDown(plain.close);
     expect(plain.intros(10), isEmpty);
+    expect(plain.preface(), isEmpty);
+  });
+
+  test('the preface is read apart from the intros of books', () {
+    writeBibleFixture(
+      path,
+      books: const [FixtureBook(10, 'Быт')],
+      verses: const {(10, 1, 1): 'В начале'},
+      intros: const [(10, IntroKind.paragraph, 'Книга')],
+      preface: const [
+        (IntroKind.title, 'Предисловие'),
+        (IntroKind.paragraph, 'Дорогой читатель!'),
+      ],
+    );
+
+    final module = BibleModule.open(path);
+    addTearDown(module.close);
+    expect(module.preface(), const [
+      Intro(0, IntroKind.title, 'Предисловие'),
+      Intro(1, IntroKind.paragraph, 'Дорогой читатель!'),
+    ]);
+    expect(module.intros(10), const [Intro(0, IntroKind.paragraph, 'Книга')]);
+    expect(module.books.map((book) => book.number), [10]);
   });
 
   test('schemes name the home of the prayer of manasseh', () {

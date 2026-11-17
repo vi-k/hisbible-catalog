@@ -356,7 +356,19 @@ final class BibleModule {
   /// Пусто, если в файле нет таблицы `intros` или вступления у книги.
   List<Intro> intros(int book) {
     final code = _codes[book];
-    if (!_hasIntros || code == null) {
+
+    return code == null ? const [] : _introsOf(code);
+  }
+
+  /// Предисловие модуля — вводные страницы издания перед всеми книгами
+  /// (строки `intros` с книгой [prefaceBookCode]) — по `position`;
+  /// незнакомый вид пропускается.
+  ///
+  /// Пусто, если в файле нет таблицы `intros` или предисловия.
+  List<Intro> preface() => _introsOf(prefaceBookCode);
+
+  List<Intro> _introsOf(String code) {
+    if (!_hasIntros) {
       return const [];
     }
 

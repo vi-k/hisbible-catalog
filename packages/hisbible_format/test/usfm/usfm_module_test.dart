@@ -174,6 +174,38 @@ void main() {
     }
   });
 
+  test('the front matter file is the preface of the module', () {
+    final books = readUsfmBooks([
+      _file(
+        '00-FRT.usfm',
+        '\\id FRT\n\\imt1 Предисловие\n'
+            '\\ip Дорогой\\f + \\ft сноска\\f* читатель!\n',
+      ),
+      _file('01-GEN.usfm', '\\id GEN\n\\c 1\n\\p\n\\v 1 В начале\n'),
+    ]);
+    expect(books.books.map((book) => book.number), [10]);
+    expect(books.preface.map((part) => part.kind), [
+      IntroKind.title,
+      IntroKind.paragraph,
+    ]);
+    expect(books.warnings, ['FRT: footnotes dropped: 1']);
+    final path = '${dir.path}/p.hb';
+
+    writeUsfmModule(path, _meta('ru'), books);
+
+    final module = BibleModule.open(path);
+    try {
+      expect(module.preface(), const [
+        Intro(0, IntroKind.title, 'Предисловие'),
+        Intro(1, IntroKind.paragraph, 'Дорогой читатель!'),
+      ]);
+      expect(module.intros(10), isEmpty);
+      expect(module.footnotes(10, 0), isEmpty);
+    } finally {
+      module.close();
+    }
+  });
+
   test('verse labels are written', () {
     final books = readUsfmBooks([
       _file(

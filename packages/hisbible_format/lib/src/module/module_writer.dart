@@ -132,11 +132,24 @@ final class ModuleWriter {
   /// Таблицу `intros` файл получает при первом вступлении.
   void addIntro(int book, IntroKind kind, String text) {
     _checkType(ModuleType.bible);
+    _addIntroRow(BookCatalog.codeOf(book), kind, text);
+  }
+
+  /// Добавляет часть предисловия модуля — вводных страниц издания перед
+  /// всеми книгами; порядок — порядок вызовов, с 0.
+  ///
+  /// Предисловие лежит в `intros` под книгой [prefaceBookCode]; таблицу
+  /// файл получает при первой части, как у [addIntro].
+  void addPreface(IntroKind kind, String text) {
+    _checkType(ModuleType.bible);
+    _addIntroRow(prefaceBookCode, kind, text);
+  }
+
+  void _addIntroRow(String code, IntroKind kind, String text) {
     if (!_introsCreated) {
       _db.execute(introsTable.create);
       _introsCreated = true;
     }
-    final code = BookCatalog.codeOf(book);
     final position = _introPositions[code] ?? 0;
     _introPositions[code] = position + 1;
     _statement('INSERT INTO intros VALUES (?, ?, ?, ?)')

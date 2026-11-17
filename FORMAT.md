@@ -54,7 +54,7 @@ CREATE TABLE headings (
   PRIMARY KEY (book, chapter, verse, position)
 ) WITHOUT ROWID;
 CREATE TABLE intros (            -- optional, bible only
-  book TEXT NOT NULL,
+  book TEXT NOT NULL,            -- book code, or FRT for the preface
   position INTEGER NOT NULL,     -- order in the book, from 0
   kind TEXT NOT NULL,            -- title | paragraph
   text TEXT NOT NULL,            -- markup
@@ -140,6 +140,12 @@ Notes:
   of a kind it does not know, and a reader of an earlier version ignores the
   table. Footnotes of an introduction are in `footnotes` with `chapter` 0 and
   `verse` 0; the `<f id>` in the text of a part refers to them like any other.
+- Rows of `intros` with `book` `FRT` are the preface of the module: the front
+  matter of the edition, which stands before all books — a title page, a
+  foreword. `FRT` is the USFM code of front matter; there is no such row in
+  `books`. The preface has the same kinds of parts in `position` order and no
+  footnotes. A reader shows it apart from the text, not before a book; a
+  reader that does not know it never asks for the book `FRT`.
 - `verse_labels` holds verses that a printed edition marks otherwise than with
   a number, and exists only when some verse has a label. A verse with a row
   here shows no number in the text; a label that is not empty stands at the
