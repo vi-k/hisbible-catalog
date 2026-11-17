@@ -190,6 +190,8 @@ final _numbered = RegExp(r'^(pi|q|qm|li|s|ms|mt|mte)(\d*)$');
       return (_Paragraph.field, null);
     case 'rem' || 'ide' || 'usfm' || 'sts' || 'mr' || 'sr' || 'r' || 'cp':
       return (_Paragraph.silent, null);
+    case 'periph':
+      return (_Paragraph.header, null);
     case 'c':
       return (_Paragraph.chapter, null);
     case 'v':
@@ -667,10 +669,31 @@ final class _IntroBuilder {
 
 final _introSection = RegExp(r'^is\d*$');
 
+// Название статьи без атрибутов `\periph`: `Послесловие|id="afterword"` —
+// `Послесловие`. Атрибуты стоят в конце, в последнем куске текста.
+List<MarkupNode> _withoutAttributes(List<MarkupNode> nodes) {
+  if (nodes.lastOrNull case TextRun(:final text)) {
+    final bar = text.indexOf('|');
+    if (bar >= 0) {
+      final rest = text.substring(0, bar).trimRight();
+      return [
+        ...nodes.take(nodes.length - 1),
+        if (rest.isNotEmpty) TextRun(rest),
+      ];
+    }
+  }
+
+  return nodes;
+}
+
 // Вид вступления по маркеру до первой главы; `null` — маркер не вступление
 // (`\mt`, `\mte` и прочие) или не переносится (`\io`, `\iot`, `\ie`;
-// `\ide` ловит `silent` раньше).
+// `\ide` ловит `silent` раньше). `\periph` — название статьи вводных
+// страниц.
 IntroKind? _introKindOf(String name) {
+  if (name == 'periph') {
+    return IntroKind.article;
+  }
   if (!name.startsWith('i')) {
     return null;
   }
@@ -864,7 +887,12 @@ final class _Parser {
       intros: [
         for (final intro in _intros)
           if (intro.content.finish() case final nodes when nodes.isNotEmpty)
-            UsfmIntro(kind: intro.kind, nodes: nodes),
+            UsfmIntro(
+              kind: intro.kind,
+              nodes: intro.kind == IntroKind.article
+                  ? _withoutAttributes(nodes)
+                  : nodes,
+            ),
       ],
       verses: [
         for (final verse in _verses)

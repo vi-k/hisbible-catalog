@@ -206,6 +206,59 @@ void main() {
     }
   });
 
+  test('a periph in the front matter opens an article', () {
+    final books = readUsfmBooks([
+      _file(
+        '00-FRT.usfm',
+        '\\id FRT\n\\ip Титул\n'
+            '\\periph Слово к читателю\n\\ip Книга\n'
+            '\\periph Послесловие|id="afterword"\n\\is Часть I\n\\ip Прошло\n',
+      ),
+      _file('01-GEN.usfm', '\\id GEN\n\\c 1\n\\p\n\\v 1 В начале\n'),
+    ]);
+    expect(books.warnings, isEmpty);
+    final path = '${dir.path}/p.hb';
+
+    writeUsfmModule(path, _meta('ru'), books);
+
+    final module = BibleModule.open(path);
+    try {
+      expect(module.preface(), const [
+        Intro(0, IntroKind.paragraph, 'Титул'),
+        Intro(1, IntroKind.article, 'Слово к читателю'),
+        Intro(2, IntroKind.paragraph, 'Книга'),
+        Intro(3, IntroKind.article, 'Послесловие'),
+        Intro(4, IntroKind.title, 'Часть I'),
+        Intro(5, IntroKind.paragraph, 'Прошло'),
+      ]);
+    } finally {
+      module.close();
+    }
+  });
+
+  test('a periph in a book is a title of its intro', () {
+    final books = readUsfmBooks([
+      _file(
+        '01-GEN.usfm',
+        '\\id GEN\n\\periph Вступление\n\\ip Книга\n\\c 1\n\\p\n\\v 1 В начале\n',
+      ),
+    ]);
+    expect(books.warnings, [r'GEN: \periph outside FRT, read as a title: 1']);
+    final path = '${dir.path}/p.hb';
+
+    writeUsfmModule(path, _meta('ru'), books);
+
+    final module = BibleModule.open(path);
+    try {
+      expect(module.intros(10), const [
+        Intro(0, IntroKind.title, 'Вступление'),
+        Intro(1, IntroKind.paragraph, 'Книга'),
+      ]);
+    } finally {
+      module.close();
+    }
+  });
+
   test('verse labels are written', () {
     final books = readUsfmBooks([
       _file(

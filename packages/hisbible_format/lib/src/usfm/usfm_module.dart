@@ -146,6 +146,12 @@ UsfmBooks readUsfmBooks(
       warnings.add('$code: second copy in ${file.name}, skipped');
     } else {
       books.add((number: number, info: info, usfm: usfm));
+      final articles = usfm.intros
+          .where((part) => part.kind == IntroKind.article)
+          .length;
+      if (articles > 0) {
+        warnings.add('$code: \\periph outside FRT, read as a title: $articles');
+      }
       if (usfm.droppedFragments > 0) {
         warnings.add('$code: dropped fragments: ${usfm.droppedFragments}');
       }
@@ -374,7 +380,9 @@ void _writeText(
   for (final intro in usfm.intros) {
     writer.addIntro(
       number,
-      intro.kind,
+      // Статьи бывают только в предисловии модуля; в книге `\periph` —
+      // заглавие вступления (предупреждение пишет [readUsfmBooks]).
+      intro.kind == IntroKind.article ? IntroKind.title : intro.kind,
       writeMarkup(_shiftNotes(intro.nodes, offset)),
     );
   }

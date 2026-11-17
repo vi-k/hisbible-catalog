@@ -143,6 +143,41 @@ final class Intro {
   String toString() => 'Intro($position, ${kind.name}, $text)';
 }
 
+/// Статья предисловия модуля: название и части после него.
+final class PrefaceArticle {
+  /// Создаёт статью.
+  const PrefaceArticle(this.title, this.parts);
+
+  /// Название статьи в разметке формата; `null` — части перед первым
+  /// названием, у них своего названия нет.
+  final String? title;
+
+  /// Части статьи по порядку, без её названия.
+  final List<Intro> parts;
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! PrefaceArticle ||
+        other.title != title ||
+        other.parts.length != parts.length) {
+      return false;
+    }
+    for (var i = 0; i < parts.length; i++) {
+      if (other.parts[i] != parts[i]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  @override
+  int get hashCode => Object.hash(title, Object.hashAll(parts));
+
+  @override
+  String toString() => 'PrefaceArticle($title, $parts)';
+}
+
 /// Сноска к стиху.
 final class Footnote {
   /// Создаёт сноску.
@@ -366,6 +401,36 @@ final class BibleModule {
   ///
   /// Пусто, если в файле нет таблицы `intros` или предисловия.
   List<Intro> preface() => _introsOf(prefaceBookCode);
+
+  /// Предисловие модуля по статьям: каждая часть [IntroKind.article]
+  /// открывает статью со своим названием. Части перед первым названием —
+  /// статья без названия; предисловие без названий — одна такая статья.
+  /// Статья без частей остаётся: у неё есть название.
+  ///
+  /// Пусто, если предисловия нет.
+  List<PrefaceArticle> prefaceArticles() {
+    final articles = <PrefaceArticle>[];
+    String? title;
+    var parts = <Intro>[];
+    var opened = false;
+    for (final part in preface()) {
+      if (part.kind == IntroKind.article) {
+        if (opened || parts.isNotEmpty) {
+          articles.add(PrefaceArticle(title, List.unmodifiable(parts)));
+        }
+        title = part.text;
+        parts = [];
+        opened = true;
+      } else {
+        parts.add(part);
+      }
+    }
+    if (opened || parts.isNotEmpty) {
+      articles.add(PrefaceArticle(title, List.unmodifiable(parts)));
+    }
+
+    return articles;
+  }
 
   List<Intro> _introsOf(String code) {
     if (!_hasIntros) {

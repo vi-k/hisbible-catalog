@@ -236,6 +236,7 @@ void main() {
     addTearDown(plain.close);
     expect(plain.intros(10), isEmpty);
     expect(plain.preface(), isEmpty);
+    expect(plain.prefaceArticles(), isEmpty);
   });
 
   test('the preface is read apart from the intros of books', () {
@@ -258,6 +259,48 @@ void main() {
     ]);
     expect(module.intros(10), const [Intro(0, IntroKind.paragraph, 'Книга')]);
     expect(module.books.map((book) => book.number), [10]);
+  });
+
+  test('the preface is split into articles', () {
+    writeBibleFixture(
+      path,
+      books: const [FixtureBook(10, 'Быт')],
+      verses: const {(10, 1, 1): 'В начале'},
+      preface: const [
+        (IntroKind.paragraph, 'Титул'),
+        (IntroKind.article, 'Слово к <i>читателю</i>'),
+        (IntroKind.paragraph, 'Книга'),
+        (IntroKind.article, 'Послесловие'),
+        (IntroKind.title, 'Часть I'),
+      ],
+    );
+
+    final module = BibleModule.open(path);
+    addTearDown(module.close);
+    expect(module.prefaceArticles(), const [
+      PrefaceArticle(null, [Intro(0, IntroKind.paragraph, 'Титул')]),
+      PrefaceArticle('Слово к <i>читателю</i>', [
+        Intro(2, IntroKind.paragraph, 'Книга'),
+      ]),
+      PrefaceArticle('Послесловие', [Intro(4, IntroKind.title, 'Часть I')]),
+    ]);
+  });
+
+  test('a preface without articles is one untitled article', () {
+    writeBibleFixture(
+      path,
+      books: const [FixtureBook(10, 'Быт')],
+      verses: const {(10, 1, 1): 'В начале'},
+      preface: const [(IntroKind.paragraph, 'Дорогой читатель!')],
+    );
+
+    final module = BibleModule.open(path);
+    addTearDown(module.close);
+    expect(module.prefaceArticles(), const [
+      PrefaceArticle(null, [
+        Intro(0, IntroKind.paragraph, 'Дорогой читатель!'),
+      ]),
+    ]);
   });
 
   test('schemes name the home of the prayer of manasseh', () {

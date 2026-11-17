@@ -56,7 +56,7 @@ CREATE TABLE headings (
 CREATE TABLE intros (            -- optional, bible only
   book TEXT NOT NULL,            -- book code, or FRT for the preface
   position INTEGER NOT NULL,     -- order in the book, from 0
-  kind TEXT NOT NULL,            -- title | paragraph
+  kind TEXT NOT NULL,            -- title | paragraph | article
   text TEXT NOT NULL,            -- markup
   PRIMARY KEY (book, position)
 ) WITHOUT ROWID;
@@ -146,6 +146,14 @@ Notes:
   `books`. The preface has the same kinds of parts in `position` order and no
   footnotes. A reader shows it apart from the text, not before a book; a
   reader that does not know it never asks for the book `FRT`.
+- The preface may be split into articles, each under its own name. A part of
+  kind `article` is the name of an article: the article is the parts after it
+  up to the next `article` part. Parts before the first name form an article
+  without a name. A reader that does not know the kind skips the names and
+  shows the preface as one text. A book introduction has no `article` parts.
+  In USFM an article starts with `\periph <name>` in the `FRT` file;
+  attributes after `|` are dropped, and `\periph` in a book is read as a
+  title.
 - `verse_labels` holds verses that a printed edition marks otherwise than with
   a number, and exists only when some verse has a label. A verse with a row
   here shows no number in the text; a label that is not empty stands at the
