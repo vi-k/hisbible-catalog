@@ -52,11 +52,15 @@ final class UsfmBooks {
     required this.skippedVerses,
     required this.warnings,
     this.preface = const [],
+    this.prefaceNotes = const [],
   });
 
   /// Предисловие модуля: части вступления файла `\id FRT` (вводные
-  /// страницы издания), без сносок; нет файла — пусто.
+  /// страницы издания); нет файла — пусто.
   final List<UsfmIntro> preface;
+
+  /// Сноски предисловия: на них ссылаются знаки сносок в [preface].
+  final List<UsfmNote> prefaceNotes;
 
   /// Книги в порядке чтения; [ordered] ставит их в порядок модуля.
   final List<UsfmBookEntry> books;
@@ -79,6 +83,7 @@ final class UsfmBooks {
     skippedVerses: skippedVerses,
     warnings: warnings,
     preface: preface,
+    prefaceNotes: prefaceNotes,
   );
 
   /// Начало текста книг для определения письменности: до 20 000 знаков.
@@ -102,8 +107,9 @@ final class UsfmBooks {
 /// Разбирает [files] по порядку имён; книга без номера в справочнике,
 /// без `\id`, без стихов или повторная пропускается и попадает в
 /// [UsfmBooks.warnings]. Файл `\id FRT` (вводные страницы издания) — не
-/// книга: его вступление становится [UsfmBooks.preface], а сноски и стихи
-/// в нём выбрасываются с предупреждением. [onProgress] — доля прочитанных
+/// книга: его вступление и сноски становятся [UsfmBooks.preface]
+/// и [UsfmBooks.prefaceNotes], а стихи в нём выбрасываются
+/// с предупреждением. [onProgress] — доля прочитанных
 /// файлов от 0 до 1.
 UsfmBooks readUsfmBooks(
   Iterable<UsfmSource> files, {
@@ -115,6 +121,7 @@ UsfmBooks readUsfmBooks(
   var skippedVerses = 0;
   final numbers = <int>{};
   List<UsfmIntro>? preface;
+  var prefaceNotes = const <UsfmNote>[];
   for (final (index, file) in sorted.indexed) {
     final usfm = parseUsfm(decodeUsfm(file.bytes));
     final code = usfm.code;
@@ -126,13 +133,8 @@ UsfmBooks readUsfmBooks(
       if (preface != null) {
         warnings.add('$code: second copy in ${file.name}, skipped');
       } else {
-        preface = [
-          for (final part in usfm.intros)
-            UsfmIntro(kind: part.kind, nodes: _withoutNotes(part.nodes)),
-        ];
-        if (usfm.notes.isNotEmpty) {
-          warnings.add('$code: footnotes dropped: ${usfm.notes.length}');
-        }
+        preface = usfm.intros;
+        prefaceNotes = usfm.notes;
         if (usfm.verses.isNotEmpty) {
           warnings.add('$code: verses dropped: ${usfm.verses.length}');
         }
@@ -168,6 +170,7 @@ UsfmBooks readUsfmBooks(
     skippedVerses: skippedVerses,
     warnings: warnings,
     preface: preface ?? const [],
+    prefaceNotes: prefaceNotes,
   );
 }
 
@@ -192,6 +195,7 @@ XtStats writeUsfmModule(
     meta,
     books.ordered(language).books,
     books.preface,
+    books.prefaceNotes,
     books.warnings,
     russian: _russianOrderLanguages.contains(language),
     language: language,
@@ -252,6 +256,7 @@ XtStats _write(
   ModuleMeta meta,
   List<UsfmBookEntry> books,
   List<UsfmIntro> preface,
+  List<UsfmNote> prefaceNotes,
   List<String> warnings, {
   required bool russian,
   required String language,
@@ -304,7 +309,18 @@ XtStats _write(
     for (final part in preface) {
       writer.addPreface(part.kind, writeMarkup(part.nodes));
     }
+    // Сноски предисловия — первыми, со своими номерами; номера сносок книг
+    // идут после них.
     var noteOffset = 0;
+    for (final note in prefaceNotes) {
+      writer.addPrefaceFootnote(
+        note.id,
+        note.kind,
+        note.caller,
+        writeMarkup(note.nodes),
+      );
+      noteOffset = note.id > noteOffset ? note.id : noteOffset;
+    }
     for (final (index, book) in books.indexed) {
       final usfm = book.usfm;
       writer.addBook(
@@ -378,10 +394,14 @@ void _writeText(
     }
   }
   for (final intro in usfm.intros) {
+    // Статьи бывают только в предисловии модуля; в книге `\periph` —
+    // заглавие вступления (предупреждение пишет [readUsfmBooks]), а автор
+    // из его атрибута не нужен.
+    if (intro.kind == IntroKind.author) {
+      continue;
+    }
     writer.addIntro(
       number,
-      // Статьи бывают только в предисловии модуля; в книге `\periph` —
-      // заглавие вступления (предупреждение пишет [readUsfmBooks]).
       intro.kind == IntroKind.article ? IntroKind.title : intro.kind,
       writeMarkup(_shiftNotes(intro.nodes, offset)),
     );
@@ -520,28 +540,6 @@ void _collectNotes(List<MarkupNode> nodes, Set<int> ids) {
 }
 
 // Номера сносок [nodes], сдвинутые на [offset].
-// Те же узлы без знаков сносок: сноски предисловия в модуль не идут.
-List<MarkupNode> _withoutNotes(List<MarkupNode> nodes) => [
-  for (final node in nodes)
-    if (node is! FootnoteRef)
-      switch (node) {
-        StyledSpan(:final style, :final children) => StyledSpan(
-          style,
-          _withoutNotes(children),
-        ),
-        CrossrefLink(:final target, :final children) => CrossrefLink(
-          target,
-          _withoutNotes(children),
-        ),
-        TaggedWord(:final children, :final strong, :final morph) => TaggedWord(
-          _withoutNotes(children),
-          strong: strong,
-          morph: morph,
-        ),
-        FootnoteRef() || TextRun() || LineBreak() || ParagraphBreak() => node,
-      },
-];
-
 List<MarkupNode> _shiftNotes(List<MarkupNode> nodes, int offset) {
   if (offset == 0) {
     return nodes;

@@ -668,22 +668,35 @@ final class _IntroBuilder {
 }
 
 final _introSection = RegExp(r'^is\d*$');
+final _introItem = RegExp(r'^ili\d*$');
+final _authorAttribute = RegExp(r'\bx-author="([^"]*)"');
 
-// Название статьи без атрибутов `\periph`: `Послесловие|id="afterword"` —
-// `Послесловие`. Атрибуты стоят в конце, в последнем куске текста.
-List<MarkupNode> _withoutAttributes(List<MarkupNode> nodes) {
+// Части статьи из `\periph`: название без атрибутов и, если есть атрибут
+// `x-author`, автор. `Послесловие|id="afterword" x-author="Пётр"` —
+// `Послесловие` и `Пётр`. Атрибуты стоят в конце, в последнем куске текста.
+List<UsfmIntro> _articleParts(List<MarkupNode> nodes) {
   if (nodes.lastOrNull case TextRun(:final text)) {
     final bar = text.indexOf('|');
     if (bar >= 0) {
       final rest = text.substring(0, bar).trimRight();
+      final author = _authorAttribute
+          .firstMatch(text.substring(bar + 1))?[1]
+          ?.trim();
       return [
-        ...nodes.take(nodes.length - 1),
-        if (rest.isNotEmpty) TextRun(rest),
+        UsfmIntro(
+          kind: IntroKind.article,
+          nodes: [
+            ...nodes.take(nodes.length - 1),
+            if (rest.isNotEmpty) TextRun(rest),
+          ],
+        ),
+        if (author != null && author.isNotEmpty)
+          UsfmIntro(kind: IntroKind.author, nodes: [TextRun(author)]),
       ];
     }
   }
 
-  return nodes;
+  return [UsfmIntro(kind: IntroKind.article, nodes: nodes)];
 }
 
 // Вид вступления по маркеру до первой главы; `null` — маркер не вступление
@@ -702,6 +715,9 @@ IntroKind? _introKindOf(String name) {
   }
   if (name.startsWith('io') || name == 'ie') {
     return null;
+  }
+  if (_introItem.hasMatch(name)) {
+    return IntroKind.item;
   }
   return IntroKind.paragraph;
 }
@@ -887,12 +903,9 @@ final class _Parser {
       intros: [
         for (final intro in _intros)
           if (intro.content.finish() case final nodes when nodes.isNotEmpty)
-            UsfmIntro(
-              kind: intro.kind,
-              nodes: intro.kind == IntroKind.article
-                  ? _withoutAttributes(nodes)
-                  : nodes,
-            ),
+            ...intro.kind == IntroKind.article
+                ? _articleParts(nodes)
+                : [UsfmIntro(kind: intro.kind, nodes: nodes)],
       ],
       verses: [
         for (final verse in _verses)

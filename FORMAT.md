@@ -56,7 +56,7 @@ CREATE TABLE headings (
 CREATE TABLE intros (            -- optional, bible only
   book TEXT NOT NULL,            -- book code, or FRT for the preface
   position INTEGER NOT NULL,     -- order in the book, from 0
-  kind TEXT NOT NULL,            -- title | paragraph | article
+  kind TEXT NOT NULL,            -- title | paragraph | item | article | author
   text TEXT NOT NULL,            -- markup
   PRIMARY KEY (book, position)
 ) WITHOUT ROWID;
@@ -135,25 +135,39 @@ Notes:
   section heading, `title` a title that is part of the text, such as a psalm
   title. Headings above one verse go in `position` order.
 - `intros` holds book introductions and exists only when some book has one. A
-  part is a `title` or a `paragraph`; the parts of a book go in `position`
-  order and stand before the first chapter of the book. A reader skips a part
-  of a kind it does not know, and a reader of an earlier version ignores the
-  table. Footnotes of an introduction are in `footnotes` with `chapter` 0 and
-  `verse` 0; the `<f id>` in the text of a part refers to them like any other.
+  part is a `title`, a `paragraph` or an `item`; the parts of a book go in
+  `position` order and stand before the first chapter of the book. An `item`
+  is a line of a list, such as a list of abbreviations: a paragraph without a
+  first-line indent. In USFM it is `\ili`, `\ili1`, `\ili2` and so on. A
+  reader skips a part of a kind it does not know, and a reader of an earlier
+  version ignores the table. Footnotes of an introduction are in `footnotes`
+  with `chapter` 0 and `verse` 0; the `<f id>` in the text of a part refers to
+  them like any other.
 - Rows of `intros` with `book` `FRT` are the preface of the module: the front
   matter of the edition, which stands before all books — a title page, a
   foreword. `FRT` is the USFM code of front matter; there is no such row in
-  `books`. The preface has the same kinds of parts in `position` order and no
-  footnotes. A reader shows it apart from the text, not before a book; a
-  reader that does not know it never asks for the book `FRT`.
+  `books`. The preface has the same kinds of parts in `position` order. A
+  reader shows it apart from the text, not before a book; a reader that does
+  not know it never asks for the book `FRT`.
+- Footnotes of the preface are rows of `footnotes` with `book` `FRT`,
+  `chapter` 0 and `verse` 0; the `<f id>` in the preface refers to them. Their
+  `id` differs from the ids of footnotes of books. A reader that does not know
+  them never asks for the book `FRT` and shows the preface without its
+  footnotes.
 - The preface may be split into articles, each under its own name. A part of
   kind `article` is the name of an article: the article is the parts after it
   up to the next `article` part. Parts before the first name form an article
   without a name. A reader that does not know the kind skips the names and
   shows the preface as one text. A book introduction has no `article` parts.
   In USFM an article starts with `\periph <name>` in the `FRT` file;
-  attributes after `|` are dropped, and `\periph` in a book is read as a
-  title.
+  attributes after `|` other than `x-author` (below) are dropped, and
+  `\periph` in a book is read as a title.
+- A part of kind `author` right after the name of an article names its author,
+  for an article that is not by the author of the module. It is not a part of
+  the text of the article: a reader may show it beside the name. In USFM it is
+  the attribute `x-author` of `\periph`:
+  `\periph Foreword|id="foreword" x-author="John Smith"`. A reader that does
+  not know the kind skips it. A book introduction has no `author` parts.
 - `verse_labels` holds verses that a printed edition marks otherwise than with
   a number, and exists only when some verse has a label. A verse with a row
   here shows no number in the text; a label that is not empty stands at the

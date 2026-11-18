@@ -200,6 +200,19 @@ final class ModuleWriter {
     );
   }
 
+  /// Добавляет сноску [id] предисловия модуля: книга [prefaceBookCode],
+  /// глава и стих 0. Номер [id] не повторяет номера сносок книг.
+  void addPrefaceFootnote(
+    int id,
+    FootnoteKind kind,
+    String caller,
+    String text,
+  ) {
+    _checkType(ModuleType.bible);
+    _statement('INSERT INTO footnotes VALUES (?, ?, ?, ?, ?, ?, ?)')
+        .execute([id, prefaceBookCode, 0, 0, kind.name, caller, text]);
+  }
+
   /// Добавляет толкование [html] к месту книги [book] (только толкования).
   ///
   /// Место — от [chapter]:[verse] до [chapterEnd]:[verseEnd]; без конца это

@@ -286,6 +286,51 @@ void main() {
     ]);
   });
 
+  test('an author part names the author of its article', () {
+    writeBibleFixture(
+      path,
+      books: const [FixtureBook(10, 'Быт')],
+      verses: const {(10, 1, 1): 'В начале'},
+      preface: const [
+        (IntroKind.article, 'Слово'),
+        (IntroKind.author, 'Митрополит Владимир'),
+        (IntroKind.paragraph, 'Книга'),
+        (IntroKind.article, 'Послесловие'),
+        (IntroKind.paragraph, 'Прошло'),
+      ],
+    );
+
+    final module = BibleModule.open(path);
+    addTearDown(module.close);
+    expect(module.prefaceArticles(), const [
+      PrefaceArticle('Слово', [
+        Intro(2, IntroKind.paragraph, 'Книга'),
+      ], author: 'Митрополит Владимир'),
+      PrefaceArticle('Послесловие', [Intro(4, IntroKind.paragraph, 'Прошло')]),
+    ]);
+  });
+
+  test('footnotes of the preface are apart from footnotes of books', () {
+    writeBibleFixture(
+      path,
+      books: const [FixtureBook(10, 'Быт')],
+      verses: const {(10, 1, 1): 'В начале<f id="2" c="+"/>'},
+      preface: const [(IntroKind.paragraph, 'Читатель<f id="1" c="1"/>')],
+      footnotes: const [
+        Footnote(1, 0, 0, 0, FootnoteKind.note, '1', 'предисловия'),
+        Footnote(2, 10, 1, 1, FootnoteKind.note, '+', 'стиха'),
+      ],
+    );
+
+    final module = BibleModule.open(path);
+    addTearDown(module.close);
+    expect(module.prefaceFootnotes(), const [
+      Footnote(1, 0, 0, 0, FootnoteKind.note, '1', 'предисловия'),
+    ]);
+    expect(module.footnotes(10, 1).map((note) => note.id), [2]);
+    expect(module.footnotes(10, 0), isEmpty);
+  });
+
   test('a preface without articles is one untitled article', () {
     writeBibleFixture(
       path,

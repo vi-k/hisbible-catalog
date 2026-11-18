@@ -188,7 +188,7 @@ void main() {
       IntroKind.title,
       IntroKind.paragraph,
     ]);
-    expect(books.warnings, ['FRT: footnotes dropped: 1']);
+    expect(books.warnings, isEmpty);
     final path = '${dir.path}/p.hb';
 
     writeUsfmModule(path, _meta('ru'), books);
@@ -197,7 +197,10 @@ void main() {
     try {
       expect(module.preface(), const [
         Intro(0, IntroKind.title, 'Предисловие'),
-        Intro(1, IntroKind.paragraph, 'Дорогой читатель!'),
+        Intro(1, IntroKind.paragraph, 'Дорогой<f id="1" c="a"/> читатель!'),
+      ]);
+      expect(module.prefaceFootnotes(), const [
+        Footnote(1, 0, 0, 0, FootnoteKind.note, 'a', 'сноска'),
       ]);
       expect(module.intros(10), isEmpty);
       expect(module.footnotes(10, 0), isEmpty);
@@ -236,11 +239,71 @@ void main() {
     }
   });
 
+  test('notes of books follow the notes of the preface', () {
+    final books = readUsfmBooks([
+      _file(
+        '00-FRT.usfm',
+        '\\id FRT\n\\ip А\\f 1 \\ft первая\\f* Б\\f 2 \\ft вторая\\f*\n',
+      ),
+      _file(
+        '01-GEN.usfm',
+        '\\id GEN\n\\c 1\n\\p\n\\v 1 В начале\\f + \\ft книги\\f*\n',
+      ),
+    ]);
+    final path = '${dir.path}/p.hb';
+
+    writeUsfmModule(path, _meta('ru'), books);
+
+    final module = BibleModule.open(path);
+    try {
+      expect(module.prefaceFootnotes().map((note) => note.id), [1, 2]);
+      expect(module.footnotes(10, 1), const [
+        Footnote(3, 10, 1, 1, FootnoteKind.note, 'a', 'книги'),
+      ]);
+      expect(module.chapter(10, 1).single.text, 'В начале<f id="3" c="a"/>');
+    } finally {
+      module.close();
+    }
+  });
+
+  test('a list item and the author of an article', () {
+    final books = readUsfmBooks([
+      _file(
+        '00-FRT.usfm',
+        '\\id FRT\n'
+            '\\periph Слово|id="word" x-author="Митрополит Владимир"\n'
+            '\\ip Текст\n\\periph Сокращения\n\\ili Быт — Бытие\n'
+            '\\ili2 ВЗ — Ветхий Завет\n',
+      ),
+      _file('01-GEN.usfm', '\\id GEN\n\\c 1\n\\p\n\\v 1 В начале\n'),
+    ]);
+    expect(books.warnings, isEmpty);
+    final path = '${dir.path}/p.hb';
+
+    writeUsfmModule(path, _meta('ru'), books);
+
+    final module = BibleModule.open(path);
+    try {
+      expect(module.prefaceArticles(), const [
+        PrefaceArticle('Слово', [
+          Intro(2, IntroKind.paragraph, 'Текст'),
+        ], author: 'Митрополит Владимир'),
+        PrefaceArticle('Сокращения', [
+          Intro(4, IntroKind.item, 'Быт — Бытие'),
+          Intro(5, IntroKind.item, 'ВЗ — Ветхий Завет'),
+        ]),
+      ]);
+    } finally {
+      module.close();
+    }
+  });
+
   test('a periph in a book is a title of its intro', () {
     final books = readUsfmBooks([
       _file(
         '01-GEN.usfm',
-        '\\id GEN\n\\periph Вступление\n\\ip Книга\n\\c 1\n\\p\n\\v 1 В начале\n',
+        '\\id GEN\n\\periph Вступление|x-author="Пётр"\n\\ip Книга\n'
+            '\\c 1\n\\p\n\\v 1 В начале\n',
       ),
     ]);
     expect(books.warnings, [r'GEN: \periph outside FRT, read as a title: 1']);

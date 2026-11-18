@@ -143,22 +143,27 @@ final class Intro {
   String toString() => 'Intro($position, ${kind.name}, $text)';
 }
 
-/// Статья предисловия модуля: название и части после него.
+/// Статья предисловия модуля: название, автор и части после них.
 final class PrefaceArticle {
   /// Создаёт статью.
-  const PrefaceArticle(this.title, this.parts);
+  const PrefaceArticle(this.title, this.parts, {this.author});
 
   /// Название статьи в разметке формата; `null` — части перед первым
   /// названием, у них своего названия нет.
   final String? title;
 
-  /// Части статьи по порядку, без её названия.
+  /// Части статьи по порядку, без её названия и автора.
   final List<Intro> parts;
+
+  /// Автор статьи в разметке формата (часть [IntroKind.author]); `null` —
+  /// не указан.
+  final String? author;
 
   @override
   bool operator ==(Object other) {
     if (other is! PrefaceArticle ||
         other.title != title ||
+        other.author != author ||
         other.parts.length != parts.length) {
       return false;
     }
@@ -172,13 +177,13 @@ final class PrefaceArticle {
   }
 
   @override
-  int get hashCode => Object.hash(title, Object.hashAll(parts));
+  int get hashCode => Object.hash(title, author, Object.hashAll(parts));
 
   @override
-  String toString() => 'PrefaceArticle($title, $parts)';
+  String toString() => 'PrefaceArticle($title, $parts, author: $author)';
 }
 
-/// Сноска к стиху.
+/// Сноска к стиху или к предисловию модуля.
 final class Footnote {
   /// Создаёт сноску.
   const Footnote(
@@ -194,7 +199,7 @@ final class Footnote {
   /// Номер сноски, на который ссылается `<f id>`.
   final int id;
 
-  /// Номер книги справочника.
+  /// Номер книги справочника; у сноски предисловия — 0.
   final int book;
 
   /// Глава.
@@ -405,29 +410,39 @@ final class BibleModule {
   /// Предисловие модуля по статьям: каждая часть [IntroKind.article]
   /// открывает статью со своим названием. Части перед первым названием —
   /// статья без названия; предисловие без названий — одна такая статья.
-  /// Статья без частей остаётся: у неё есть название.
+  /// Статья без частей остаётся: у неё есть название. Часть
+  /// [IntroKind.author] — автор своей статьи, а не её часть.
   ///
   /// Пусто, если предисловия нет.
   List<PrefaceArticle> prefaceArticles() {
     final articles = <PrefaceArticle>[];
     String? title;
+    String? author;
     var parts = <Intro>[];
     var opened = false;
-    for (final part in preface()) {
-      if (part.kind == IntroKind.article) {
-        if (opened || parts.isNotEmpty) {
-          articles.add(PrefaceArticle(title, List.unmodifiable(parts)));
-        }
-        title = part.text;
-        parts = [];
-        opened = true;
-      } else {
-        parts.add(part);
+    void close() {
+      if (opened || parts.isNotEmpty || author != null) {
+        articles.add(
+          PrefaceArticle(title, List.unmodifiable(parts), author: author),
+        );
       }
     }
-    if (opened || parts.isNotEmpty) {
-      articles.add(PrefaceArticle(title, List.unmodifiable(parts)));
+
+    for (final part in preface()) {
+      switch (part.kind) {
+        case IntroKind.article:
+          close();
+          title = part.text;
+          author = null;
+          parts = [];
+          opened = true;
+        case IntroKind.author:
+          author = part.text;
+        case IntroKind.title || IntroKind.paragraph || IntroKind.item:
+          parts.add(part);
+      }
     }
+    close();
 
     return articles;
   }
@@ -563,6 +578,29 @@ final class BibleModule {
           Footnote(id, book, chapter, verse, kind, caller, text),
     ];
   }
+
+  /// Сноски предисловия модуля (строки `footnotes` с книгой
+  /// [prefaceBookCode]) по номерам; у них [Footnote.book], глава и стих — 0.
+  /// Незнакомый вид пропускается.
+  List<Footnote> prefaceFootnotes() => [
+    for (final row in _db.select(
+      'SELECT id, kind, caller, text FROM footnotes WHERE book = ? ORDER BY id',
+      [prefaceBookCode],
+    ))
+      if ((
+            row.columnAt(0),
+            footnoteKindOfValue(row.columnAt(1)),
+            row.columnAt(2),
+            row.columnAt(3),
+          )
+          case (
+            final int id,
+            final FootnoteKind kind,
+            final String caller,
+            final String text,
+          ))
+        Footnote(id, 0, 0, 0, kind, caller, text),
+  ];
 
   /// Закрывает базу; повторный вызов ничего не делает.
   void close() {
