@@ -1018,6 +1018,12 @@ final class _Parser {
       _openCharacter(_FrameKind.style, name, style: style);
       return;
     }
+    if (name == 'xt') {
+      // Ссылка в тексте, вне сноски (USFM 3 это позволяет): место берётся
+      // из `link-href`; без него остаётся текст.
+      _openCharacter(_FrameKind.xref, name);
+      return;
+    }
     if (name == 'w') {
       _openCharacter(_FrameKind.word, name);
       return;

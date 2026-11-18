@@ -266,6 +266,29 @@ void main() {
     }
   });
 
+  test('a link outside a note keeps its place', () {
+    final books = readUsfmBooks([
+      _file(
+        '00-FRT.usfm',
+        '\\id FRT\n\\ip См. \\xt Ио 1:1|link-href="JHN 1:1"\\xt* '
+            'и \\xt Мк 2|x-other="1"\\xt*.\n',
+      ),
+      _file('01-GEN.usfm', '\\id GEN\n\\c 1\n\\p\n\\v 1 В начале\n'),
+    ]);
+    final path = '${dir.path}/p.hb';
+
+    writeUsfmModule(path, _meta('ru'), books);
+
+    final module = BibleModule.open(path);
+    try {
+      expect(module.preface(), const [
+        Intro(0, IntroKind.paragraph, 'См. <x r="JHN.1.1">Ио 1:1</x> и Мк 2.'),
+      ]);
+    } finally {
+      module.close();
+    }
+  });
+
   test('a list item and the author of an article', () {
     final books = readUsfmBooks([
       _file(
