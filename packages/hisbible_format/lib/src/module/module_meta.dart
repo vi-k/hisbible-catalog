@@ -19,6 +19,7 @@ final class ModuleMeta {
     required this.name,
     required this.language,
     required this.direction,
+    this.citation,
     this.script,
     this.license = 'unknown',
     this.copyright,
@@ -70,6 +71,7 @@ final class ModuleMeta {
       name: name,
       language: language,
       direction: direction,
+      citation: _filled(values['citation']),
       script: _filled(values['script']),
       license: license == null || license.isEmpty ? 'unknown' : license,
       copyright: _filled(values['copyright']),
@@ -102,6 +104,7 @@ final class ModuleMeta {
     'name',
     'language',
     'direction',
+    'citation',
     'script',
     'license',
     'copyright',
@@ -133,6 +136,10 @@ final class ModuleMeta {
 
   /// Направление письма: `direction`.
   final WritingDirection direction;
+
+  /// Подпись перевода за местом цитаты, на языке модуля
+  /// («пер. С. С. Аверинцева»): `citation`; нет — подписывают [name].
+  final String? citation;
 
   /// Письменность ISO 15924 (`Cyrl`, `Hebr`): `script`.
   final String? script;
@@ -190,6 +197,7 @@ final class ModuleMeta {
       'name': name,
       'language': language,
       'direction': direction.name,
+      'citation': ?_filled(citation),
       'script': ?_filled(script),
       'license': license,
       'copyright': ?_filled(copyright),
@@ -221,6 +229,7 @@ final class ModuleMeta {
     name: name,
     language: language,
     direction: direction,
+    citation: citation,
     script: script,
     license: license,
     copyright: copyright,

@@ -147,6 +147,27 @@ void main() {
     expect(formatVersion, 1);
   });
 
+  test('reads and writes the citation of a translation', () {
+    // Подпись за местом цитаты — «(Мф 1:1, пер. С. С. Аверинцева)»; без
+    // неё подписывают названием.
+    const meta = ModuleMeta(
+      type: ModuleType.bible,
+      abbreviation: 'TST',
+      name: 'Test Bible',
+      language: 'en',
+      direction: WritingDirection.ltr,
+      citation: 'tr. Test',
+    );
+    final cited = '${dir.path}/CIT.hb';
+    ModuleWriter.create(cited, meta).finish();
+    expect(readModuleMeta(cited).citation, 'tr. Test');
+    expect(readModuleMeta(cited).extra, isEmpty);
+    expect(meta.copyWith(abbreviation: 'TST-2').citation, 'tr. Test');
+
+    writeSample(path);
+    expect(readModuleMeta(path).citation, isNull);
+  });
+
   test('ignores unknown meta keys and tables', () {
     writeSample(path);
     sqlite3.open(path)

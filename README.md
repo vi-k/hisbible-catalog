@@ -214,7 +214,7 @@ and built into a catalog module by the catalog run. It lives in
   `description`, `language`, `languageName`, `languageNameEnglish`, `script`,
   `direction`, `license`, `copyright`, and `sourceUrl`; all of them are
   required. The `id` is the name of the folder, and `direction` is `ltr` or
-  `rtl`.
+  `rtl`. An optional `citation` becomes the module's `citation`.
 - `usfm/` holds the books, one USFM file each, ending in `.usfm` or `.sfm`;
   other files there are not read. Besides standard USFM, a verse may carry
   the user marker `\zvl` right after its number: `\v 24 \zvl а\zvl*` shows the

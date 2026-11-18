@@ -99,6 +99,19 @@ void main() {
     expect(File('${out()}.part').existsSync(), isFalse);
   });
 
+  test('citation comes from edition.json and may be absent', () async {
+    expect((await build()).meta.citation, isNull);
+
+    final file = File(p.join(dir.path, 'edition.json'));
+    final json = jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
+    file.writeAsStringSync(jsonEncode({...json, 'citation': 'Синод. пер.'}));
+    expect((await build()).meta.citation, 'Синод. пер.');
+    expect(readModuleMeta(out()).citation, 'Синод. пер.');
+
+    file.writeAsStringSync(jsonEncode({...json, 'citation': 7}));
+    expect(() => readEdition(dir), throwsFormatException);
+  });
+
   test('applies spelling', () async {
     final outcome = await build();
     expect(outcome.replaced, 1);

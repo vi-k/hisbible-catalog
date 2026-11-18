@@ -28,6 +28,7 @@ final class Edition {
     required this.license,
     required this.copyright,
     required this.sourceUrl,
+    this.citation,
   });
 
   /// Папка издания.
@@ -68,9 +69,13 @@ final class Edition {
 
   /// Страница источника.
   final String sourceUrl;
+
+  /// Подпись перевода за местом цитаты (`citation` модуля); `null` — нет.
+  final String? citation;
 }
 
-/// Читает издание из [dir]: нужны `edition.json` со всеми полями, `id`
+/// Читает издание из [dir]: нужны `edition.json` со всеми полями, кроме
+/// необязательного `citation`, `id`
 /// по имени папки и `direction` `ltr` или `rtl`, папка `usfm/`
 /// и `spelling.tsv`; чего-то нет — [FormatException].
 Edition readEdition(Directory dir) {
@@ -113,6 +118,13 @@ Edition readEdition(Directory dir) {
     license: field('license'),
     copyright: field('copyright'),
     sourceUrl: field('sourceUrl'),
+    citation: switch (json['citation']) {
+      final String citation when citation.trim().isNotEmpty => citation,
+      null => null,
+      final other => throw FormatException(
+        '${file.path}: citation $other is not a non-empty string',
+      ),
+    },
   );
   if (missing.isNotEmpty) {
     throw FormatException('${file.path}: нет полей ${missing.join(', ')}');
@@ -322,6 +334,7 @@ Future<EditionOutcome> buildEdition(
     direction: edition.direction == 'rtl'
         ? WritingDirection.rtl
         : WritingDirection.ltr,
+    citation: edition.citation,
     script: edition.script,
     license: edition.license,
     copyright: edition.copyright,
