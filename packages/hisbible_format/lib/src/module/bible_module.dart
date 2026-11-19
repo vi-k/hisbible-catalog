@@ -414,7 +414,9 @@ final class BibleModule {
   ///
   /// `verse_end`, который не больше `verse`, больше его больше чем на
   /// [maxVerseEndSpan] или заходит на следующий по номерам кусок главы,
-  /// читается как `null` вместе с `part_end`: кусок в одном стихе.
+  /// читается как `null` вместе с `part_end`: кусок в одном стихе. Концы
+  /// сравниваются парами (стих, часть), пустая часть раньше любой буквы:
+  /// `28–29` перед `29a` годен, `1–7b` перед `7b` — нет.
   List<Verse> chapter(int book, int chapter) {
     final code = _codes[book];
     if (code == null) {
@@ -433,14 +435,13 @@ final class BibleModule {
           final String part,
           final String text,
         ))
-          if (row.columnAt(2) case final int? verseEnd)
-            Verse(
-              verse,
-              text,
-              verseEnd: verseEnd,
-              part: part,
-              partEnd: _partEnd(verseEnd, row.columnAt(3)),
-            ),
+          Verse(
+            verse,
+            text,
+            verseEnd: row.columnAt(2) as int?,
+            part: part,
+            partEnd: _partEnd(row.columnAt(2), row.columnAt(3)),
+          ),
     ];
   }
 
@@ -674,7 +675,7 @@ final class BibleModule {
 
   // Часть последнего стиха куска с концом [verseEnd] по значению [value]
   // столбца `part_end`: без конца или не строка — пустая.
-  static String _partEnd(int? verseEnd, Object? value) =>
+  static String _partEnd(Object? verseEnd, Object? value) =>
       verseEnd != null && value is String ? value : '';
 
   // Столбец части в запросах к файлу версии [version].
@@ -703,14 +704,14 @@ final class BibleModule {
 
   // Годный последний стих куска из [_pieces] или NULL: `verse_end`, если он
   // больше `verse` не больше чем на [maxVerseEndSpan] и кончается до
-  // следующего по номерам куска главы. Конец в том же стихе, что и начало
-  // следующего куска, годен, только если оба — части, и часть конца раньше.
+  // следующего по номерам куска главы. Концы сравниваются парами (стих,
+  // часть), пустая часть раньше любой буквы: `6b–10a` перед `10b` и `28–29`
+  // перед добавлением `29a` годны, `1–7b` перед `7b` — нет.
   static const String _verseEndRule =
       "CASE WHEN typeof(verse_end) = 'integer' AND verse_end > verse "
       'AND verse_end - verse <= $maxVerseEndSpan '
       "AND (typeof(next) != 'integer' OR verse_end < next "
-      "OR (verse_end = next AND part_end != '' AND next_part != '' "
-      'AND part_end < next_part)) '
+      'OR (verse_end = next AND part_end < next_part)) '
       'THEN verse_end END';
 
   // Книга → глава → последний стих, только у книг из [codes]; `verse_end`

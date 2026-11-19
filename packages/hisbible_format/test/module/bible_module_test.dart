@@ -609,6 +609,31 @@ void main() {
         450: {4: 8},
       });
     });
+
+    test('a whole verse may end a piece before its lettered addition', () {
+      // Стих 29 целиком и добавление 29a за ним: концы сравниваются парами,
+      // пустая часть раньше любой буквы.
+      ModuleWriter.create(path, _meta)
+        ..addBook(
+          number: 450,
+          shortName: 'Zech',
+          longName: 'Zechariah',
+          scheme: VerseScheme.eng,
+        )
+        ..addVerse(450, 4, 28, 'a', verseEnd: 29)
+        ..addVerse(450, 4, 29, 'b', part: 'a')
+        ..addVerse(450, 4, 30, 'c')
+        ..finish();
+
+      final module = BibleModule.open(path);
+      addTearDown(module.close);
+      final pieces = module.chapter(450, 4);
+      expect([for (final piece in pieces) piece.label], ['28–29', '29a', '30']);
+      expect(pieces.first.covers(29), isTrue);
+      expect(module.lastVerses(), {
+        450: {4: 30},
+      });
+    });
   });
 
   test('a version 1 file reads as before', () {
