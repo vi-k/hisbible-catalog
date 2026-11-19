@@ -11,7 +11,7 @@ import 'package:crypto/crypto.dart' as crypto;
 import 'package:hisbible_format/hisbible_format.dart';
 
 /// Версия сборки в ключе `generator`; равна версии пакета в `pubspec.yaml`.
-const builderVersion = '0.3.0';
+const builderVersion = '0.4.0';
 
 /// Что сборщик пишет в `generator` модуля и записи указателя; запись другого
 /// `generator` прогон пересобирает.
