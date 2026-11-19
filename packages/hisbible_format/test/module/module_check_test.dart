@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:hisbible_format/hisbible_format.dart';
 import 'package:hisbible_format/src/module/module_check.dart';
+import 'package:hisbible_format/src/module/schema.dart';
 import 'package:hisbible_format/testing.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:test/test.dart';
@@ -372,8 +373,40 @@ void main() {
       });
     });
 
-    test('reaching the next verse reads as one verse', () {
-      final path = bible('overlap.hb', {
+    // Файл версии 1 с Бытием 1: номер стиха → последний из слитых.
+    String bibleV1(String name, Map<int, int?> verses) {
+      final path = '${dir.path}/$name';
+      final db = sqlite3.open(path)
+        ..execute('PRAGMA application_id = $formatApplicationId')
+        ..execute('PRAGMA user_version = 1');
+      for (final table in tablesOf(ModuleType.bible, version: 1)) {
+        db.execute(table.create);
+      }
+      final insertMeta = db.prepare('INSERT INTO meta VALUES (?, ?)');
+      for (final MapEntry(:key, :value) in fixtureMeta.toValues().entries) {
+        insertMeta.execute([key, value]);
+      }
+      insertMeta.close();
+      db.execute(
+        "INSERT INTO books VALUES (1, 'GEN', 'Быт', 'Бытие', NULL, 'eng', "
+        'NULL)',
+      );
+      for (final MapEntry(key: verse, value: end) in verses.entries) {
+        db.execute('INSERT INTO verses VALUES (?, ?, ?, ?, ?)', [
+          'GEN',
+          1,
+          verse,
+          end,
+          'Стих $verse',
+        ]);
+      }
+      db.close();
+
+      return path;
+    }
+
+    test('in version 1 reaching the next verse reads as one verse', () {
+      final path = bibleV1('overlap.hb', {
         1: 3, // заходит на стих 2
         2: 4, // кончается до стиха 5
         5: 2, // меньше своего стиха
@@ -396,8 +429,8 @@ void main() {
       });
     });
 
-    test('an overlapping end does not count as the last verse', () {
-      final path = bible('overlap-last.hb', {1: 150, 2: null});
+    test('in version 1 an overlapping end does not count as the last', () {
+      final path = bibleV1('overlap-last.hb', {1: 150, 2: null});
       expect(checkModuleFile(path), isNull);
 
       final module = BibleModule.open(path);
@@ -428,6 +461,108 @@ void main() {
       expect(module.lastVerses(), {
         10: {1: 2},
       });
+    });
+  });
+
+  group('pieces', () {
+    // Пишет Бытие 1 кусками [pieces] в их порядке: (стих, часть, конец,
+    // часть конца).
+    String bible(String name, List<(int, String, int?, String)> pieces) {
+      final path = '${dir.path}/$name';
+      final writer = ModuleWriter.create(path, fixtureMeta)
+        ..addBook(
+          number: 10,
+          shortName: 'Быт',
+          longName: 'Бытие',
+          scheme: VerseScheme.eng,
+        );
+      for (final (verse, part, end, partEnd) in pieces) {
+        writer.addVerse(
+          10,
+          1,
+          verse,
+          'Стих $verse$part',
+          part: part,
+          verseEnd: end,
+          partEnd: partEnd,
+        );
+      }
+      writer.finish();
+
+      return path;
+    }
+
+    void expectBad(String name, List<(int, String, int?, String)> pieces) {
+      final path = bible('$name.hb', pieces);
+      expect(checkModuleFile(path), isA<BadPiece>(), reason: name);
+      expect(openProblem(path), isA<BadPiece>(), reason: name);
+    }
+
+    test('Zechariah 4 order is a module', () {
+      final path = bible('zech.hb', [
+        (1, '', 5, ''),
+        (6, 'a', null, ''),
+        (10, 'b', 14, ''),
+        (6, 'b', 10, 'a'),
+      ]);
+      expect(checkModuleFile(path), isNull);
+      expect(openProblem(path), isNull);
+    });
+
+    test('a whole verse and its lettered addition is a module', () {
+      final path = bible('addition.hb', [
+        (6, '', null, ''),
+        (6, 'a', null, ''),
+        (7, '', 9, ''),
+        (9, 'a', null, ''),
+      ]);
+      expect(checkModuleFile(path), isNull);
+    });
+
+    test('a range may end before a lettered piece of its last verse', () {
+      final path = bible('before-letter.hb', [
+        (1, '', 6, ''),
+        (6, 'b', 10, 'a'),
+      ]);
+      expect(checkModuleFile(path), isNull);
+    });
+
+    test('overlapping pieces are not a module', () {
+      expectBad('whole', [(1, '', 7, ''), (6, '', null, '')]);
+      expectBad('same-end', [(1, '', 6, 'b'), (6, 'b', null, '')]);
+      expectBad('inside', [(1, '', 5, ''), (3, '', null, '')]);
+      expectBad('shared-start-letter', [(6, 'a', 8, ''), (7, '', null, '')]);
+    });
+
+    test('BadPiece names the piece that spoils the chapter', () {
+      final path = bible('named.hb', [
+        (1, '', null, ''),
+        (2, '', 7, ''),
+        (6, '', null, ''),
+      ]);
+      expect(checkModuleFile(path), const BadPiece('GEN', 1, 2));
+    });
+
+    test('a part that is not one letter is not a module', () {
+      expectBad('long', [(1, 'ab', null, '')]);
+      expectBad('digit', [(1, '1', null, '')]);
+      expectBad('upper', [(1, 'A', null, '')]);
+      expectBad('long-end', [(1, '', 3, 'ab')]);
+      expectBad('upper-end', [(1, '', 3, 'B')]);
+      final cyrillic = bible('cyrillic.hb', [(1, 'а', 3, 'б')]);
+      expect(checkModuleFile(cyrillic), isNull);
+    });
+
+    test('a part_end without verse_end is not a module', () {
+      expectBad('lonely-end', [(1, 'a', null, 'b')]);
+    });
+
+    test('an end that is not after the start is not a module', () {
+      expectBad('below', [(5, '', 3, '')]);
+      expectBad('equal', [(5, '', 5, '')]);
+      expectBad('equal-letters', [(5, 'b', 5, 'a')]);
+      expectBad('same-letter', [(5, 'b', 5, 'b')]);
+      expectBad('letters-in-one-verse', [(5, 'a', 5, 'b')]);
     });
   });
 

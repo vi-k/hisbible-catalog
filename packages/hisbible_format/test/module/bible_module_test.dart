@@ -584,8 +584,8 @@ void main() {
       expect(const Verse(6, '', part: 'b'), isNot(const Verse(6, '')));
     });
 
-    test('an end reaching the next piece of the same verse is dropped', () {
-      // Кусок 1–7b заходит на кусок 7b: следующий по номерам — 7b, а не 8.
+    test('an end reaching the next piece of the same verse is not opened', () {
+      // Кусок 1–7b заходит на кусок 7b: файл негоден.
       ModuleWriter.create(path, _meta)
         ..addBook(
           number: 450,
@@ -598,16 +598,17 @@ void main() {
         ..addVerse(450, 4, 8, 'c')
         ..finish();
 
-      final module = BibleModule.open(path);
-      addTearDown(module.close);
-      expect(module.chapter(450, 4), const [
-        Verse(7, 'b', part: 'b'),
-        Verse(1, 'a'),
-        Verse(8, 'c'),
-      ]);
-      expect(module.lastVerses(), {
-        450: {4: 8},
-      });
+      expect(checkModuleFile(path), const BadPiece('ZEC', 4, 1));
+      expect(
+        () => BibleModule.open(path),
+        throwsA(
+          isA<ModuleOpenException>().having(
+            (e) => e.problem,
+            'problem',
+            const BadPiece('ZEC', 4, 1),
+          ),
+        ),
+      );
     });
 
     test('a whole verse may end a piece before its lettered addition', () {

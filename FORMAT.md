@@ -2,7 +2,7 @@
 
 A HisBible module is one SQLite database file with the extension `.hb`. One
 file holds one module: a Bible translation, commentaries, or cross references.
-This document describes version 1 of the file format, the verse markup, links
+This document describes version 2 of the file format, the verse markup, links
 in commentaries, and the catalog index. The Dart package
 `packages/hisbible_format` reads and writes these files (`ModuleWriter`,
 `BibleModule`, `checkModuleFile`).
@@ -18,7 +18,7 @@ the other types.
 - `PRAGMA application_id = 1214857833` (`0x48694269`, the bytes `HiBi`). A file
   is a HisBible module when its `application_id` is 1214857833 and its
   `user_version` is at least 1; any other SQLite database is not a module.
-- `PRAGMA user_version` is the format version, currently `1`. A reader that
+- `PRAGMA user_version` is the format version, currently `2`. A reader that
   knows version `N` opens files of versions `1..N` and rejects newer ones.
 - Adding an optional `meta` key, a table, or a column does not change the
   version: readers skip what they do not know. The version grows only with an
@@ -26,7 +26,7 @@ the other types.
 - A module contains only tables and their indexes: no views, triggers or
   virtual tables. A reader refuses a file with any other schema object.
 
-### Schema of version 1
+### Schema of version 2
 
 ```sql
 CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL) WITHOUT ROWID;
@@ -39,19 +39,23 @@ CREATE TABLE books (
   scheme TEXT NOT NULL,          -- eng | org | rso | rsc
   color INTEGER                  -- deprecated: writers leave NULL, readers ignore it
 );
-CREATE TABLE verses (
-  book TEXT NOT NULL, chapter INTEGER NOT NULL, verse INTEGER NOT NULL,
-  verse_end INTEGER,             -- last of merged verses; NULL: one verse
+CREATE TABLE verses (            -- one row per piece of a chapter
+  book TEXT NOT NULL, chapter INTEGER NOT NULL,
+  position INTEGER NOT NULL,     -- place of the piece in the chapter, from 0
+  verse INTEGER NOT NULL, part TEXT NOT NULL,  -- start; part: '' or a letter
+  verse_end INTEGER, part_end TEXT NOT NULL,   -- end; NULL: one verse
   text TEXT NOT NULL,            -- markup, see "Markup"
-  PRIMARY KEY (book, chapter, verse)
+  PRIMARY KEY (book, chapter, position),
+  UNIQUE (book, chapter, verse, part)
 ) WITHOUT ROWID;
 CREATE TABLE headings (
   book TEXT NOT NULL, chapter INTEGER NOT NULL, verse INTEGER NOT NULL,
-  position INTEGER NOT NULL,     -- order above one verse, from 0
+  part TEXT NOT NULL,            -- the piece (verse, part) it stands above
+  position INTEGER NOT NULL,     -- order above one piece, from 0
   kind TEXT NOT NULL,            -- major | section | title
   level INTEGER NOT NULL,        -- 1..3
   text TEXT NOT NULL,            -- markup without <p/> and <l/>
-  PRIMARY KEY (book, chapter, verse, position)
+  PRIMARY KEY (book, chapter, verse, part, position)
 ) WITHOUT ROWID;
 CREATE TABLE intros (            -- optional, bible only
   book TEXT NOT NULL,            -- book code, or FRT for the preface
@@ -62,13 +66,15 @@ CREATE TABLE intros (            -- optional, bible only
 ) WITHOUT ROWID;
 CREATE TABLE verse_labels (      -- optional, bible only
   book TEXT NOT NULL, chapter INTEGER NOT NULL, verse INTEGER NOT NULL,
-  label TEXT NOT NULL,           -- shown at the end of the verse; '' for none
-  PRIMARY KEY (book, chapter, verse)
+  part TEXT NOT NULL,            -- the piece (verse, part)
+  label TEXT NOT NULL,           -- shown at the end of the piece; '' for none
+  PRIMARY KEY (book, chapter, verse, part)
 ) WITHOUT ROWID;
 CREATE TABLE verse_numbers (     -- optional, bible only
   book TEXT NOT NULL, chapter INTEGER NOT NULL, verse INTEGER NOT NULL,
+  part TEXT NOT NULL,            -- the piece (verse, part)
   number TEXT NOT NULL,          -- shown instead of the verse number
-  PRIMARY KEY (book, chapter, verse)
+  PRIMARY KEY (book, chapter, verse, part)
 ) WITHOUT ROWID;
 CREATE TABLE footnotes (
   id INTEGER PRIMARY KEY,        -- what <f id> refers to
@@ -126,14 +132,38 @@ Notes:
   whatever the scheme of 2 Chronicles.
 - In `verses`, `chapter` is at most 200 and `verse` at most 1000. A file with a
   larger number in a row of a book from `books` is not a valid module.
-- Merged verses are one row: `verse` is the first verse, `verse_end` the last.
-  `verse_end` is greater than `verse`, at most `verse` + 200, and less than the
-  `verse` of the next row of the same chapter. A reader reads any other
-  `verse_end` as NULL (one verse). A file with a `verse_end` more than 200
-  above its `verse` is not a valid module.
+- A row of `verses` is a piece of a chapter: text that starts at `verse` with
+  the letter `part` and ends at `verse_end` with the letter `part_end`. An
+  empty `part` is the whole verse; otherwise it is the letter of a part of
+  the verse as the source marks it (`a`, `б`): one letter of `[a-zа-я]`.
+  `verse_end` NULL is a piece within one verse, and then `part_end` is empty;
+  with `verse_end` the piece is merged verses, and `part_end` is the part of
+  the last verse (empty: the whole verse). `verse_end` is at most `verse` +
+  200, and greater than `verse`: a piece within one verse has no `verse_end`.
+  A file with a `verse_end` more than 200 above its `verse` is not a valid
+  module.
+- `position` is the place of the piece in the chapter, from 0, and the reader
+  shows the pieces in that order: a translator may set verses out of the
+  numbers or divide a verse into pieces in different places. Zechariah 4 in
+  some editions reads 1–5, 6a, 10b–14, 6b–10a: four rows with `position` 0 to
+  3, and `(verse, part)` of `(1, '')`, `(6, 'a')`, `(10, 'b')` and `(6, 'b')`;
+  the last two have `verse_end` 14 and 10 and `part_end` '' and `a`. Pieces
+  of one verse are never joined by a reader, even if they stand apart.
+- Pieces do not overlap. Sort the pieces of a chapter by `(verse, part)`,
+  the empty part before any letter, and compare pairs as pairs: the end of a
+  piece, `(verse_end, part_end)` or, with no `verse_end`, `(verse, part)`,
+  is strictly less than the `(verse, part)` of the next piece. So `1–6`
+  before `6b`, and `6b–10a` before `10b`, are valid; `1–7` before `6`, and
+  `1–6b` before `6b`, are not. A whole verse may be followed by its lettered
+  pieces, as additions to a book (`29` then `29a` in the Greek Esther, or
+  Esther `1` then `1a`). A file whose pieces overlap, with a part that is not
+  one letter, with `part_end` without `verse_end`, or with a `verse_end` not
+  greater than `verse` is not a valid module (`BadPiece` of
+  `checkModuleFile`). A `verse_end` that is not an integer is read as NULL.
 - Heading kinds: `major` is a heading above several sections, `section` a
   section heading, `title` a title that is part of the text, such as a psalm
-  title. Headings above one verse go in `position` order.
+  title. A heading stands above the piece that starts at its `verse` and
+  `part`; headings above one piece go in `position` order.
 - `intros` holds book introductions and exists only when some book has one. A
   part is a `title`, a `paragraph` or an `item`; the parts of a book go in
   `position` order and stand before the first chapter of the book. An `item`
@@ -168,26 +198,30 @@ Notes:
   the attribute `x-author` of `\periph`:
   `\periph Foreword|id="foreword" x-author="John Smith"`. A reader that does
   not know the kind skips it. A book introduction has no `author` parts.
-- `verse_labels` holds verses that a printed edition marks otherwise than with
-  a number, and exists only when some verse has a label. A verse with a row
-  here shows no number in the text; a label that is not empty stands at the
-  end of the verse, before the punctuation that ends it, in italics and square
-  brackets. The Synodal edition marks the verses of the Prayer of Manasseh this
-  way: 2 Chronicles 36:24 ends with *[а]* (`праведного [а],`), 36:35 has no
-  number and no label. The verse keeps its number as its place: references,
-  search and the verse list use it. `verse` is the `verse` of a row of
-  `verses`; a label of merged verses is the label of their row. A reader of an
-  earlier version ignores the table and shows the numbers.
+- `verse_labels` holds pieces that a printed edition marks otherwise than
+  with a number, and exists only when some piece has a label. A piece with a
+  row here shows no number in the text; a label that is not empty stands at
+  the end of the piece, before the punctuation that ends it, in italics and
+  square brackets. The Synodal edition marks the verses of the Prayer of
+  Manasseh this way: 2 Chronicles 36:24 ends with *[а]* (`праведного [а],`),
+  36:35 has no number and no label. The verse keeps its number as its place:
+  references, search and the verse list use it. `verse` and `part` are the
+  `verse` and `part` of a row of `verses`. A reader of an earlier version
+  ignores the table and shows the numbers.
 - `verse_numbers` holds verse numbers as a printed edition prints them, where
-  they are not the plain number or range, and exists only when some verse has
-  one. The text shows `number` in place of the number of the row. A verse
-  split between two merged ranges is the case: where an edition prints
-  Matthew 1:1–6а and 6б–11, the file has rows 1–5 and 6–11 with numbers
-  `1–6а` and `6б–11`, and the text of 6а stays in the first.
-  The row keeps its numbers as its place: references, search and the verse
-  list use them. `verse` is the `verse` of a row of `verses`. A verse in
-  `verse_labels` shows no number, and its row here is not used. A reader of an
-  earlier version ignores the table and shows the numbers.
+  they are not the plain number or range, and exists only when some piece has
+  one. The text shows `number` in place of the number of the piece. A verse
+  split between two ranges is the case: where an edition prints Matthew
+  1:1–6а and 6б–11, the file has the pieces `1–6а` and `6б–11`: rows
+  `(1, '')` with `verse_end` 6 and `part_end` `а`, and `(6, 'б')` with
+  `verse_end` 11. The numbers are then the plain labels of the pieces and
+  the table needs no row; it holds a number only where the print differs
+  from them.
+  The piece keeps its numbers as its place: references, search and the verse
+  list use them. `verse` and `part` are the `verse` and `part` of a row of
+  `verses`. A piece in `verse_labels` shows no number, and its row here is
+  not used. A reader of an earlier version ignores the table and shows the
+  numbers.
 - A comment covers the place from `chapter`:`verse` to `chapter_end`:
   `verse_end`; without `chapter_end` it ends in the same chapter, without
   `verse_end` it is one verse. A reader finds comments by the chapter where
@@ -201,6 +235,33 @@ Notes:
   source gives it; an empty string means no mark. A footnote whose `<f id>` is
   in the text of a heading is stored with the `chapter` and `verse` of the
   verse below that heading.
+
+### Version 1
+
+A file of version 1 has the same tables except these, which have no `part`,
+`part_end` and `position` in `verses` and no `part` in `headings`,
+`verse_labels` and `verse_numbers`:
+
+```sql
+CREATE TABLE verses (
+  book TEXT NOT NULL, chapter INTEGER NOT NULL, verse INTEGER NOT NULL,
+  verse_end INTEGER,             -- last of merged verses; NULL: one verse
+  text TEXT NOT NULL,
+  PRIMARY KEY (book, chapter, verse)
+) WITHOUT ROWID;
+-- headings: PRIMARY KEY (book, chapter, verse, position)
+-- verse_labels, verse_numbers: PRIMARY KEY (book, chapter, verse)
+```
+
+A reader reads a version 1 file as pieces without parts: a row is a piece,
+its place in the chapter is its `verse`, and the pieces go in the order of the
+numbers. `verse_end` there is greater than `verse`, at most `verse` + 200, and
+less than the `verse` of the next row of the same chapter; a reader reads any
+other `verse_end` as NULL, and such a file is still a valid module. A version
+1 file is not rewritten: a version 2 reader opens it, and a version 1 reader
+rejects a file of version 2 as newer. Matthew 1:1–6а and 6б–11 in version 1
+is the rows 1–5 and 6–11 with `verse_numbers` `1–6а` and `6б–11`, the text of
+6а in the first.
 
 ### `meta` keys
 
@@ -259,7 +320,7 @@ A Bible with Genesis 1:1–2 and Psalm 3, where Psalm 3 has a title above verse
 
 ```sql
 PRAGMA application_id = 1214857833;
-PRAGMA user_version = 1;
+PRAGMA user_version = 2;
 -- CREATE TABLE statements of the schema above
 INSERT INTO meta VALUES
   ('type', 'bible'), ('abbreviation', 'TST'), ('name', 'Test Bible'),
@@ -272,13 +333,17 @@ INSERT INTO books VALUES
   (1, 'GEN', 'Gen', 'Genesis', 'The First Book of Moses', 'eng', NULL),
   (2, 'PSA', 'Ps', 'Psalms', NULL, 'eng', NULL);
 INSERT INTO verses VALUES
-  ('GEN', 1, 1, NULL, 'In the beginning God created the heavens and the earth.'),
-  ('GEN', 1, 2, NULL, '<p/>The earth was formless and empty.'),
-  ('PSA', 3, 1, NULL, 'Yahweh, how my adversaries have increased!'),
-  ('PSA', 3, 2, NULL, 'Many there are who say of my soul<f id="1" c="a"/>, ...'),
-  ('PSA', 3, 4, 5, 'I cry to Yahweh with my voice. <l i="1"/>I laid myself down and slept.');
+  ('GEN', 1, 0, 1, '', NULL, '',
+   'In the beginning God created the heavens and the earth.'),
+  ('GEN', 1, 1, 2, '', NULL, '', '<p/>The earth was formless and empty.'),
+  ('PSA', 3, 0, 1, '', NULL, '', 'Yahweh, how my adversaries have increased!'),
+  ('PSA', 3, 1, 2, '', NULL, '',
+   'Many there are who say of my soul<f id="1" c="a"/>, ...'),
+  ('PSA', 3, 2, 4, '', 5, '',
+   'I cry to Yahweh with my voice. <l i="1"/>I laid myself down and slept.');
 INSERT INTO headings VALUES
-  ('PSA', 3, 1, 0, 'title', 1, 'A Psalm by David, when he fled from Absalom his son.');
+  ('PSA', 3, 1, '', 0, 'title', 1,
+   'A Psalm by David, when he fled from Absalom his son.');
 INSERT INTO footnotes VALUES
   (1, 'PSA', 3, 2, 'note', 'a', 'Or, <em>life</em>');
 ```

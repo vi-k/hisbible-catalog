@@ -118,6 +118,39 @@ final class VerseOutOfRange extends ModuleProblem {
   String toString() => 'VerseOutOfRange($book $chapter:$verse)';
 }
 
+/// Куски стихов Библии версии 2 негодны: часть — не одна буква `[a-zа-я]`
+/// (и не пустая), `part_end` без `verse_end`, конец куска не после его начала
+/// или кусок заходит на следующий по номерам. Файл испорчен или собран
+/// со злым умыслом.
+final class BadPiece extends ModuleProblem {
+  /// Создаёт причину для куска, который начинается стихом [verse] главы
+  /// [chapter] книги с кодом [book].
+  const BadPiece(this.book, this.chapter, this.verse);
+
+  /// Код книги в файле.
+  final String book;
+
+  /// Глава.
+  final int chapter;
+
+  /// Стих, с которого начинается негодный кусок; у перекрытия — тот кусок,
+  /// чей конец заходит на следующий.
+  final int verse;
+
+  @override
+  bool operator ==(Object other) =>
+      other is BadPiece &&
+      other.book == book &&
+      other.chapter == chapter &&
+      other.verse == verse;
+
+  @override
+  int get hashCode => Object.hash(BadPiece, book, chapter, verse);
+
+  @override
+  String toString() => 'BadPiece($book $chapter:$verse)';
+}
+
 /// В модуле есть объект схемы, кроме таблиц и их индексов: представление,
 /// триггер или виртуальная таблица. Запрос к такому модулю может зависнуть
 /// или сделать то, чего читатель не ждёт.

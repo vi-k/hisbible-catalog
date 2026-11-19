@@ -20,9 +20,13 @@ const int _notADatabase = 26;
 /// В файле только таблицы и их индексы, иначе — [UnsupportedSchemaObject]
 /// до любого запроса к `meta`. У Библии глава больше [maxChapterNumber],
 /// стих больше [maxVerseNumber] или `verse_end` больше `verse` больше чем
-/// на [maxVerseEndSpan] — [VerseOutOfRange]; `verse_end`, который заходит
-/// на следующий стих главы, файл не портит: читатель считает такой стих
-/// одним.
+/// на [maxVerseEndSpan] — [VerseOutOfRange]. В файле версии 1 `verse_end`,
+/// который заходит на следующий стих главы, файл не портит: читатель считает
+/// такой стих одним. В файле версии 2 куски проверяются строже — [BadPiece]:
+/// часть не одна буква `[a-zа-я]`, `part_end` без `verse_end`, конец куска
+/// не после его начала, `verse_end`, который заходит на следующий по номерам
+/// кусок главы (куски сравниваются по паре (стих, часть), пустая часть
+/// раньше любой буквы).
 /// Исключений наружу не бросает: любой отказ — это [ModuleProblem].
 ModuleProblem? checkModuleFile(String path) {
   final Database db;
@@ -64,7 +68,11 @@ ModuleProblem? checkModuleFile(String path) {
       return const EmptyModule();
     }
 
-    return meta.type == ModuleType.bible ? _verseProblem(db) : null;
+    if (meta.type != ModuleType.bible) {
+      return null;
+    }
+
+    return _verseProblem(db) ?? (version >= 2 ? _pieceProblem(db) : null);
   } on ModuleOpenException catch (e) {
     return e.problem;
   } on SqliteException catch (e) {
@@ -287,6 +295,70 @@ ModuleProblem? _verseProblem(Database db) {
     row.columnAt(1) as int,
     row.columnAt(2) as int,
   );
+}
+
+final _partLetter = RegExp(r'^[a-zа-я]?$');
+
+// Первый негодный кусок Библии версии 2 как [BadPiece]; нет такого — `null`.
+// Куски главы идут по номерам, (стих, часть); конец куска — (`verse_end`,
+// `part_end`), без него — его начало — должен быть строго раньше начала
+// следующего куска. Так `1–6` перед `6b` годно, `1–6b` перед `6b` — нет.
+// Конец не целое число читатель пропускает, и проверка тоже.
+ModuleProblem? _pieceProblem(Database db) {
+  final codes = readBookCodes(db).keys.toList();
+  if (codes.isEmpty) {
+    return null;
+  }
+  final rows = db.select(
+    'SELECT book, chapter, verse, part, verse_end, part_end FROM verses '
+    'WHERE book IN (${List.filled(codes.length, '?').join(', ')}) '
+    'AND chapter >= 1 AND verse >= 1 '
+    "AND typeof(chapter) = 'integer' AND typeof(verse) = 'integer' "
+    'AND chapter <= ? AND verse <= ? '
+    'ORDER BY book, chapter, verse, part',
+    [...codes, maxChapterNumber, maxVerseNumber],
+  );
+  String? book;
+  int? chapter;
+  // Конец предыдущего куска главы и его стих.
+  (int, String)? previousEnd;
+  var previousVerse = 0;
+  for (final row in rows) {
+    final rowBook = row.columnAt(0) as String;
+    final rowChapter = row.columnAt(1) as int;
+    final verse = row.columnAt(2) as int;
+    final part = row.columnAt(3);
+    final verseEnd = row.columnAt(4);
+    final partEnd = row.columnAt(5);
+    BadPiece bad() => BadPiece(rowBook, rowChapter, verse);
+    if (part is! String ||
+        partEnd is! String ||
+        !_partLetter.hasMatch(part) ||
+        !_partLetter.hasMatch(partEnd)) {
+      return bad();
+    }
+    final end = verseEnd is int ? verseEnd : null;
+    if (end == null && partEnd.isNotEmpty && verseEnd == null) {
+      return bad();
+    }
+    // Читатель берёт конец, только если он больше стиха начала.
+    if (end != null && end <= verse) {
+      return bad();
+    }
+    if (rowBook != book || rowChapter != chapter) {
+      book = rowBook;
+      chapter = rowChapter;
+    } else if (previousEnd case (final endVerse, final endPart)) {
+      if (endVerse > verse ||
+          (endVerse == verse && endPart.compareTo(part) >= 0)) {
+        return BadPiece(rowBook, rowChapter, previousVerse);
+      }
+    }
+    previousEnd = end == null ? (verse, part) : (end, partEnd);
+    previousVerse = verse;
+  }
+
+  return null;
 }
 
 // Есть ли стих книги из `books` с главой и стихом не меньше 1.
