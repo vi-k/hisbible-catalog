@@ -13,10 +13,10 @@ const int _notADatabase = 26;
 /// Проверяет файл модуля HisBible; `null` — модуль в порядке.
 ///
 /// Проверяются подпись и версия формата, обязательные ключи `meta`, таблицы
-/// типа модуля и их столбцы (у Библии ещё необязательных `intros`,
-/// `verse_labels` и `verse_numbers`, если они есть), а у Библии — хотя бы
-/// один стих книги из `books`; у толкований и ссылок — хотя бы одна запись
-/// с известной книгой.
+/// типа модуля и их столбцы по версии файла (у Библии ещё необязательных
+/// `intros`, `verse_labels` и `verse_numbers`, если они есть), а у Библии —
+/// хотя бы один стих книги из `books`; у толкований и ссылок — хотя бы одна
+/// запись с известной книгой.
 /// В файле только таблицы и их индексы, иначе — [UnsupportedSchemaObject]
 /// до любого запроса к `meta`. У Библии глава больше [maxChapterNumber],
 /// стих больше [maxVerseNumber] или `verse_end` больше `verse` больше чем
@@ -33,7 +33,8 @@ ModuleProblem? checkModuleFile(String path) {
   }
   try {
     final meta = readCheckedMeta(db);
-    for (final table in tablesOf(meta.type).skip(1)) {
+    final version = moduleFormatVersion(db);
+    for (final table in tablesOf(meta.type, version: version).skip(1)) {
       final columns = _columnsOf(db, table.name);
       if (columns.isEmpty) {
         return MissingTable(table.name);
@@ -47,7 +48,7 @@ ModuleProblem? checkModuleFile(String path) {
     // Необязательные таблицы: старый читатель их пропускает, а этот
     // проверяет столбцы, только если таблица есть.
     if (meta.type == ModuleType.bible) {
-      for (final table in [introsTable, verseLabelsTable, verseNumbersTable]) {
+      for (final table in optionalBibleTablesOf(version)) {
         final columns = _columnsOf(db, table.name);
         if (columns.isEmpty) {
           continue;
@@ -190,6 +191,11 @@ UnsupportedSchemaObject? _unsupportedObject(Database db) {
 
   return null;
 }
+
+/// Версия формата открытой базы из `PRAGMA user_version`; файл проверен
+/// [readCheckedMeta].
+int moduleFormatVersion(Database db) =>
+    db.select('PRAGMA user_version').single.columnAt(0) as int;
 
 /// Пары `meta` открытой базы; без таблицы — [MissingTable] в исключении.
 Map<String, String> readMetaValues(Database db) {

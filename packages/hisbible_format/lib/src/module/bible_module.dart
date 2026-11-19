@@ -50,44 +50,89 @@ final class ModuleBook {
   final VerseScheme scheme;
 }
 
-/// Стих главы.
-final class Verse {
-  /// Создаёт стих; [verseEnd] — последний из слитых стихов.
-  const Verse(this.verse, this.text, {this.verseEnd});
+/// Ключ куска стиха в главе: стих, которым он начинается, и часть этого
+/// стиха; пустая часть — стих целиком.
+typedef PieceKey = ({int verse, String part});
 
-  /// Номер стиха; у слитых стихов — первый.
+/// Кусок стиха главы: от [verse] с частью [part] до [verseEnd] с частью
+/// [partEnd].
+///
+/// Кусок без частей и без [verseEnd] — обычный стих; без частей с
+/// [verseEnd] — слитые стихи.
+final class Verse {
+  /// Создаёт кусок; [verseEnd] — последний стих куска, [part] и [partEnd] —
+  /// части первого и последнего стиха, пустые — стих целиком.
+  const Verse(
+    this.verse,
+    this.text, {
+    this.verseEnd,
+    this.part = '',
+    this.partEnd = '',
+  });
+
+  /// Номер первого стиха куска.
   final int verse;
 
-  /// Текст стиха в разметке формата.
+  /// Текст куска в разметке формата.
   final String text;
 
-  /// Последний из слитых стихов; `null` — стих один.
+  /// Последний стих куска; `null` — кусок в одном стихе.
   final int? verseEnd;
+
+  /// Буква части первого стиха (`a`, `б`); пустая — стих целиком.
+  final String part;
+
+  /// Буква части последнего стиха; пустая — стих целиком. Без [verseEnd]
+  /// пустая.
+  final String partEnd;
+
+  /// Ключ куска в главе: первый стих и его часть.
+  PieceKey get key => (verse: verse, part: part);
+
+  /// Номер куска из его концов: `6`, `6b`, `10b–14`, `1–6а`.
+  String get label =>
+      verseEnd == null ? '$verse$part' : '$verse$part–$verseEnd$partEnd';
+
+  /// Есть ли в куске стих [verse], целиком или частью.
+  bool covers(int verse) =>
+      verse >= this.verse && verse <= (verseEnd ?? this.verse);
 
   @override
   bool operator ==(Object other) =>
       other is Verse &&
       other.verse == verse &&
       other.text == text &&
-      other.verseEnd == verseEnd;
+      other.verseEnd == verseEnd &&
+      other.part == part &&
+      other.partEnd == partEnd;
 
   @override
-  int get hashCode => Object.hash(verse, text, verseEnd);
+  int get hashCode => Object.hash(verse, text, verseEnd, part, partEnd);
 
   @override
-  String toString() =>
-      'Verse($verse${verseEnd == null ? '' : '-$verseEnd'}, $text)';
+  String toString() => 'Verse($label, $text)';
 }
 
-/// Заголовок над стихом.
+/// Заголовок над куском стиха.
 final class Heading {
-  /// Создаёт заголовок.
-  const Heading(this.verse, this.order, this.kind, this.level, this.text);
+  /// Создаёт заголовок; [part] — часть стиха, которой начинается кусок.
+  const Heading(
+    this.verse,
+    this.order,
+    this.kind,
+    this.level,
+    this.text, {
+    this.part = '',
+  });
 
-  /// Номер стиха, над которым стоит заголовок.
+  /// Номер стиха, которым начинается кусок под заголовком.
   final int verse;
 
-  /// Порядок среди заголовков одного стиха, с 0.
+  /// Часть стиха, которой начинается кусок под заголовком; пустая — стих
+  /// целиком.
+  final String part;
+
+  /// Порядок среди заголовков одного куска, с 0.
   final int order;
 
   /// Вид заголовка.
@@ -103,16 +148,18 @@ final class Heading {
   bool operator ==(Object other) =>
       other is Heading &&
       other.verse == verse &&
+      other.part == part &&
       other.order == order &&
       other.kind == kind &&
       other.level == level &&
       other.text == text;
 
   @override
-  int get hashCode => Object.hash(verse, order, kind, level, text);
+  int get hashCode => Object.hash(verse, part, order, kind, level, text);
 
   @override
-  String toString() => 'Heading($verse, $order, ${kind.name}, $level, $text)';
+  String toString() =>
+      'Heading($verse$part, $order, ${kind.name}, $level, $text)';
 }
 
 /// Часть вступления книги.
@@ -244,6 +291,7 @@ const _manassehBook = 145;
 final class BibleModule {
   BibleModule._(
     this._db,
+    this._version,
     this.meta,
     this.books,
     this._codes,
@@ -270,10 +318,12 @@ final class BibleModule {
       if (meta.type != ModuleType.bible) {
         throw ModuleOpenException(UnsupportedType(typeValue(meta.type)));
       }
+      final version = moduleFormatVersion(db);
       final codes = readBookCodes(db);
-      final lastVerses = _readLastVerses(db, codes);
+      final lastVerses = _readLastVerses(db, version, codes);
       final module = BibleModule._(
         db,
+        version,
         meta,
         _readBooks(db, codes, lastVerses),
         {for (final MapEntry(:key, :value) in codes.entries) value: key},
@@ -296,6 +346,8 @@ final class BibleModule {
   }
 
   final Database _db;
+  // Версия формата файла: у версии 1 нет частей и места куска в главе.
+  final int _version;
   // Номер книги → код в файле.
   final Map<int, String> _codes;
   final Map<int, Map<int, int>> _lastVerses;
@@ -357,37 +409,38 @@ final class BibleModule {
       key: Map<int, int>.of(value),
   };
 
-  /// Стихи главы по возрастанию номеров.
+  /// Куски стихов главы по их месту в главе (`position`); у файла версии 1
+  /// — стихи по возрастанию номеров, без частей.
   ///
   /// `verse_end`, который не больше `verse`, больше его больше чем на
-  /// [maxVerseEndSpan] или заходит на следующий стих главы, читается как
-  /// `null`: стих один.
+  /// [maxVerseEndSpan] или заходит на следующий по номерам кусок главы,
+  /// читается как `null` вместе с `part_end`: кусок в одном стихе.
   List<Verse> chapter(int book, int chapter) {
     final code = _codes[book];
     if (code == null) {
       return const [];
     }
-    final rows = _db.select(
-      'SELECT verse, verse_end, text FROM verses '
-      'WHERE book = ? AND chapter = ? AND verse >= 1 ORDER BY verse',
-      [code, chapter],
-    );
 
     return [
-      for (var i = 0; i < rows.length; i++)
-        if ((rows[i].columnAt(0), rows[i].columnAt(2)) case (
+      for (final row in _db.select(
+        'SELECT verse, part, $_verseEndRule, part_end, text '
+        'FROM (${_pieces(_version)} WHERE book = ? AND chapter = ? '
+        'AND verse >= 1) ORDER BY place',
+        [code, chapter],
+      ))
+        if ((row.columnAt(0), row.columnAt(1), row.columnAt(4)) case (
           final int verse,
+          final String part,
           final String text,
         ))
-          Verse(
-            verse,
-            text,
-            verseEnd: _verseEnd(
+          if (row.columnAt(2) case final int? verseEnd)
+            Verse(
               verse,
-              rows[i].columnAt(1),
-              i + 1 < rows.length ? rows[i + 1].columnAt(0) : null,
+              text,
+              verseEnd: verseEnd,
+              part: part,
+              partEnd: _partEnd(verseEnd, row.columnAt(3)),
             ),
-          ),
     ];
   }
 
@@ -468,56 +521,56 @@ final class BibleModule {
     ];
   }
 
-  /// Метки стихов главы вместо номеров: стих → метка.
+  /// Метки кусков главы вместо номеров: ключ куска → метка.
   ///
-  /// У стиха с меткой в тексте нет номера; непустая метка стоит в конце
-  /// стиха. Пусто, если в файле нет таблицы `verse_labels` или меток у главы.
-  Map<int, String> verseLabels(int book, int chapter) {
+  /// У куска с меткой в тексте нет номера; непустая метка стоит в конце
+  /// куска. Пусто, если в файле нет таблицы `verse_labels` или меток у главы.
+  /// У файла версии 1 части ключей пустые.
+  Map<PieceKey, String> verseLabels(int book, int chapter) {
     final code = _codes[book];
     if (!_hasVerseLabels || code == null) {
       return const {};
     }
 
-    return {
-      for (final row in _db.select(
-        'SELECT verse, label FROM verse_labels '
-        'WHERE book = ? AND chapter = ? ORDER BY verse',
-        [code, chapter],
-      ))
-        if ((row.columnAt(0), row.columnAt(1)) case (
-          final int verse,
-          final String label,
-        ))
-          verse: label,
-    };
+    return _pieceValues('verse_labels', 'label', code, chapter);
   }
 
-  /// Номера стихов главы, как их печатает издание: стих → номер.
+  /// Номера кусков главы, как их печатает издание, когда их не построить
+  /// из концов куска: ключ куска → номер.
   ///
-  /// Текст показывает такой номер вместо своего («1–6а» у стихов 1–5); адрес
-  /// стиха прежний. Пусто, если в файле нет таблицы `verse_numbers` или
-  /// номеров у главы.
-  Map<int, String> verseNumbers(int book, int chapter) {
+  /// Текст показывает такой номер вместо своего; адрес куска прежний. Пусто,
+  /// если в файле нет таблицы `verse_numbers` или номеров у главы. У файла
+  /// версии 1 части ключей пустые.
+  Map<PieceKey, String> verseNumbers(int book, int chapter) {
     final code = _codes[book];
     if (!_hasVerseNumbers || code == null) {
       return const {};
     }
 
-    return {
-      for (final row in _db.select(
-        'SELECT verse, number FROM verse_numbers '
-        'WHERE book = ? AND chapter = ? ORDER BY verse',
-        [code, chapter],
-      ))
-        if ((row.columnAt(0), row.columnAt(1)) case (
-          final int verse,
-          final String number,
-        ))
-          verse: number,
-    };
+    return _pieceValues('verse_numbers', 'number', code, chapter);
   }
 
-  /// Заголовки главы по стихам и порядку; незнакомый вид пропускается.
+  // Значения столбца [column] таблицы [table] у кусков главы по номерам.
+  Map<PieceKey, String> _pieceValues(
+    String table,
+    String column,
+    String code,
+    int chapter,
+  ) => {
+    for (final row in _db.select(
+      'SELECT verse, $_part, $column FROM $table '
+      'WHERE book = ? AND chapter = ? ORDER BY $_byNumbers',
+      [code, chapter],
+    ))
+      if ((row.columnAt(0), row.columnAt(1), row.columnAt(2)) case (
+        final int verse,
+        final String part,
+        final String value,
+      ))
+        (verse: verse, part: part): value,
+  };
+
+  /// Заголовки главы по кускам и порядку; незнакомый вид пропускается.
   List<Heading> headings(int book, int chapter) {
     final code = _codes[book];
     if (code == null) {
@@ -526,27 +579,35 @@ final class BibleModule {
 
     return [
       for (final row in _db.select(
-        'SELECT verse, position, kind, level, text FROM headings '
-        'WHERE book = ? AND chapter = ? ORDER BY verse, position',
+        'SELECT verse, $_part, position, kind, level, text FROM headings '
+        'WHERE book = ? AND chapter = ? ORDER BY $_byNumbers, position',
         [code, chapter],
       ))
         if ((
               row.columnAt(0),
               row.columnAt(1),
-              headingKindOfValue(row.columnAt(2)),
-              row.columnAt(3),
+              row.columnAt(2),
+              headingKindOfValue(row.columnAt(3)),
               row.columnAt(4),
+              row.columnAt(5),
             )
             case (
               final int verse,
+              final String part,
               final int order,
               final HeadingKind kind,
               final int level,
               final String text,
             ))
-          Heading(verse, order, kind, level, text),
+          Heading(verse, order, kind, level, text, part: part),
     ];
   }
+
+  // Столбец части в запросах: у файла версии 1 частей нет — пустая строка.
+  String get _part => _partOf(_version);
+
+  // Порядок кусков по номерам в запросах.
+  String get _byNumbers => _byNumbersOf(_version);
 
   /// Сноски главы по стихам и номерам; незнакомый вид пропускается.
   List<Footnote> footnotes(int book, int chapter) {
@@ -611,36 +672,59 @@ final class BibleModule {
     _db.close();
   }
 
-  // Последний из слитых стихов [value] стиха [verse], за которым в главе идёт
-  // стих [next]; `null`, если [value] не больше [verse], больше его больше
-  // чем на [maxVerseEndSpan] или не меньше [next]. Это же правило —
-  // в запросе [_readLastVerses].
-  static int? _verseEnd(int verse, Object? value, Object? next) =>
-      value is int &&
-          value > verse &&
-          value - verse <= maxVerseEndSpan &&
-          (next is! int || value < next)
-      ? value
-      : null;
+  // Часть последнего стиха куска с концом [verseEnd] по значению [value]
+  // столбца `part_end`: без конца или не строка — пустая.
+  static String _partEnd(int? verseEnd, Object? value) =>
+      verseEnd != null && value is String ? value : '';
+
+  // Столбец части в запросах к файлу версии [version].
+  static String _partOf(int version) => version == 1 ? "''" : 'part';
+
+  // Порядок кусков по номерам в запросах к файлу версии [version]: стих,
+  // затем часть.
+  static String _byNumbersOf(int version) =>
+      version == 1 ? 'verse' : 'verse, part';
+
+  // Запрос кусков `verses` файла версии [version] без условия: место куска
+  // в главе (`place`), его концы и текст, а также следующий по номерам кусок
+  // (`next`, `next_part`) среди строк, которые пройдут условие. У версии 1
+  // место — номер стиха, части пустые. Условие дописывает вызывающий.
+  static String _pieces(int version) {
+    final part = _partOf(version);
+    final numbers =
+        'OVER (PARTITION BY book, chapter ORDER BY ${_byNumbersOf(version)})';
+
+    return 'SELECT book, chapter, '
+        '${version == 1 ? 'verse' : 'position'} AS place, verse, '
+        '$part AS part, verse_end, ${version == 1 ? "''" : 'part_end'} '
+        'AS part_end, text, LEAD(verse) $numbers AS next, '
+        'LEAD($part) $numbers AS next_part FROM verses';
+  }
+
+  // Годный последний стих куска из [_pieces] или NULL: `verse_end`, если он
+  // больше `verse` не больше чем на [maxVerseEndSpan] и кончается до
+  // следующего по номерам куска главы. Конец в том же стихе, что и начало
+  // следующего куска, годен, только если оба — части, и часть конца раньше.
+  static const String _verseEndRule =
+      "CASE WHEN typeof(verse_end) = 'integer' AND verse_end > verse "
+      'AND verse_end - verse <= $maxVerseEndSpan '
+      "AND (typeof(next) != 'integer' OR verse_end < next "
+      "OR (verse_end = next AND part_end != '' AND next_part != '' "
+      'AND part_end < next_part)) '
+      'THEN verse_end END';
 
   // Книга → глава → последний стих, только у книг из [codes]; `verse_end`
-  // берётся по правилу [_verseEnd].
+  // берётся по правилу [_verseEndRule].
   static Map<int, Map<int, int>> _readLastVerses(
     Database db,
+    int version,
     Map<String, int> codes,
   ) {
     final lastVerses = <int, Map<int, int>>{};
     for (final row in db.select(
-      'SELECT book, chapter, MAX(CASE '
-      "WHEN typeof(verse_end) = 'integer' AND verse_end > verse "
-      'AND verse_end - verse <= ? '
-      "AND (typeof(next) != 'integer' OR verse_end < next) "
-      'THEN verse_end ELSE verse END) '
-      'FROM (SELECT book, chapter, verse, verse_end, '
-      'LEAD(verse) OVER (PARTITION BY book, chapter ORDER BY verse) AS next '
-      'FROM verses WHERE chapter >= 1 AND verse >= 1) '
+      'SELECT book, chapter, MAX(COALESCE($_verseEndRule, verse)) '
+      'FROM (${_pieces(version)} WHERE chapter >= 1 AND verse >= 1) '
       'GROUP BY book, chapter',
-      [maxVerseEndSpan],
     )) {
       final number = codes[row.columnAt(0)];
       if ((number, row.columnAt(1), row.columnAt(2)) case (

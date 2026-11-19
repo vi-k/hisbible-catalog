@@ -101,7 +101,8 @@ void main() {
     );
     sqlite3.open(broken)
       ..execute(
-        'CREATE TABLE verse_labels (book TEXT, chapter INTEGER, verse INTEGER)',
+        'CREATE TABLE verse_labels '
+        '(book TEXT, chapter INTEGER, verse INTEGER, part TEXT)',
       )
       ..close();
     expect(
@@ -131,7 +132,7 @@ void main() {
     sqlite3.open(broken)
       ..execute(
         'CREATE TABLE verse_numbers '
-        '(book TEXT, chapter INTEGER, verse INTEGER)',
+        '(book TEXT, chapter INTEGER, verse INTEGER, part TEXT)',
       )
       ..close();
     expect(
@@ -176,10 +177,10 @@ void main() {
 
     final newer = fixture('newer.hb');
     sqlite3.open(newer)
-      ..execute('PRAGMA user_version = 2')
+      ..execute('PRAGMA user_version = 3')
       ..close();
-    expect(checkModuleFile(newer), const NewerFormat(2));
-    expect(openProblem(newer), const NewerFormat(2));
+    expect(checkModuleFile(newer), const NewerFormat(3));
+    expect(openProblem(newer), const NewerFormat(3));
 
     final nameless = fixture('nameless.hb');
     sqlite3.open(nameless)

@@ -57,8 +57,10 @@ final class ModuleWriter {
   final Database _db;
   final ModuleType _type;
   final Map<String, PreparedStatement> _statements = {};
-  // Следующий номер заголовка над каждым стихом.
-  final Map<(String, int, int), int> _headingPositions = {};
+  // Следующее место куска в каждой главе.
+  final Map<(String, int), int> _versePositions = {};
+  // Следующий номер заголовка над каждым куском.
+  final Map<(String, int, int, String), int> _headingPositions = {};
   // Следующий номер части вступления в каждой книге.
   final Map<String, int> _introPositions = {};
   bool _introsCreated = false;
@@ -91,39 +93,54 @@ final class ModuleWriter {
     ]);
   }
 
-  /// Добавляет стих в разметке формата; [verseEnd] — последний из слитых.
+  /// Добавляет кусок стиха в разметке формата: от [verse] с частью [part]
+  /// до [verseEnd] с частью [partEnd].
+  ///
+  /// Пустая часть — стих целиком; без [verseEnd] кусок в одном стихе. Место
+  /// куска в главе (`position`) — порядок вызовов в ней, с 0.
   void addVerse(
     int book,
     int chapter,
     int verse,
     String text, {
     int? verseEnd,
+    String part = '',
+    String partEnd = '',
   }) {
     _checkType(ModuleType.bible);
     if (!_paragraphs && text.contains('<p/>')) {
       _paragraphs = true;
     }
-    _statement('INSERT INTO verses VALUES (?, ?, ?, ?, ?)')
-        .execute([BookCatalog.codeOf(book), chapter, verse, verseEnd, text]);
+    final code = BookCatalog.codeOf(book);
+    final key = (code, chapter);
+    final position = _versePositions[key] ?? 0;
+    _versePositions[key] = position + 1;
+    _statement(
+      'INSERT INTO verses (book, chapter, position, verse, part, verse_end, '
+      'part_end, text) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+    ).execute([code, chapter, position, verse, part, verseEnd, partEnd, text]);
   }
 
-  /// Добавляет заголовок над стихом; порядок над одним стихом — порядок
-  /// вызовов.
+  /// Добавляет заголовок над куском, который начинается стихом [verse]
+  /// с частью [part]; порядок над одним куском — порядок вызовов.
   void addHeading(
     int book,
     int chapter,
     int verse,
     HeadingKind kind,
     int level,
-    String text,
-  ) {
+    String text, {
+    String part = '',
+  }) {
     _checkType(ModuleType.bible);
     final code = BookCatalog.codeOf(book);
-    final key = (code, chapter, verse);
+    final key = (code, chapter, verse, part);
     final position = _headingPositions[key] ?? 0;
     _headingPositions[key] = position + 1;
-    _statement('INSERT INTO headings VALUES (?, ?, ?, ?, ?, ?, ?)')
-        .execute([code, chapter, verse, position, kind.name, level, text]);
+    _statement(
+      'INSERT INTO headings (book, chapter, verse, part, position, kind, '
+      'level, text) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+    ).execute([code, chapter, verse, part, position, kind.name, level, text]);
   }
 
   /// Добавляет часть вступления книги [book]; порядок внутри книги — порядок
@@ -156,32 +173,51 @@ final class ModuleWriter {
         .execute([code, position, kind.name, text]);
   }
 
-  /// Даёт стиху [verse] главы [chapter] книги [book] метку [label] вместо
-  /// номера; пустая метка — у стиха ни номера, ни метки.
+  /// Даёт куску, который начинается стихом [verse] с частью [part] главы
+  /// [chapter] книги [book], метку [label] вместо номера; пустая метка —
+  /// у куска ни номера, ни метки.
   ///
   /// Таблицу `verse_labels` файл получает при первой метке.
-  void addVerseLabel(int book, int chapter, int verse, String label) {
+  void addVerseLabel(
+    int book,
+    int chapter,
+    int verse,
+    String label, {
+    String part = '',
+  }) {
     _checkType(ModuleType.bible);
     if (!_verseLabelsCreated) {
       _db.execute(verseLabelsTable.create);
       _verseLabelsCreated = true;
     }
-    _statement('INSERT INTO verse_labels VALUES (?, ?, ?, ?)')
-        .execute([BookCatalog.codeOf(book), chapter, verse, label]);
+    _statement(
+      'INSERT INTO verse_labels (book, chapter, verse, part, label) '
+      'VALUES (?, ?, ?, ?, ?)',
+    ).execute([BookCatalog.codeOf(book), chapter, verse, part, label]);
   }
 
-  /// Даёт стиху [verse] главы [chapter] книги [book] номер [number], как его
-  /// печатает издание («1–6а»): текст показывает его вместо своего номера.
+  /// Даёт куску, который начинается стихом [verse] с частью [part] главы
+  /// [chapter] книги [book], номер [number], как его печатает издание,
+  /// когда его не построить из концов куска: текст показывает его вместо
+  /// своего номера.
   ///
   /// Таблицу `verse_numbers` файл получает при первом номере.
-  void addVerseNumber(int book, int chapter, int verse, String number) {
+  void addVerseNumber(
+    int book,
+    int chapter,
+    int verse,
+    String number, {
+    String part = '',
+  }) {
     _checkType(ModuleType.bible);
     if (!_verseNumbersCreated) {
       _db.execute(verseNumbersTable.create);
       _verseNumbersCreated = true;
     }
-    _statement('INSERT INTO verse_numbers VALUES (?, ?, ?, ?)')
-        .execute([BookCatalog.codeOf(book), chapter, verse, number]);
+    _statement(
+      'INSERT INTO verse_numbers (book, chapter, verse, part, number) '
+      'VALUES (?, ?, ?, ?, ?)',
+    ).execute([BookCatalog.codeOf(book), chapter, verse, part, number]);
   }
 
   /// Добавляет сноску [id] к стиху; на неё ссылается `<f id>` в тексте.

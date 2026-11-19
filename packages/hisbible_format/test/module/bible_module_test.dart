@@ -142,9 +142,9 @@ void main() {
     final db = sqlite3.open(path, mode: OpenMode.readOnly);
     addTearDown(db.close);
     expect(db.select('PRAGMA application_id').single.columnAt(0), 1214857833);
-    expect(db.select('PRAGMA user_version').single.columnAt(0), 1);
+    expect(db.select('PRAGMA user_version').single.columnAt(0), 2);
     expect(formatApplicationId, 1214857833);
-    expect(formatVersion, 1);
+    expect(formatVersion, 2);
   });
 
   test('reads and writes the citation of a translation', () {
@@ -201,7 +201,10 @@ void main() {
       ..execute(
         "INSERT INTO books VALUES (2, 'ZZZ', 'Z', 'Zzz', NULL, 'eng', NULL)",
       )
-      ..execute("INSERT INTO verses VALUES ('ZZZ', 1, 1, NULL, 'z')")
+      ..execute(
+        'INSERT INTO verses (book, chapter, position, verse, part, '
+        "part_end, text) VALUES ('ZZZ', 1, 0, 1, '', '', 'z')",
+      )
       ..close();
 
     final module = BibleModule.open(path);
@@ -425,8 +428,14 @@ void main() {
 
     final module = BibleModule.open(path);
     addTearDown(module.close);
-    expect(module.verseLabels(140, 36), const {24: 'а', 25: ''});
-    expect(module.verseLabels(140, 36).keys, [24, 25]);
+    expect(module.verseLabels(140, 36), const {
+      (verse: 24, part: ''): 'а',
+      (verse: 25, part: ''): '',
+    });
+    expect(
+      [for (final key in module.verseLabels(140, 36).keys) key.verse],
+      [24, 25],
+    );
     expect(module.verseLabels(140, 35), isEmpty);
     expect(module.verseLabels(10, 1), isEmpty);
 
@@ -448,8 +457,14 @@ void main() {
 
     final module = BibleModule.open(path);
     addTearDown(module.close);
-    expect(module.verseNumbers(470, 1), const {1: '1–6а', 6: '6б–11'});
-    expect(module.verseNumbers(470, 1).keys, [1, 6]);
+    expect(module.verseNumbers(470, 1), const {
+      (verse: 1, part: ''): '1–6а',
+      (verse: 6, part: ''): '6б–11',
+    });
+    expect(
+      [for (final key in module.verseNumbers(470, 1).keys) key.verse],
+      [1, 6],
+    );
     expect(module.verseNumbers(470, 2), isEmpty);
     expect(module.verseNumbers(10, 1), isEmpty);
 
@@ -487,4 +502,227 @@ void main() {
     ]);
     expect(original.footnotes(10, 1), isEmpty);
   });
+
+  group('pieces', () {
+    // Пишет Захарию 4 в порядке переводчика: 1–5, 6a, 10b–14, 6b–10a;
+    // заголовок и номер — у куска 6b.
+    void writeZechariah(String path) {
+      ModuleWriter.create(path, _meta)
+        ..addBook(
+          number: 450,
+          shortName: 'Zech',
+          longName: 'Zechariah',
+          scheme: VerseScheme.eng,
+        )
+        ..addVerse(450, 4, 1, 'alpha', verseEnd: 5)
+        ..addVerse(450, 4, 6, 'beta', part: 'a')
+        ..addVerse(450, 4, 10, 'gamma', part: 'b', verseEnd: 14)
+        ..addVerse(450, 4, 6, 'delta', part: 'b', verseEnd: 10, partEnd: 'a')
+        ..addHeading(450, 4, 6, HeadingKind.section, 1, 'Word', part: 'b')
+        ..addVerseNumber(450, 4, 6, '6b–10a', part: 'b')
+        ..addVerseLabel(450, 4, 10, '', part: 'b')
+        ..finish();
+    }
+
+    test('pieces keep the order of calls', () {
+      writeZechariah(path);
+
+      final module = BibleModule.open(path);
+      addTearDown(module.close);
+      final pieces = module.chapter(450, 4);
+      expect(
+        [for (final piece in pieces) piece.label],
+        ['1–5', '6a', '10b–14', '6b–10a'],
+      );
+      expect(
+        pieces.last,
+        const Verse(6, 'delta', verseEnd: 10, part: 'b', partEnd: 'a'),
+      );
+      expect(module.lastVerses(), {
+        450: {4: 14},
+      });
+    });
+
+    test('a verse in two pieces is two rows', () {
+      writeZechariah(path);
+
+      final module = BibleModule.open(path);
+      addTearDown(module.close);
+      final sixth = [
+        for (final piece in module.chapter(450, 4))
+          if (piece.covers(6)) piece,
+      ];
+      expect(
+        [for (final piece in sixth) piece.key],
+        [(verse: 6, part: 'a'), (verse: 6, part: 'b')],
+      );
+      expect([for (final piece in sixth) piece.text], ['beta', 'delta']);
+      expect(sixth.last.covers(10), isTrue);
+      expect(sixth.last.covers(11), isFalse);
+    });
+
+    test('headings and numbers belong to a piece', () {
+      writeZechariah(path);
+
+      final module = BibleModule.open(path);
+      addTearDown(module.close);
+      expect(module.headings(450, 4), const [
+        Heading(6, 0, HeadingKind.section, 1, 'Word', part: 'b'),
+      ]);
+      expect(module.verseNumbers(450, 4), const {
+        (verse: 6, part: 'b'): '6b–10a',
+      });
+      expect(module.verseLabels(450, 4), const {(verse: 10, part: 'b'): ''});
+    });
+
+    test('labels are built from the ends of a piece', () {
+      expect(const Verse(6, '').label, '6');
+      expect(const Verse(6, '', part: 'b').label, '6b');
+      expect(const Verse(10, '', part: 'b', verseEnd: 14).label, '10b–14');
+      expect(const Verse(1, '', verseEnd: 6, partEnd: 'а').label, '1–6а');
+      expect(const Verse(6, '', part: 'b').key, (verse: 6, part: 'b'));
+      expect(const Verse(6, '', part: 'b'), isNot(const Verse(6, '')));
+    });
+
+    test('an end reaching the next piece of the same verse is dropped', () {
+      // Кусок 1–7b заходит на кусок 7b: следующий по номерам — 7b, а не 8.
+      ModuleWriter.create(path, _meta)
+        ..addBook(
+          number: 450,
+          shortName: 'Zech',
+          longName: 'Zechariah',
+          scheme: VerseScheme.eng,
+        )
+        ..addVerse(450, 4, 7, 'b', part: 'b')
+        ..addVerse(450, 4, 1, 'a', verseEnd: 7, partEnd: 'b')
+        ..addVerse(450, 4, 8, 'c')
+        ..finish();
+
+      final module = BibleModule.open(path);
+      addTearDown(module.close);
+      expect(module.chapter(450, 4), const [
+        Verse(7, 'b', part: 'b'),
+        Verse(1, 'a'),
+        Verse(8, 'c'),
+      ]);
+      expect(module.lastVerses(), {
+        450: {4: 8},
+      });
+    });
+  });
+
+  test('a version 1 file reads as before', () {
+    final db = sqlite3.open(path)
+      ..execute('PRAGMA application_id = $formatApplicationId')
+      ..execute('PRAGMA user_version = 1');
+    for (final create in _schemaV1) {
+      db.execute(create);
+    }
+    final insertMeta = db.prepare('INSERT INTO meta VALUES (?, ?)');
+    for (final MapEntry(:key, :value) in _meta.toValues().entries) {
+      insertMeta.execute([key, value]);
+    }
+    insertMeta.close();
+    db
+      ..execute(
+        "INSERT INTO books VALUES (1, 'MAT', 'Mt', 'Matthew', NULL, 'eng', "
+        'NULL)',
+      )
+      // Строки идут не по номерам: читатель версии 1 ставит их по номерам.
+      ..execute("INSERT INTO verses VALUES ('MAT', 1, 6, 11, 'six')")
+      ..execute("INSERT INTO verses VALUES ('MAT', 1, 1, 5, 'one')")
+      ..execute("INSERT INTO verses VALUES ('MAT', 1, 12, NULL, 'twelve')")
+      ..execute(
+        "INSERT INTO headings VALUES ('MAT', 1, 6, 0, 'section', 1, 'Birth')",
+      )
+      ..execute(
+        "INSERT INTO verse_numbers VALUES ('MAT', 1, 1, '1–6а'), "
+        "('MAT', 1, 6, '6б–11')",
+      )
+      ..execute("INSERT INTO verse_labels VALUES ('MAT', 1, 12, '')")
+      ..close();
+
+    expect(checkModuleFile(path), isNull);
+    final module = BibleModule.open(path);
+    addTearDown(module.close);
+    expect(module.chapter(470, 1), const [
+      Verse(1, 'one', verseEnd: 5),
+      Verse(6, 'six', verseEnd: 11),
+      Verse(12, 'twelve'),
+    ]);
+    expect(
+      [for (final piece in module.chapter(470, 1)) piece.part],
+      ['', '', ''],
+    );
+    expect(module.headings(470, 1), const [
+      Heading(6, 0, HeadingKind.section, 1, 'Birth'),
+    ]);
+    expect(module.verseNumbers(470, 1), const {
+      (verse: 1, part: ''): '1–6а',
+      (verse: 6, part: ''): '6б–11',
+    });
+    expect(module.verseLabels(470, 1), const {(verse: 12, part: ''): ''});
+    expect(module.lastVerses(), {
+      470: {1: 12},
+    });
+
+    // Новый файл пишется версией 2.
+    final newPath = '${dir.path}/new.hb';
+    writeSample(newPath);
+    final written = sqlite3.open(newPath, mode: OpenMode.readOnly);
+    addTearDown(written.close);
+    expect(written.select('PRAGMA user_version').single.columnAt(0), 2);
+  });
 }
+
+// Схема файла версии 1, как её писал прежний писатель: `meta`, `books`,
+// `verses`, `headings`, `footnotes`, `verse_labels` и `verse_numbers`.
+const _schemaV1 = [
+  'CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL) WITHOUT ROWID',
+  '''
+CREATE TABLE books (
+  position INTEGER PRIMARY KEY,
+  code TEXT NOT NULL UNIQUE,
+  short_name TEXT NOT NULL,
+  long_name TEXT NOT NULL,
+  title TEXT,
+  scheme TEXT NOT NULL,
+  color INTEGER
+)''',
+  '''
+CREATE TABLE verses (
+  book TEXT NOT NULL, chapter INTEGER NOT NULL, verse INTEGER NOT NULL,
+  verse_end INTEGER,
+  text TEXT NOT NULL,
+  PRIMARY KEY (book, chapter, verse)
+) WITHOUT ROWID''',
+  '''
+CREATE TABLE headings (
+  book TEXT NOT NULL, chapter INTEGER NOT NULL, verse INTEGER NOT NULL,
+  position INTEGER NOT NULL,
+  kind TEXT NOT NULL,
+  level INTEGER NOT NULL,
+  text TEXT NOT NULL,
+  PRIMARY KEY (book, chapter, verse, position)
+) WITHOUT ROWID''',
+  '''
+CREATE TABLE footnotes (
+  id INTEGER PRIMARY KEY,
+  book TEXT NOT NULL, chapter INTEGER NOT NULL, verse INTEGER NOT NULL,
+  kind TEXT NOT NULL,
+  caller TEXT NOT NULL,
+  text TEXT NOT NULL
+)''',
+  '''
+CREATE TABLE verse_labels (
+  book TEXT NOT NULL, chapter INTEGER NOT NULL, verse INTEGER NOT NULL,
+  label TEXT NOT NULL,
+  PRIMARY KEY (book, chapter, verse)
+) WITHOUT ROWID''',
+  '''
+CREATE TABLE verse_numbers (
+  book TEXT NOT NULL, chapter INTEGER NOT NULL, verse INTEGER NOT NULL,
+  number TEXT NOT NULL,
+  PRIMARY KEY (book, chapter, verse)
+) WITHOUT ROWID''',
+];

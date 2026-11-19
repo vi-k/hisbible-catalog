@@ -5,7 +5,11 @@ import 'package:hisbible_format/src/versification/book_schemes.dart';
 ///
 /// Хранится в `PRAGMA user_version`; растёт только при несовместимом
 /// изменении. Читатель версии `N` открывает файлы версий `1..N`.
-const int formatVersion = 1;
+///
+/// Версия 2 хранит куски стихов: строка `verses` — кусок с местом в главе
+/// (`position`) и частями концов (`part`, `part_end`); заголовки, метки
+/// и номера стихов привязаны к куску (`verse`, `part`).
+const int formatVersion = 2;
 
 /// Подпись файла модуля HisBible в `PRAGMA application_id`.
 ///
@@ -89,7 +93,7 @@ enum BookKind {
   outsideTable,
 }
 
-/// Таблица схемы версии 1: имя, обязательные столбцы и `CREATE`.
+/// Таблица схемы: имя, обязательные столбцы и `CREATE`.
 typedef SchemaTable = ({String name, List<String> columns, String create});
 
 /// Таблица `meta`: ключи и значения модуля.
@@ -125,8 +129,37 @@ CREATE TABLE books (
 )''',
 );
 
-/// Таблица `verses`: стихи Библии.
+/// Таблица `verses`: куски стихов Библии в порядке главы.
+///
+/// Кусок идёт от `verse`/`part` до `verse_end`/`part_end`; `part` — буква
+/// части, пустая — стих целиком; `verse_end` `NULL` — кусок в одном стихе.
+/// `position` — место куска в главе, с 0.
 const SchemaTable versesTable = (
+  name: 'verses',
+  columns: [
+    'book',
+    'chapter',
+    'position',
+    'verse',
+    'part',
+    'verse_end',
+    'part_end',
+    'text',
+  ],
+  create: '''
+CREATE TABLE verses (
+  book TEXT NOT NULL, chapter INTEGER NOT NULL,
+  position INTEGER NOT NULL,
+  verse INTEGER NOT NULL, part TEXT NOT NULL,
+  verse_end INTEGER, part_end TEXT NOT NULL,
+  text TEXT NOT NULL,
+  PRIMARY KEY (book, chapter, position),
+  UNIQUE (book, chapter, verse, part)
+) WITHOUT ROWID''',
+);
+
+/// Таблица `verses` версии 1: стихи по номерам, без частей и места в главе.
+const SchemaTable versesTableV1 = (
   name: 'verses',
   columns: ['book', 'chapter', 'verse', 'verse_end', 'text'],
   create: '''
@@ -138,8 +171,33 @@ CREATE TABLE verses (
 ) WITHOUT ROWID''',
 );
 
-/// Таблица `headings`: заголовки над стихами.
+/// Таблица `headings`: заголовки над кусками стихов.
 const SchemaTable headingsTable = (
+  name: 'headings',
+  columns: [
+    'book',
+    'chapter',
+    'verse',
+    'part',
+    'position',
+    'kind',
+    'level',
+    'text',
+  ],
+  create: '''
+CREATE TABLE headings (
+  book TEXT NOT NULL, chapter INTEGER NOT NULL, verse INTEGER NOT NULL,
+  part TEXT NOT NULL,
+  position INTEGER NOT NULL,
+  kind TEXT NOT NULL,
+  level INTEGER NOT NULL,
+  text TEXT NOT NULL,
+  PRIMARY KEY (book, chapter, verse, part, position)
+) WITHOUT ROWID''',
+);
+
+/// Таблица `headings` версии 1: заголовки над стихами.
+const SchemaTable headingsTableV1 = (
   name: 'headings',
   columns: ['book', 'chapter', 'verse', 'position', 'kind', 'level', 'text'],
   create: '''
@@ -175,11 +233,24 @@ CREATE TABLE intros (
 ) WITHOUT ROWID''',
 );
 
-/// Таблица `verse_labels`: метки стихов вместо номеров.
+/// Таблица `verse_labels`: метки кусков стихов вместо номеров.
 ///
 /// Необязательная, только у Библии: в [tablesOf] её нет, писатель создаёт её
 /// при первой метке, читатель смотрит, есть ли она в файле.
 const SchemaTable verseLabelsTable = (
+  name: 'verse_labels',
+  columns: ['book', 'chapter', 'verse', 'part', 'label'],
+  create: '''
+CREATE TABLE verse_labels (
+  book TEXT NOT NULL, chapter INTEGER NOT NULL, verse INTEGER NOT NULL,
+  part TEXT NOT NULL,
+  label TEXT NOT NULL,
+  PRIMARY KEY (book, chapter, verse, part)
+) WITHOUT ROWID''',
+);
+
+/// Таблица `verse_labels` версии 1: метки стихов вместо номеров.
+const SchemaTable verseLabelsTableV1 = (
   name: 'verse_labels',
   columns: ['book', 'chapter', 'verse', 'label'],
   create: '''
@@ -190,11 +261,24 @@ CREATE TABLE verse_labels (
 ) WITHOUT ROWID''',
 );
 
-/// Таблица `verse_numbers`: номера стихов, как их печатает издание.
+/// Таблица `verse_numbers`: номера кусков стихов, как их печатает издание.
 ///
 /// Необязательная, только у Библии: в [tablesOf] её нет, писатель создаёт её
 /// при первом номере, читатель смотрит, есть ли она в файле.
 const SchemaTable verseNumbersTable = (
+  name: 'verse_numbers',
+  columns: ['book', 'chapter', 'verse', 'part', 'number'],
+  create: '''
+CREATE TABLE verse_numbers (
+  book TEXT NOT NULL, chapter INTEGER NOT NULL, verse INTEGER NOT NULL,
+  part TEXT NOT NULL,
+  number TEXT NOT NULL,
+  PRIMARY KEY (book, chapter, verse, part)
+) WITHOUT ROWID''',
+);
+
+/// Таблица `verse_numbers` версии 1: номера стихов, как их печатает издание.
+const SchemaTable verseNumbersTableV1 = (
   name: 'verse_numbers',
   columns: ['book', 'chapter', 'verse', 'number'],
   create: '''
@@ -265,18 +349,33 @@ CREATE TABLE crossrefs (
 )''',
 );
 
-/// Таблицы модуля типа [type] в порядке создания и проверки.
-List<SchemaTable> tablesOf(ModuleType type) => switch (type) {
-  ModuleType.bible => const [
-    metaTable,
-    booksTable,
-    versesTable,
-    headingsTable,
-    footnotesTable,
-  ],
-  ModuleType.commentaries => const [metaTable, commentsTable],
-  ModuleType.crossReferences => const [metaTable, crossrefsTable],
-};
+/// Таблицы модуля типа [type] версии формата [version] в порядке создания
+/// и проверки.
+List<SchemaTable> tablesOf(ModuleType type, {int version = formatVersion}) =>
+    switch (type) {
+      ModuleType.bible when version == 1 => const [
+        metaTable,
+        booksTable,
+        versesTableV1,
+        headingsTableV1,
+        footnotesTable,
+      ],
+      ModuleType.bible => const [
+        metaTable,
+        booksTable,
+        versesTable,
+        headingsTable,
+        footnotesTable,
+      ],
+      ModuleType.commentaries => const [metaTable, commentsTable],
+      ModuleType.crossReferences => const [metaTable, crossrefsTable],
+    };
+
+/// Необязательные таблицы Библии версии формата [version]: `intros`,
+/// `verse_labels` и `verse_numbers`.
+List<SchemaTable> optionalBibleTablesOf(int version) => version == 1
+    ? const [introsTable, verseLabelsTableV1, verseNumbersTableV1]
+    : const [introsTable, verseLabelsTable, verseNumbersTable];
 
 /// Индексы модуля типа [type]; создаются после записи данных.
 List<String> indexesOf(ModuleType type) => switch (type) {

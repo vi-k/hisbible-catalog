@@ -359,7 +359,10 @@ void main() {
 
     final module = BibleModule.open(path);
     try {
-      expect(module.verseLabels(140, 36), const {24: 'а', 25: ''});
+      expect(module.verseLabels(140, 36), const {
+        (verse: 24, part: ''): 'а',
+        (verse: 25, part: ''): '',
+      });
       expect(module.verseLabels(140, 35), isEmpty);
       expect(module.chapter(140, 36)[1].text, 'Б,');
     } finally {
@@ -381,7 +384,10 @@ void main() {
 
     final module = BibleModule.open(path);
     try {
-      expect(module.verseNumbers(470, 1), const {1: '1–6а', 6: '6б–11'});
+      expect(module.verseNumbers(470, 1), const {
+        (verse: 1, part: ''): '1–6а',
+        (verse: 6, part: ''): '6б–11',
+      });
       expect(module.chapter(470, 1).map((v) => (v.verse, v.verseEnd)), [
         (1, 5),
         (6, 11),
