@@ -422,4 +422,143 @@ void main() {
       module.close();
     }
   });
+
+  test('Zechariah 4 keeps its pieces', () {
+    final books = readUsfmBooks([
+      _file(
+        'a.usfm',
+        '\\id ZEC\n\\c 4\n\\p\n\\v 1-5 alpha\n\\v 6a beta\n'
+            '\\v 10b-14 gamma\n\\s Heading\n\\p\n'
+            '\\v 6b-10a \\vp 6b–10a\\vp* \\zvl b\\zvl* delta\n',
+      ),
+    ]);
+    final path = '${dir.path}/z.hb';
+
+    writeUsfmModule(path, _meta('und'), books);
+
+    expect(books.warnings, isEmpty);
+    expect(checkModuleFile(path), isNull);
+    final module = BibleModule.open(path);
+    try {
+      expect(
+        [for (final v in module.chapter(450, 4)) (v.label, v.text)],
+        [
+          ('1–5', 'alpha'),
+          ('6a', 'beta'),
+          ('10b–14', 'gamma'),
+          ('6b–10a', '<p/>delta'),
+        ],
+      );
+      expect(module.headings(450, 4), const [
+        Heading(6, 0, HeadingKind.section, 1, 'Heading', part: 'b'),
+      ]);
+      expect(module.verseNumbers(450, 4), const {
+        (verse: 6, part: 'b'): '6b–10a',
+      });
+      expect(module.verseLabels(450, 4), const {(verse: 6, part: 'b'): 'b'});
+    } finally {
+      module.close();
+    }
+  });
+
+  test('a repeated piece is dropped', () {
+    final books = readUsfmBooks([
+      _file(
+        'a.usfm',
+        '\\id GEN\n\\c 1\n\\p\n\\v 3 alpha\n\\v 4 beta\n\\v 3 gamma\n'
+            '\\v 6b delta\n\\s Kept\n\\v 7 zeta\n\\s Lost\n\\v 6b epsilon\n',
+      ),
+    ]);
+    final path = '${dir.path}/r.hb';
+
+    writeUsfmModule(path, _meta('und'), books);
+
+    expect(books.warnings, [
+      'GEN 1:3: repeated verse, skipped',
+      'GEN 1:6b: repeated verse, skipped',
+    ]);
+    final module = BibleModule.open(path);
+    try {
+      expect(
+        [for (final v in module.chapter(10, 1)) (v.label, v.text)],
+        [('3', 'alpha'), ('4', 'beta'), ('6b', 'delta'), ('7', 'zeta')],
+      );
+      expect([for (final h in module.headings(10, 1)) h.text], ['Kept']);
+    } finally {
+      module.close();
+    }
+  });
+
+  test('an end that reaches a later piece is cut', () {
+    final books = readUsfmBooks([
+      _file(
+        'a.usfm',
+        '\\id GEN\n\\c 1\n\\p\n\\v 1-7 alpha\n\\v 6b beta\n'
+            '\\c 2\n\\p\n\\v 6b gamma\n\\v 1-7 delta\n'
+            '\\c 3\n\\p\n\\v 1-6b epsilon\n\\v 6b zeta\n',
+      ),
+    ]);
+    final path = '${dir.path}/e.hb';
+
+    writeUsfmModule(path, _meta('und'), books);
+
+    expect(books.warnings, [
+      'GEN 1:1-7: reaches verse 6b, written as one verse',
+      'GEN 2:1-7: reaches verse 6b, written as one verse',
+      'GEN 3:1-6b: reaches verse 6b, written as one verse',
+    ]);
+    expect(checkModuleFile(path), isNull);
+    final module = BibleModule.open(path);
+    try {
+      expect([for (final v in module.chapter(10, 1)) v.label], ['1', '6b']);
+      expect([for (final v in module.chapter(10, 2)) v.label], ['6b', '1']);
+      expect([for (final v in module.chapter(10, 3)) v.label], ['1', '6b']);
+    } finally {
+      module.close();
+    }
+  });
+
+  test('pieces from USFM pass the module check', () {
+    final books = readUsfmBooks([
+      _file(
+        'a.usfm',
+        '\\id GEN\n'
+            '\\c 1\n\\p\n\\v 28-29 a\n\\p\n\\v 29a b\n\\v 30 c\n'
+            '\\c 2\n\\p\n\\v 29 a\n\\v 29a b\n'
+            '\\c 3\n\\p\n\\v 1a a\n\\v 1b b\n\\v 1c c\n\\v 2 d\n'
+            '\\c 4\n\\p\n\\v 5 a\n\\v 6a b\n\\v 10b-14 c\n\\v 6b-10a d\n'
+            '\\c 5\n\\p\n\\v 1-6а а\n\\v 6б-11 б\n'
+            '\\c 6\n\\p\n\\v 1-6 a\n\\v 6b b\n'
+            '\\c 7\n\\p\n\\v 16 a\n\\v 13 b\n\\v 14 c\n'
+            '\\c 8\n\\p\n\\v 5a-5b a\n\\v 6 b\n',
+      ),
+    ]);
+    final path = '${dir.path}/c.hb';
+
+    writeUsfmModule(path, _meta('und'), books);
+
+    expect(books.warnings, isEmpty);
+    expect(checkModuleFile(path), isNull);
+    final module = BibleModule.open(path);
+    try {
+      expect(
+        [
+          for (var chapter = 1; chapter <= 8; chapter++)
+            [for (final v in module.chapter(10, chapter)) v.label],
+        ],
+        [
+          ['28–29', '29a', '30'],
+          ['29', '29a'],
+          ['1a', '1b', '1c', '2'],
+          ['5', '6a', '10b–14', '6b–10a'],
+          ['1–6а', '6б–11'],
+          ['1–6', '6b'],
+          ['16', '13', '14'],
+          ['5a', '6'],
+        ],
+      );
+    } finally {
+      module.close();
+    }
+  });
 }

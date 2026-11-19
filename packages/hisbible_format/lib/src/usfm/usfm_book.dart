@@ -40,7 +40,7 @@ final class UsfmBook {
   /// [notes] с главой 0 и стихом 0.
   final List<UsfmIntro> intros;
 
-  /// Стихи по порядку текста.
+  /// Куски стихов по порядку текста: свой на каждый `\v`.
   final List<UsfmVerse> verses;
 
   /// Заголовки по порядку текста.
@@ -68,14 +68,19 @@ final class UsfmIntro {
   final List<MarkupNode> nodes;
 }
 
-/// Стих книги USFM.
+/// Кусок стиха книги USFM: то, что идёт за одним `\v`.
+///
+/// Кусок идёт от стиха [verse] с частью [part] до стиха [verseEnd] с частью
+/// [partEnd]: `\v 6b-10a` — от `6b` до `10a`. Пустая часть — стих целиком.
 final class UsfmVerse {
-  /// Создаёт стих [verse] главы [chapter].
+  /// Создаёт кусок, который начинается стихом [verse] главы [chapter].
   const UsfmVerse({
     required this.chapter,
     required this.verse,
     required this.nodes,
     this.verseEnd,
+    this.part = '',
+    this.partEnd = '',
     this.label,
     this.number,
   });
@@ -83,8 +88,15 @@ final class UsfmVerse {
   /// Номер главы.
   final int chapter;
 
-  /// Номер стиха.
+  /// Номер стиха, которым начинается кусок.
   final int verse;
+
+  /// Буква части первого стиха (`a`, `б`) из `\v`; пустая — стих целиком.
+  final String part;
+
+  /// Буква части последнего стиха; пустая — стих целиком. Без [verseEnd]
+  /// пустая.
+  final String partEnd;
 
   /// Метка вместо номера из `\zvl`; пусто — ни номера, ни метки; `null` —
   /// стих с номером.
@@ -93,29 +105,36 @@ final class UsfmVerse {
   /// Номер, как его печатает издание, из `\vp` («1–6а»); `null` — свой.
   final String? number;
 
-  /// Последний стих объединённых стихов (`\v 16-17`); `null` — стих один.
+  /// Последний стих куска (`\v 16-17`), больше [verse]; `null` — кусок
+  /// в одном стихе.
   final int? verseEnd;
 
   /// Разметка стиха.
   final List<MarkupNode> nodes;
 }
 
-/// Заголовок над стихом.
+/// Заголовок над куском стиха.
 final class UsfmHeading {
-  /// Создаёт заголовок над стихом [verse] главы [chapter].
+  /// Создаёт заголовок над куском, который начинается стихом [verse] главы
+  /// [chapter] с частью [part].
   const UsfmHeading({
     required this.chapter,
     required this.verse,
     required this.kind,
     required this.level,
     required this.nodes,
+    this.part = '',
   });
 
   /// Номер главы.
   final int chapter;
 
-  /// Номер стиха, над которым стоит заголовок.
+  /// Номер стиха, которым начинается кусок под заголовком.
   final int verse;
+
+  /// Часть стиха, которой начинается кусок под заголовком; пустая — стих
+  /// целиком.
+  final String part;
 
   /// Вид заголовка.
   final HeadingKind kind;

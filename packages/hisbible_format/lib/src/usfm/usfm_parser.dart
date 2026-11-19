@@ -723,11 +723,19 @@ IntroKind? _introKindOf(String name) {
 }
 
 final class _VerseBuilder {
-  _VerseBuilder(this.chapter, this.verse, this.verseEnd);
+  _VerseBuilder(
+    this.chapter,
+    this.verse,
+    this.verseEnd, {
+    required this.part,
+    required this.partEnd,
+  });
 
   final int chapter;
   final int verse;
-  int? verseEnd;
+  final int? verseEnd;
+  final String part;
+  final String partEnd;
   // Метка из `\zvl`; `null` — помета не встретилась.
   String? label;
   // Номер из `\vp`; `null` — помета не встретилась или пуста.
@@ -757,8 +765,10 @@ final class _HeadingBuilder {
   final _Content content = _Content();
   final List<_NoteBuilder> notes = [];
 
-  // Стих под заголовком; `null` — стиха ещё не было.
+  // Кусок под заголовком: его первый стих и часть; `null` — куска ещё
+  // не было.
   int? verse;
+  String part = '';
 
   // Текст открытого стиха после заголовка до следующего заголовка;
   // дописывается к стиху на следующем `\v`.
@@ -816,7 +826,9 @@ final class _OpenNote {
 }
 
 final _lowercase = RegExp(r'^[a-z]+$');
-final _verseNumber = RegExp(r'(\d+)[a-z]?(?:[-–](\d+)[a-z]?)?');
+// Номер `\v`: стих, его часть, через дефис или тире — последний стих
+// куска и его часть (`6b-10a`, `1-6а`).
+final _verseNumber = RegExp(r'(\d+)([a-zа-я])?(?:[-–](\d+)([a-zа-я])?)?');
 final _leadingDigits = RegExp(r'^\d+');
 final _whitespace = RegExp(r'\s');
 
@@ -913,6 +925,8 @@ final class _Parser {
             chapter: verse.chapter,
             verse: verse.verse,
             verseEnd: verse.verseEnd,
+            part: verse.part,
+            partEnd: verse.partEnd,
             label: verse.label,
             number: verse.number,
             nodes: verse.content.finish(),
@@ -924,6 +938,7 @@ final class _Parser {
             UsfmHeading(
               chapter: heading.chapter,
               verse: heading.verse ?? 0,
+              part: heading.part,
               kind: heading.kind,
               level: heading.level,
               nodes: nodes,
@@ -1256,23 +1271,26 @@ final class _Parser {
         ? last
         : null;
     final verseNumber = parsed ?? (lastInChapter?.verse ?? 0) + 1;
-    // Конец, который не помещается в `int`, отбрасывается.
-    final rangeEnd = match?[2] == null ? null : int.tryParse(match![2]!);
+    final part = match?[2] ?? '';
+    // Конец, который не помещается в `int` или не больше начала, —
+    // отбрасывается вместе со своей частью: `\v 5a-5b` — кусок `5a`.
+    final rangeEnd = match?[3] == null ? null : int.tryParse(match![3]!);
     final end = rangeEnd != null && rangeEnd > verseNumber ? rangeEnd : null;
-    final _VerseBuilder verse;
-    if (lastInChapter != null && lastInChapter.verse == verseNumber) {
-      // `\v 1b` дописывается к стиху 1.
-      verse = lastInChapter;
-      if (end != null && end > (verse.verseEnd ?? 0)) {
-        verse.verseEnd = end;
-      }
-    } else {
-      verse = _VerseBuilder(_chapter, verseNumber, end);
-      _verses.add(verse);
-    }
+    // Каждый `\v` — свой кусок, и `\v 1b` за `\v 1a` тоже: повторы
+    // и перекрытия разбирает запись модуля.
+    final verse = _VerseBuilder(
+      _chapter,
+      verseNumber,
+      end,
+      part: part,
+      partEnd: end == null ? '' : match?[4] ?? '',
+    );
+    _verses.add(verse);
     _chapterHasVerse = true;
     for (final heading in _pendingHeadings) {
-      heading.verse = verseNumber;
+      heading
+        ..verse = verseNumber
+        ..part = part;
       for (final note in heading.notes) {
         note.verse = verseNumber;
       }

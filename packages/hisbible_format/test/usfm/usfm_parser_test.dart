@@ -79,17 +79,77 @@ void main() {
     expect(book.unknownMarkers, isEmpty);
   });
 
-  test('verse parts join and chapters number verses anew', () {
+  test('parts in a row are two pieces and chapters number verses anew', () {
     final book = parseUsfm(
       '\\id GEN\n\\c 1\n\\v 1a first\n\\v 1b second\n\\v 2 two\n'
       '\\c 2\n\\v 1 again',
     );
     expect(
-      [for (final v in book.verses) (v.chapter, v.verse)],
-      [(1, 1), (1, 2), (2, 1)],
+      [for (final v in book.verses) (v.chapter, v.verse, v.part)],
+      [(1, 1, 'a'), (1, 1, 'b'), (1, 2, ''), (2, 1, '')],
     );
-    expect(book.verses.first.nodes, [const TextRun('first second')]);
+    expect(book.verses[0].nodes, [const TextRun('first')]);
+    expect(book.verses[1].nodes, [const TextRun('second')]);
     expect(book.verses.first.verseEnd, isNull);
+  });
+
+  test('Zechariah 4 keeps its pieces', () {
+    final book = parseUsfm(
+      '\\id ZEC\n\\c 4\n\\p\n\\v 5 alpha\n\\v 6a beta\n'
+      '\\v 10b-14 gamma\n\\v 6b-10a delta\n',
+    );
+    expect(
+      [
+        for (final v in book.verses)
+          (v.verse, v.part, v.verseEnd, v.partEnd, plainText(v.nodes)),
+      ],
+      [
+        (5, '', null, '', 'alpha'),
+        (6, 'a', null, '', 'beta'),
+        (10, 'b', 14, '', 'gamma'),
+        (6, 'b', 10, 'a', 'delta'),
+      ],
+    );
+  });
+
+  test('a moved verse stays where it stands', () {
+    final book = parseUsfm(
+      '\\id JOB\n\\c 3\n\\p\n\\v 16 alpha\n\\v 13 beta\n\\v 14 gamma\n',
+    );
+    expect([for (final v in book.verses) v.verse], [16, 13, 14]);
+  });
+
+  test('Cyrillic parts', () {
+    final book = parseUsfm(
+      '\\id MAT\n\\c 1\n\\p\n\\v 1-6а альфа\n\\v 6б-11 бета\n',
+    );
+    expect(
+      [for (final v in book.verses) (v.verse, v.part, v.verseEnd, v.partEnd)],
+      [(1, '', 6, 'а'), (6, 'б', 11, '')],
+    );
+  });
+
+  test('the end part of a piece in one verse is dropped', () {
+    final verse = parseUsfm('\\id GEN\n\\c 1\n\\p\n\\v 5a-5b alpha\n')
+        .verses
+        .single;
+    expect(
+      (verse.verse, verse.part, verse.verseEnd, verse.partEnd),
+      (5, 'a', null, ''),
+    );
+  });
+
+  test('a heading belongs to its piece', () {
+    final book = parseUsfm(
+      '\\id GEN\n\\c 2\n\\p\n\\v 4a alpha\n\\s Heading\n\\p\n'
+      '\\v 4b beta\n\\v 5 gamma\n',
+    );
+    final heading = book.headings.single;
+    expect((heading.chapter, heading.verse, heading.part), (2, 4, 'b'));
+    expect(
+      [for (final v in book.verses) (v.verse, v.part, plainText(v.nodes))],
+      [(4, 'a', 'alpha'), (4, 'b', 'beta'), (5, '', 'gamma')],
+    );
   });
 
   test('headings stand over the next verse of the chapter', () {
