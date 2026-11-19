@@ -119,6 +119,33 @@ void main() {
     expect([for (final v in book.verses) v.verse], [16, 13, 14]);
   });
 
+  test('a capital part letter reads as a small one', () {
+    final book = parseUsfm(
+      '\\id GEN\n\\c 1\n\\p\n\\v 1 alpha\n\\v 1A beta\n'
+      '\\v 2-6Б gamma\n\\v 6В delta\n',
+    );
+    expect(
+      [for (final v in book.verses) (v.verse, v.part, v.verseEnd, v.partEnd)],
+      [
+        (1, '', null, ''),
+        (1, 'a', null, ''),
+        (2, '', 6, 'б'),
+        (6, 'в', null, ''),
+      ],
+    );
+  });
+
+  test('an adjacent repeat joins its piece', () {
+    final book = parseUsfm(
+      '\\id GEN\n\\c 1\n\\p\n\\v 3 alpha\n\\v 3 beta\n\\v 4 gamma\n'
+      '\\v 3 delta\n',
+    );
+    expect(
+      [for (final v in book.verses) (v.verse, plainText(v.nodes))],
+      [(3, 'alpha beta'), (4, 'gamma'), (3, 'delta')],
+    );
+  });
+
   test('Cyrillic parts', () {
     final book = parseUsfm(
       '\\id MAT\n\\c 1\n\\p\n\\v 1-6а альфа\n\\v 6б-11 бета\n',

@@ -733,9 +733,10 @@ final class _VerseBuilder {
 
   final int chapter;
   final int verse;
-  final int? verseEnd;
   final String part;
-  final String partEnd;
+  // Конец растёт, если к куску приклеен повтор с концом дальше.
+  int? verseEnd;
+  String partEnd;
   // Метка из `\zvl`; `null` — помета не встретилась.
   String? label;
   // Номер из `\vp`; `null` — помета не встретилась или пуста.
@@ -827,8 +828,11 @@ final class _OpenNote {
 
 final _lowercase = RegExp(r'^[a-z]+$');
 // Номер `\v`: стих, его часть, через дефис или тире — последний стих
-// куска и его часть (`6b-10a`, `1-6а`).
-final _verseNumber = RegExp(r'(\d+)([a-zа-я])?(?:[-–](\d+)([a-zа-я])?)?');
+// куска и его часть (`6b-10a`, `1-6а`). Заглавная буква части читается
+// строчной: `\v 1A` — `1a`.
+final _verseNumber = RegExp(
+  r'(\d+)([a-zA-Zа-яА-Я])?(?:[-–](\d+)([a-zA-Zа-яА-Я])?)?',
+);
 final _leadingDigits = RegExp(r'^\d+');
 final _whitespace = RegExp(r'\s');
 
@@ -1271,21 +1275,40 @@ final class _Parser {
         ? last
         : null;
     final verseNumber = parsed ?? (lastInChapter?.verse ?? 0) + 1;
-    final part = match?[2] ?? '';
+    final part = match?[2]?.toLowerCase() ?? '';
     // Конец, который не помещается в `int` или не больше начала, —
     // отбрасывается вместе со своей частью: `\v 5a-5b` — кусок `5a`.
     final rangeEnd = match?[3] == null ? null : int.tryParse(match![3]!);
     final end = rangeEnd != null && rangeEnd > verseNumber ? rangeEnd : null;
-    // Каждый `\v` — свой кусок, и `\v 1b` за `\v 1a` тоже: повторы
-    // и перекрытия разбирает запись модуля.
-    final verse = _VerseBuilder(
-      _chapter,
-      verseNumber,
-      end,
-      part: part,
-      partEnd: end == null ? '' : match?[4] ?? '',
-    );
-    _verses.add(verse);
+    final partEnd = end == null ? '' : match?[4]?.toLowerCase() ?? '';
+    final _VerseBuilder verse;
+    if (lastInChapter != null &&
+        lastInChapter.verse == verseNumber &&
+        lastInChapter.part == part) {
+      // Тот же стих с той же частью сразу за своим куском дописывается
+      // к нему, без предупреждения: текст не теряется.
+      verse = lastInChapter;
+      final previous = verse.verseEnd;
+      if (end != null &&
+          (previous == null ||
+              end > previous ||
+              (end == previous && partEnd.compareTo(verse.partEnd) > 0))) {
+        verse
+          ..verseEnd = end
+          ..partEnd = partEnd;
+      }
+    } else {
+      // Остальные `\v` — свои куски, и `\v 1b` за `\v 1a` тоже: повторы
+      // не подряд и перекрытия разбирает запись модуля.
+      verse = _VerseBuilder(
+        _chapter,
+        verseNumber,
+        end,
+        part: part,
+        partEnd: partEnd,
+      );
+      _verses.add(verse);
+    }
     _chapterHasVerse = true;
     for (final heading in _pendingHeadings) {
       heading

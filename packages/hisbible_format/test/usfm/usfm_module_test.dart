@@ -489,6 +489,31 @@ void main() {
     }
   });
 
+  test('an adjacent repeat joins its piece', () {
+    final books = readUsfmBooks([
+      _file(
+        'a.usfm',
+        '\\id GEN\n\\c 1\n\\p\n\\v 3 alpha\n\\v 3 beta\n'
+            '\\v 6b gamma\n\\v 6b-8 delta\n\\v 9 epsilon\n',
+      ),
+    ]);
+    final path = '${dir.path}/j.hb';
+
+    writeUsfmModule(path, _meta('und'), books);
+
+    expect(books.warnings, isEmpty);
+    expect(checkModuleFile(path), isNull);
+    final module = BibleModule.open(path);
+    try {
+      expect(
+        [for (final v in module.chapter(10, 1)) (v.label, v.text)],
+        [('3', 'alpha beta'), ('6b–8', 'gamma delta'), ('9', 'epsilon')],
+      );
+    } finally {
+      module.close();
+    }
+  });
+
   test('an end that reaches a later piece is cut', () {
     final books = readUsfmBooks([
       _file(
@@ -530,7 +555,8 @@ void main() {
             '\\c 5\n\\p\n\\v 1-6а а\n\\v 6б-11 б\n'
             '\\c 6\n\\p\n\\v 1-6 a\n\\v 6b b\n'
             '\\c 7\n\\p\n\\v 16 a\n\\v 13 b\n\\v 14 c\n'
-            '\\c 8\n\\p\n\\v 5a-5b a\n\\v 6 b\n',
+            '\\c 8\n\\p\n\\v 5a-5b a\n\\v 6 b\n'
+            '\\c 9\n\\p\n\\v 1 a\n\\v 1A b\n\\v 2 c\n',
       ),
     ]);
     final path = '${dir.path}/c.hb';
@@ -543,7 +569,7 @@ void main() {
     try {
       expect(
         [
-          for (var chapter = 1; chapter <= 8; chapter++)
+          for (var chapter = 1; chapter <= 9; chapter++)
             [for (final v in module.chapter(10, chapter)) v.label],
         ],
         [
@@ -555,6 +581,7 @@ void main() {
           ['1–6', '6b'],
           ['16', '13', '14'],
           ['5a', '6'],
+          ['1', '1a', '2'],
         ],
       );
     } finally {
