@@ -119,9 +119,10 @@ Notes:
 - `scheme` is the verse numbering of the book, named as the SIL versification
   files: `eng` (English), `org` (original: a psalm title is verse 1), `rso`
   (Russian Synodal, full edition), `rsc` (Russian Synodal, canonical edition).
-  The SIL file `rso` does not map the deuterocanonical books; for them `rso`
-  maps to `org` (the Greek text as Rahlfs numbers it) by the table of
-  `hisbible_format` (`rso_deutero_vrs.dart`).
+  The SIL files `eng` and `rso` do not map the deuterocanonical books; for them
+  `eng` (numbered as the KJV and Brenton number them) and `rso` map to `org`
+  (the Greek text as Rahlfs numbers it) by the tables of `hisbible_format`
+  (`eng_deutero_vrs.dart`, `rso_deutero_vrs.dart`).
 - In a Bible whose 2 Chronicles follows `rsc` or `rso`, or, in a Bible without
   a book `MAN`, whose 2 Chronicles 36 has more than 23 verses, 2 Chronicles
   36:24–35 is the Prayer of Manasseh; in `rso`, so is 2 Chronicles 37. A reader

@@ -1,6 +1,7 @@
 import 'package:hisbible_format/src/books/book_catalog.dart';
 import 'package:hisbible_format/src/refs/verse_ref.dart';
 import 'package:hisbible_format/src/versification/book_schemes.dart';
+import 'package:hisbible_format/src/versification/eng_deutero_vrs.dart';
 import 'package:hisbible_format/src/versification/rso_deutero_vrs.dart';
 import 'package:hisbible_format/src/versification/vrs_data.dart';
 
@@ -22,10 +23,11 @@ final class Versification {
       });
 
   /// Четыре схемы SIL из `vrs_data.dart`; разбираются при первом обращении.
-  /// К `rso` дописаны свои соответствия неканонических книг
-  /// (`rso_deutero_vrs.dart`).
+  /// К `eng` и `rso` дописаны свои соответствия неканонических книг
+  /// (`eng_deutero_vrs.dart`, `rso_deutero_vrs.dart`); у `eng` они стоят
+  /// первыми, чтобы победить строку SIL `BAR 6:1-73 = LJE 1:1-73`.
   static final Versification standard = Versification.fromVrs({
-    VerseScheme.eng: engVrs,
+    VerseScheme.eng: '$engDeuteroVrs\n$engVrs',
     VerseScheme.org: orgVrs,
     VerseScheme.rso: '$rsoVrs\n$rsoDeuteroVrs',
     VerseScheme.rsc: rscVrs,

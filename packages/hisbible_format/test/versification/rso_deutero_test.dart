@@ -14,6 +14,17 @@ VerseRef toOrg(VerseRef ref) =>
 VerseRef fromOrg(VerseRef ref) =>
     vs.fromCanonical(vs.toCanonical(ref, VerseScheme.org), VerseScheme.rso);
 
+// Каноническое место: в нём модуль хранит стих.
+VerseRef canonical(VerseRef ref, VerseScheme scheme) =>
+    vs.toCanonical(ref, scheme);
+
+// Греческий стих со своим стихом в `eng`. Где английский стих покрывает два
+// греческих, второй своего места в `eng` не имеет и переводится в первый.
+bool ownCanonical(VerseRef greek) => toOrgOf(greek) == greek;
+
+VerseRef toOrgOf(VerseRef greek) =>
+    vs.fromCanonical(canonical(greek, VerseScheme.org), VerseScheme.org);
+
 /// Место таблицы `tool/rso_deutero`: `глава:стих`, `глава:стих-стих`
 /// или `глава:стих-глава:стих` в одной главе.
 List<(int, int)> _verses(String spec) {
@@ -57,9 +68,10 @@ void main() {
           continue;
         }
         final greek = _verses(cells[1]);
+        // Синодальный стих и его греческий — одно каноническое место.
         expect(
-          toOrg(r(book, rus.$1, rus.$2)),
-          r(book, greek.first.$1, greek.first.$2),
+          canonical(r(book, rus.$1, rus.$2), VerseScheme.rso),
+          canonical(r(book, greek.first.$1, greek.first.$2), VerseScheme.org),
           reason: '$code ${cells[0]}',
         );
         for (final verse in greek) {
@@ -67,6 +79,9 @@ void main() {
         }
       }
       firstNamed.forEach((greek, rus) {
+        if (!ownCanonical(r(book, greek.$1, greek.$2))) {
+          return;
+        }
         expect(
           fromOrg(r(book, greek.$1, greek.$2)),
           r(book, rus.$1, rus.$2),
@@ -75,6 +90,13 @@ void main() {
       });
     });
   }
+
+  test('a Greek verse without its own English verse is one verse early', () {
+    // Сир 33:16 английского счёта — греческие 33:16–17: Синодальный 33:16,
+    // по смыслу греческий 33:17, в греческом открывается на 33:16.
+    expect(toOrg(r(280, 33, 16)), r(280, 33, 16));
+    expect(canonical(r(280, 33, 16), VerseScheme.rso), r(280, 33, 16));
+  });
 
   test('Sirach 43:15 of the Synodal is 43:14 of the Greek', () {
     expect(toOrg(r(280, 43, 15)), r(280, 43, 14));
