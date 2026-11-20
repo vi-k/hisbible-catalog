@@ -115,6 +115,31 @@ void main() {
     }
   });
 
+  test('a scheme set by hand beats the detected one', () {
+    final books = readUsfmBooks([
+      _file('a.usfm', _book('GEN')),
+      _file('b.usfm', _book('EXO', verse: 'Names.')),
+    ]);
+    final path = '${dir.path}/m.hb';
+
+    writeUsfmModule(
+      path,
+      _meta('und'),
+      books,
+      schemes: {20: VerseScheme.org, 300: VerseScheme.rso},
+    );
+
+    final module = BibleModule.open(path);
+    try {
+      expect(module.schemes.of(10), VerseScheme.eng);
+      expect(module.schemes.of(20), VerseScheme.org);
+      // Книги, которой в модуле нет, ручная схема не добавляет.
+      expect(module.schemes.schemes.keys, unorderedEquals([10, 20]));
+    } finally {
+      module.close();
+    }
+  });
+
   test('ru order follows the russian catalog order', () {
     final books = readUsfmBooks([
       _file('a.usfm', _book('ROM')),

@@ -183,12 +183,17 @@ UsfmBooks readUsfmBooks(
 /// кусок, отбрасывается; всё это попадает в `books.warnings`. Возвращает
 /// счётчики ссылок из `\xt`. [onProgress] — доля записанных книг.
 ///
+/// Схему нумерации каждой книги запись распознаёт по последним стихам глав
+/// (`Versification.detect`); [schemes] — книги, чью схему задали руками:
+/// номер книги → схема. Схема из [schemes] побеждает распознанную.
+///
 /// Файл `.part` и проверку модуля вызывающий ведёт сам. При ошибке бросает,
 /// файл уже закрыт через [ModuleWriter.abort].
 XtStats writeUsfmModule(
   String path,
   ModuleMeta meta,
   UsfmBooks books, {
+  Map<int, VerseScheme> schemes = const {},
   void Function(double fraction)? onProgress,
 }) {
   final language = meta.language;
@@ -202,6 +207,7 @@ XtStats writeUsfmModule(
     books.warnings,
     russian: _russianOrderLanguages.contains(language),
     language: language,
+    schemes: schemes,
     onProgress: onProgress,
   );
 }
@@ -263,6 +269,7 @@ XtStats _write(
   List<String> warnings, {
   required bool russian,
   required String language,
+  required Map<int, VerseScheme> schemes,
   void Function(double fraction)? onProgress,
 }) {
   final skipped = {for (final book in books) book.number: _skipped(book.usfm)};
@@ -270,7 +277,7 @@ XtStats _write(
     for (final book in books)
       book.number: _verseEnds(book.usfm, skipped[book.number]!, warnings),
   };
-  final schemes = Versification.standard.detect({
+  final detected = Versification.standard.detect({
     for (final book in books)
       book.number: _lastVerses(
         book.usfm,
@@ -278,6 +285,19 @@ XtStats _write(
         skipped[book.number]!.outOfRange,
       ),
   }, russianFlag: russian);
+  final forced = {
+    for (final MapEntry(key: book, value: scheme) in schemes.entries)
+      if (detected.schemes.containsKey(book)) book: scheme,
+  };
+  final bookSchemes = forced.isEmpty
+      ? detected
+      : BookSchemes(
+          schemes: Map.unmodifiable({...detected.schemes, ...forced}),
+          uncertain: Set.unmodifiable(
+            detected.uncertain.difference(forced.keys.toSet()),
+          ),
+          manasseh: detected.manasseh,
+        );
   final names = RefBooks.of([
     for (final book in books)
       (
@@ -292,7 +312,7 @@ XtStats _write(
   final lastVerses = {
     for (final book in books)
       book.number: Versification.standard.lastVerses(
-        schemes.of(book.number),
+        bookSchemes.of(book.number),
         book.number,
       ),
   };
@@ -332,7 +352,7 @@ XtStats _write(
         shortName: _shortName(book, language),
         longName: _longName(book),
         title: _filled(usfm.toc1),
-        scheme: schemes.of(book.number),
+        scheme: bookSchemes.of(book.number),
       );
       _writeText(
         writer,

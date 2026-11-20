@@ -79,6 +79,15 @@ dart run catalog_builder:build --apply-deletions <deletions.json>
   translation is looked up in the given `translations.csv`. It ignores
   `overrides.json`.
 
+### Verse numbering of a book
+
+The builder finds the numbering scheme of each book (`eng`, `org`, `rso`,
+`rsc`) from the last verses of its chapters. Where it guesses wrong, set the
+scheme in `overrides.json`:
+`"schemes": {"<translationId>": {"<book code>": "<scheme>"}}`. For example,
+`"grclxx": {"TOB": "org"}`: Tobit of the LXX lacks three verses, and its
+chapters end as in the Russian Synodal. Then rebuild the module (see below).
+
 ### Rebuilding a module
 
 A module is rebuilt by itself only when its translation gets a new `UpdateDate`

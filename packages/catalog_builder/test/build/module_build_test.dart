@@ -182,6 +182,39 @@ void main() {
     expect([for (final b in bible.books) b.code], ['ACT', 'JAS', 'ROM']);
   });
 
+  test('a book scheme from overrides beats the detected one', () {
+    final outcome = build(
+      _translation(nt: 32 + 26),
+      zip({
+        '75-ROMtest.usfm': _usfm('ROM', [32]),
+        '74-ACTtest.usfm': _usfm('ACT', [26]),
+      }),
+      overrides: Overrides.parse(
+        '{"schemes": {"eng-test": {"ACT": "org"}, "other": {"ROM": "rso"}}}',
+      ),
+    );
+
+    built(outcome);
+    final bible = BibleModule.open(out());
+    addTearDown(bible.close);
+    expect(bible.schemes.of(510), VerseScheme.org);
+    expect(bible.schemes.of(520), VerseScheme.eng);
+  });
+
+  test('overrides with an unknown book or scheme do not parse', () {
+    for (final json in [
+      '{"schemes": {"eng-test": {"XYZ": "org"}}}',
+      '{"schemes": {"eng-test": {"TOB": "lxx"}}}',
+      '{"schemes": {"eng-test": ["TOB"]}}',
+      '{"schemes": []}',
+    ]) {
+      expect(() => Overrides.parse(json), throwsFormatException, reason: json);
+    }
+    expect(Overrides.parse('{"schemes": {"grclxx": {"TOB": "org"}}}').schemes, {
+      'grclxx': {170: VerseScheme.org},
+    });
+  });
+
   test('other languages go by book number', () {
     final outcome = build(
       _translation(nt: 32 + 26 + 27),

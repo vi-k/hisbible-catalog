@@ -150,7 +150,12 @@ BuildOutcome buildModule(
   final XtStats xt;
   try {
     part.parent.createSync(recursive: true);
-    xt = writeUsfmModule(partPath, meta, books);
+    xt = writeUsfmModule(
+      partPath,
+      meta,
+      books,
+      schemes: overrides.schemes[t.translationId] ?? const {},
+    );
   } on Object catch (e) {
     _delete(part);
 

@@ -59,5 +59,10 @@
     "swef": "SFB",
     "turytc": "YTC"
   },
-  "exclude": []
+  "exclude": [],
+  "schemes": {
+    "grclxx": {
+      "TOB": "org"
+    }
+  }
 }
