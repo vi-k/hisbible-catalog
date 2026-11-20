@@ -50,6 +50,36 @@ void main() {
     );
   });
 
+  test('the scheme of the tradition wins a tie', () {
+    // Псалтирь LXX: длины глав те же, что у Синодального.
+    final psalms = {230: of(VerseScheme.lxx, 230)};
+    expect(
+      vs.detect(psalms, russianFlag: false, preferred: VerseScheme.lxx).of(230),
+      VerseScheme.lxx,
+    );
+    // Греческий Новый Завет остаётся `eng`: у `lxx` там те же главы.
+    expect(
+      vs
+          .detect(
+            {520: of(VerseScheme.eng, 520)},
+            russianFlag: false,
+            preferred: VerseScheme.lxx,
+          )
+          .of(520),
+      VerseScheme.eng,
+    );
+    // Без подсказки схемы традиции не предлагаются: 3 Царств с 22:54
+    // у украинского перевода — Синодальный с одной главой мимо, а не Вульгата.
+    final kings = {...of(VerseScheme.rsc, 110), 22: 54};
+    expect(vs.detect({110: kings}, russianFlag: true).of(110), VerseScheme.rsc);
+    expect(
+      vs
+          .detect({110: kings}, russianFlag: true, preferred: VerseScheme.vul)
+          .of(110),
+      VerseScheme.vul,
+    );
+  });
+
   test('a book matching no scheme is uncertain', () {
     final garbled = {
       for (final e in of(VerseScheme.eng, 230).entries)

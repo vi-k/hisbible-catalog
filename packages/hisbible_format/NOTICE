@@ -6,7 +6,10 @@ verbatim from the SIL libpalaso project:
   https://github.com/sillsdev/libpalaso
   commit b4f7a6da7b868f9ae909e40fb0708f5fd4efd782
   (SIL.Scripture/Resources: eng.vrs.txt, org.vrs.txt, rso.vrs.txt,
-  rsc.vrs.txt)
+  rsc.vrs.txt, lxx.vrs.txt, vul.vrs.txt)
+
+One line of vul.vrs.txt, "DAG 3:52-23", is read as "DAG 3:52-53" by
+versification.dart; the copy in vrs_data.dart is left as SIL has it.
 
 They are used under the MIT License:
 

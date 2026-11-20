@@ -204,14 +204,14 @@ void main() {
   test('overrides with an unknown book or scheme do not parse', () {
     for (final json in [
       '{"schemes": {"eng-test": {"XYZ": "org"}}}',
-      '{"schemes": {"eng-test": {"TOB": "lxx"}}}',
+      '{"schemes": {"eng-test": {"TOB": "kjv"}}}',
       '{"schemes": {"eng-test": ["TOB"]}}',
       '{"schemes": []}',
     ]) {
       expect(() => Overrides.parse(json), throwsFormatException, reason: json);
     }
-    expect(Overrides.parse('{"schemes": {"grclxx": {"TOB": "org"}}}').schemes, {
-      'grclxx': {170: VerseScheme.org},
+    expect(Overrides.parse('{"schemes": {"grclxx": {"TOB": "lxx"}}}').schemes, {
+      'grclxx': {170: VerseScheme.lxx},
     });
   });
 

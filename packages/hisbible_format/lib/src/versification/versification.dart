@@ -22,7 +22,7 @@ final class Versification {
           scheme: _VrsTable.parse(files[scheme] ?? ''),
       });
 
-  /// Четыре схемы SIL из `vrs_data.dart`; разбираются при первом обращении.
+  /// Шесть схем SIL из `vrs_data.dart`; разбираются при первом обращении.
   /// К `eng` и `rso` дописаны свои соответствия неканонических книг
   /// (`eng_deutero_vrs.dart`, `rso_deutero_vrs.dart`); у `eng` они стоят
   /// первыми, чтобы победить строку SIL `BAR 6:1-73 = LJE 1:1-73`.
@@ -31,9 +31,31 @@ final class Versification {
     VerseScheme.org: orgVrs,
     VerseScheme.rso: '$rsoVrs\n$rsoDeuteroVrs',
     VerseScheme.rsc: rscVrs,
+    VerseScheme.lxx: lxxVrs,
+    VerseScheme.vul: _vulFixed,
   });
 
-  // Порядок схем при ничьей в распознавании.
+  // Опечатка `vul.vrs.txt`: `DAG 3:52-23` вместо `DAG 3:52-53` — та же
+  // строка в `eng.vrs.txt` читается `S3Y 1:30-31 = DAG 3:52-53`.
+  static final String _vulFixed = _fixed(
+    vulVrs,
+    'DAG 3:52-23 = S3Y 1:30-31',
+    'DAG 3:52-53 = S3Y 1:30-31',
+  );
+
+  // Таблица с одной поправленной строкой; строки нет — ошибка: таблицу
+  // обновили, и поправку пора пересмотреть.
+  static String _fixed(String table, String wrong, String right) {
+    final at = table.indexOf(wrong);
+    if (at < 0 || table.indexOf(wrong, at + 1) >= 0) {
+      throw StateError('Поправка таблицы .vrs не на месте: $wrong');
+    }
+
+    return table.replaceFirst(wrong, right);
+  }
+
+  // Порядок схем при ничьей в распознавании. `lxx` и `vul` в нём нет: они —
+  // схемы традиции и спорят за книгу, только когда [detect] их назвали.
   static const _russianOrder = [
     VerseScheme.rsc,
     VerseScheme.rso,
@@ -182,18 +204,34 @@ final class Versification {
   ///
   /// [chapters] — книга → глава → последний стих, как в модуле. Очки схемы —
   /// число глав, где последний стих совпал со схемой; ничью разбивает
-  /// [russianFlag]. Книга без кода SIL в карту не попадает.
+  /// [russianFlag]. [preferred] — схема традиции перевода (`lxx` у греческого,
+  /// `vul` у латинского). Без неё `lxx` и `vul` не предлагаются вовсе: длины
+  /// глав говорят о совпадении, а не о происхождении текста, и `vul` иначе
+  /// брала бы 3 Царств у украинского перевода за одну главу 22:54. Названная
+  /// схема выигрывает ничью первой, но только в книге, где её длины глав
+  /// не те же, что у `eng`, — иначе греческий Новый Завет звался бы
+  /// Септуагинтой. Книга без кода SIL в карту не попадает.
   BookSchemes detect(
     Map<int, Map<int, int>> chapters, {
     required bool russianFlag,
+    VerseScheme? preferred,
   }) {
-    final order = russianFlag ? _russianOrder : _otherOrder;
+    final base = russianFlag ? _russianOrder : _otherOrder;
     final schemes = <int, VerseScheme>{};
     final uncertain = <int>{};
     for (final MapEntry(key: book, value: lasts) in chapters.entries) {
       if (BookCatalog.byNumber(book)?.silCode == null) {
         continue;
       }
+      final order = switch (preferred) {
+        null => base,
+        final own when base.contains(own) => [
+          own,
+          ...base.where((s) => s != own),
+        ],
+        final own when _sameAsEng(own, book) => [...base, own],
+        final own => [own, ...base],
+      };
       var best = order.first;
       var bestScore = -1;
       for (final scheme in order) {
@@ -217,6 +255,14 @@ final class Versification {
       schemes: Map.unmodifiable(schemes),
       uncertain: Set.unmodifiable(uncertain),
     );
+  }
+
+  bool _sameAsEng(VerseScheme scheme, int book) {
+    final own = lastVerses(scheme, book);
+    final eng = lastVerses(VerseScheme.eng, book);
+
+    return own.length == eng.length &&
+        own.entries.every((e) => eng[e.key] == e.value);
   }
 
   /// Переводит место через таблицы SIL; книга без кода SIL — в себя.

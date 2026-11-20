@@ -140,6 +140,47 @@ void main() {
     }
   });
 
+  test('a Greek translation gets the Septuagint scheme by its language', () {
+    // Книга с длинами глав схемы: в каждой главе стихи до последнего.
+    String full(String code, VerseScheme scheme) {
+      final last = Versification.standard.lastVerses(
+        scheme,
+        BookCatalog.numberOfCode(code)!,
+      );
+      return [
+        '\\id $code',
+        for (final MapEntry(key: c, value: v) in last.entries) ...[
+          '\\c $c',
+          r'\p',
+          for (var i = 1; i <= v; i++) '\\v $i Text.',
+        ],
+      ].join('\n');
+    }
+
+    final books = readUsfmBooks([
+      _file('a.usfm', full('PSA', VerseScheme.lxx)),
+      _file('b.usfm', full('ROM', VerseScheme.eng)),
+    ]);
+    final psalms = BookCatalog.numberOfCode('PSA')!;
+    final romans = BookCatalog.numberOfCode('ROM')!;
+    VerseScheme? schemeOf(String language, int book) {
+      final path = '${dir.path}/$language.hb';
+      writeUsfmModule(path, _meta(language), books);
+      final module = BibleModule.open(path);
+      try {
+        return module.schemes.of(book);
+      } finally {
+        module.close();
+      }
+    }
+
+    expect(schemeOf('grc', psalms), VerseScheme.lxx);
+    // Новый Завет у `lxx` тот же, что у `eng`: он остаётся `eng`.
+    expect(schemeOf('grc', romans), VerseScheme.eng);
+    // Без языка традиции `lxx` не предлагается.
+    expect(schemeOf('und', psalms), isNot(VerseScheme.lxx));
+  });
+
   test('ru order follows the russian catalog order', () {
     final books = readUsfmBooks([
       _file('a.usfm', _book('ROM')),

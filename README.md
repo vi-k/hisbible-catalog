@@ -82,10 +82,13 @@ dart run catalog_builder:build --apply-deletions <deletions.json>
 ### Verse numbering of a book
 
 The builder finds the numbering scheme of each book (`eng`, `org`, `rso`,
-`rsc`) from the last verses of its chapters. Where it guesses wrong, set the
-scheme in `overrides.json`:
+`rsc`) from the last verses of its chapters. A Greek translation (language
+`grc`) may also get `lxx`, a Latin one (`la`) `vul`: chapter lengths tell what
+a book matches, not where its text comes from, so these two are offered only by
+the language. Where the builder guesses wrong, set the scheme in
+`overrides.json`:
 `"schemes": {"<translationId>": {"<book code>": "<scheme>"}}`. For example,
-`"grclxx": {"TOB": "org"}`: Tobit of the LXX lacks three verses, and its
+`"grclxx": {"TOB": "lxx"}`: Tobit of the LXX lacks three verses, and its
 chapters end as in the Russian Synodal. Then rebuild the module (see below).
 
 ### Rebuilding a module

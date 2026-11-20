@@ -11,6 +11,9 @@ typedef UsfmBookEntry = ({int number, BookInfo info, UsfmBook usfm});
 /// Языки, у которых книги идут в порядке [BookCatalog.russianOrder].
 const _russianOrderLanguages = {'ru', 'uk', 'be'};
 
+// Схема традиции перевода: выигрывает ничью в распознавании схемы книги.
+const _traditionSchemes = {'grc': VerseScheme.lxx, 'la': VerseScheme.vul};
+
 // Длина выборки текста в знаках: вдвое больше 10 000 букв, которые считает
 // определитель письменности, с запасом на пробелы, цифры и знаки.
 const _sampleLength = 20000;
@@ -277,14 +280,18 @@ XtStats _write(
     for (final book in books)
       book.number: _verseEnds(book.usfm, skipped[book.number]!, warnings),
   };
-  final detected = Versification.standard.detect({
-    for (final book in books)
-      book.number: _lastVerses(
-        book.usfm,
-        ends[book.number]!,
-        skipped[book.number]!.outOfRange,
-      ),
-  }, russianFlag: russian);
+  final detected = Versification.standard.detect(
+    {
+      for (final book in books)
+        book.number: _lastVerses(
+          book.usfm,
+          ends[book.number]!,
+          skipped[book.number]!.outOfRange,
+        ),
+    },
+    russianFlag: russian,
+    preferred: _traditionSchemes[language.split('-').first],
+  );
   final forced = {
     for (final MapEntry(key: book, value: scheme) in schemes.entries)
       if (detected.schemes.containsKey(book)) book: scheme,
