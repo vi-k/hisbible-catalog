@@ -1,6 +1,7 @@
 import 'package:hisbible_format/src/books/book_catalog.dart';
 import 'package:hisbible_format/src/refs/verse_ref.dart';
 import 'package:hisbible_format/src/versification/book_schemes.dart';
+import 'package:hisbible_format/src/versification/rso_deutero_vrs.dart';
 import 'package:hisbible_format/src/versification/vrs_data.dart';
 
 /// Место внутри таблиц SIL: код книги SIL, глава, стих.
@@ -21,10 +22,12 @@ final class Versification {
       });
 
   /// Четыре схемы SIL из `vrs_data.dart`; разбираются при первом обращении.
+  /// К `rso` дописаны свои соответствия неканонических книг
+  /// (`rso_deutero_vrs.dart`).
   static final Versification standard = Versification.fromVrs({
     VerseScheme.eng: engVrs,
     VerseScheme.org: orgVrs,
-    VerseScheme.rso: rsoVrs,
+    VerseScheme.rso: '$rsoVrs\n$rsoDeuteroVrs',
     VerseScheme.rsc: rscVrs,
   });
 
