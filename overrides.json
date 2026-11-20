@@ -61,8 +61,93 @@
   },
   "exclude": [],
   "schemes": {
+    "ces1613": {
+      "HAG": "vul"
+    },
+    "eng-Brenton": {
+      "EXO": "lxx",
+      "JOS": "lxx",
+      "1SA": "lxx",
+      "1KI": "lxx",
+      "EZR": "lxx",
+      "PSA": "lxx",
+      "ISA": "lxx",
+      "JER": "lxx"
+    },
+    "eng-lxx2012": {
+      "ECC": "vul",
+      "JER": "lxx"
+    },
+    "eng-uk-lxx2012": {
+      "ECC": "vul",
+      "JER": "lxx"
+    },
+    "engDRA": {
+      "GEN": "vul",
+      "NUM": "vul",
+      "JOS": "vul",
+      "JDG": "vul",
+      "1CH": "vul",
+      "NEH": "vul",
+      "TOB": "vul",
+      "JDT": "vul",
+      "JOB": "vul",
+      "PSA": "vul",
+      "ECC": "vul",
+      "SNG": "vul",
+      "WIS": "vul",
+      "SIR": "vul",
+      "HAG": "vul",
+      "1MA": "vul",
+      "2MA": "vul",
+      "MRK": "vul",
+      "ACT": "vul"
+    },
+    "engWycliffe": {
+      "GEN": "vul"
+    },
+    "enggnv": {
+      "SNG": "vul",
+      "HAG": "vul"
+    },
+    "englxxup": {
+      "EXO": "lxx",
+      "JOS": "lxx",
+      "1SA": "lxx",
+      "1KI": "lxx",
+      "EZR": "lxx",
+      "PSA": "lxx",
+      "ISA": "lxx",
+      "JER": "lxx"
+    },
+    "engwyc2017": {
+      "TOB": "vul",
+      "JDT": "vul"
+    },
+    "engwyc2018": {
+      "TOB": "vul",
+      "JDT": "vul"
+    },
+    "francl": {
+      "JDG": "vul",
+      "JDT": "vul"
+    },
     "grclxx": {
       "TOB": "lxx"
+    },
+    "hrv": {
+      "NUM": "lxx"
+    },
+    "nld1939": {
+      "TOB": "vul",
+      "JDT": "vul"
+    },
+    "nldnbg": {
+      "HAG": "vul"
+    },
+    "swef": {
+      "ECC": "vul",
+      "HAG": "vul"
     }
   }
 }

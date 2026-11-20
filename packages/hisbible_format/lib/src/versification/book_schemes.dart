@@ -67,7 +67,8 @@ final class SchemeDoubt {
     required this.rivalMatched,
     required this.weak,
     required this.close,
-    required this.synodal,
+    this.better,
+    this.betterMatched = 0,
   });
 
   /// Номер книги.
@@ -96,6 +97,11 @@ final class SchemeDoubt {
   /// не реже: схему выбрал порядок, а не текст.
   final bool close;
 
-  /// Синодальная схема у перевода не на русском, украинском или белорусском.
-  final bool synodal;
+  /// Схема, которую сборка этому переводу не предлагает (`lxx`, `vul` без
+  /// подсказки языка), а она совпала хотя бы на две главы больше [scheme];
+  /// `null` — такой нет.
+  final VerseScheme? better;
+
+  /// Сколько глав совпало с [better].
+  final int betterMatched;
 }

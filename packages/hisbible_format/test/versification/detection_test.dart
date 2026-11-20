@@ -68,6 +68,19 @@ void main() {
           .of(520),
       VerseScheme.eng,
     );
+    // И 2 Коринфянам, где у `lxx` главы те же, что у `org`: в Новом Завете
+    // Септуагинты нет.
+    final corinthians = BookCatalog.numberOfCode('2CO')!;
+    expect(
+      vs
+          .detect(
+            {corinthians: of(VerseScheme.org, corinthians)},
+            russianFlag: false,
+            preferred: VerseScheme.lxx,
+          )
+          .of(corinthians),
+      VerseScheme.org,
+    );
     // Без подсказки схемы традиции не предлагаются: 3 Царств с 22:54
     // у украинского перевода — Синодальный с одной главой мимо, а не Вульгата.
     final kings = {...of(VerseScheme.rsc, 110), 22: 54};
@@ -97,7 +110,7 @@ void main() {
           .single;
       expect((d.scheme, d.matched, d.chapters), (VerseScheme.rso, 13, 14));
       expect((d.rival, d.rivalMatched), (VerseScheme.lxx, 11));
-      expect((d.weak, d.close, d.synodal), (true, false, true));
+      expect((d.weak, d.close, d.better), (true, false, null));
     });
 
     test('a book set by hand is not checked', () {
@@ -126,7 +139,7 @@ void main() {
           .single;
       expect((d.matched, d.rival, d.rivalMatched), (20, VerseScheme.org, 20));
       // Глава 22 короче, чем у любой схемы, и не считается: 20 из 21.
-      expect((d.weak, d.close, d.synodal), (false, true, false));
+      expect((d.weak, d.close, d.better), (false, true, null));
     });
 
     test('a chapter translated in part says nothing', () {
@@ -136,6 +149,46 @@ void main() {
         vs.doubts(
           {10: genesis},
           schemesOf({10: VerseScheme.eng}),
+          russianFlag: false,
+        ),
+        isEmpty,
+      );
+    });
+
+    test('a scheme offered only by the language is better', () {
+      // Иеремия английского перевода Септуагинты: с `lxx` совпала целиком.
+      final jeremiah = BookCatalog.numberOfCode('JER')!;
+      final d = vs
+          .doubts(
+            {jeremiah: of(VerseScheme.lxx, jeremiah)},
+            schemesOf({jeremiah: VerseScheme.org}),
+            russianFlag: false,
+          )
+          .single;
+      expect((d.better, d.betterMatched), (VerseScheme.lxx, 52));
+    });
+
+    test('one chapter more is no better', () {
+      // 3 Царств с 22:54 и главами 4 и 5, как у `eng`: `vul` совпала
+      // на одну главу больше.
+      final kings = {...of(VerseScheme.eng, 110), 22: 54};
+      expect(
+        vs.doubts(
+          {110: kings},
+          schemesOf({110: VerseScheme.eng}),
+          russianFlag: false,
+        ),
+        isEmpty,
+      );
+    });
+
+    test('a Synodal scheme outside Russian is no doubt by itself', () {
+      // Откровение с 12:17, как у KJV.
+      final revelation = BookCatalog.numberOfCode('REV')!;
+      expect(
+        vs.doubts(
+          {revelation: of(VerseScheme.rsc, revelation)},
+          schemesOf({revelation: VerseScheme.rsc}),
           russianFlag: false,
         ),
         isEmpty,

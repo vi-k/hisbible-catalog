@@ -24,7 +24,8 @@ String schemeWarning(SchemeDoubt doubt, String code) {
   final why = [
     if (doubt.weak) 'matches fewer than 95% of chapters',
     if (doubt.close) 'another scheme is as close',
-    if (doubt.synodal) 'Synodal scheme outside ru, uk and be',
+    if (doubt.better case final better?)
+      '${better.name} matches ${doubt.betterMatched}, set it in overrides.json',
   ];
   final rival = doubt.rival == null
       ? ''

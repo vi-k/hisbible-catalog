@@ -1,4 +1,5 @@
 import 'package:hisbible_format/src/books/book_catalog.dart';
+import 'package:hisbible_format/src/books/book_info.dart';
 import 'package:hisbible_format/src/refs/verse_ref.dart';
 import 'package:hisbible_format/src/versification/book_schemes.dart';
 import 'package:hisbible_format/src/versification/eng_deutero_vrs.dart';
@@ -27,7 +28,7 @@ final class Versification {
   /// (`eng_deutero_vrs.dart`, `rso_deutero_vrs.dart`); у `eng` они стоят
   /// первыми, чтобы победить строку SIL `BAR 6:1-73 = LJE 1:1-73`.
   static final Versification standard = Versification.fromVrs({
-    VerseScheme.eng: '$engDeuteroVrs\n$engVrs',
+    VerseScheme.eng: '$engDeuteroVrs\n$engVrs\n$engDeuteroLengths',
     VerseScheme.org: orgVrs,
     VerseScheme.rso: '$rsoVrs\n$rsoDeuteroVrs',
     VerseScheme.rsc: rscVrs,
@@ -210,7 +211,9 @@ final class Versification {
   /// брала бы 3 Царств у украинского перевода за одну главу 22:54. Названная
   /// схема выигрывает ничью первой, но только в книге, где её длины глав
   /// не те же, что у `eng`, — иначе греческий Новый Завет звался бы
-  /// Септуагинтой. Книга без кода SIL в карту не попадает.
+  /// Септуагинтой. В Новом Завете `lxx` не предлагается вовсе: у Деяний
+  /// и 2 Коринфянам её длины те же, что у `org`, а Септуагинта — Ветхий
+  /// Завет. Книга без кода SIL в карту не попадает.
   BookSchemes detect(
     Map<int, Map<int, int>> chapters, {
     required bool russianFlag,
@@ -254,8 +257,16 @@ final class Versification {
   ///   схемы, — недопереведённая — не считается: о счёте она не говорит;
   /// - другая схема в главах, где её длины не те же, совпала хоть раз и не
   ///   реже ([SchemeDoubt.close]): выбор решил порядок схем, а не текст;
-  /// - синодальная схема (`rsc`, `rso`) у перевода не на русском, украинском
-  ///   или белорусском ([SchemeDoubt.synodal]).
+  /// - схема, которую [detect] этому переводу не предлагает (`lxx`, `vul`
+  ///   без подсказки языка), совпала хотя бы на две главы больше
+  ///   ([SchemeDoubt.better]): английский перевод Септуагинты или Вульгаты.
+  ///   Её ставят руками. На одну главу — случайность: 3 Царств с 22:54 у
+  ///   шведского и украинского переводов ложится в `vul` лучше всех.
+  ///
+  /// Синодальная схема у перевода не на русском сама по себе не сомнение:
+  /// Откровение с 12:17, как у KJV, 1 Царств с 20:43, как у Лютера и
+  /// Вульгаты, — по длинам глав это Синодальный счёт, и места он переводит
+  /// верно.
   List<SchemeDoubt> doubts(
     Map<int, Map<int, int>> chapters,
     BookSchemes schemes, {
@@ -316,10 +327,17 @@ final class Versification {
         }
       }
       final weak = rival != null && countedMatched < counted * 0.95;
-      final synodal =
-          !russianFlag &&
-          (scheme == VerseScheme.rsc || scheme == VerseScheme.rso);
-      if (weak || close || synodal) {
+      final offered = {scheme, ..._order(book, russianFlag, preferred)};
+      VerseScheme? better;
+      var betterMatched = matched + 1;
+      for (final other in VerseScheme.values) {
+        final score = offered.contains(other) ? 0 : _score(lasts, other, book);
+        if (score > betterMatched) {
+          better = other;
+          betterMatched = score;
+        }
+      }
+      if (weak || close || better != null) {
         found.add(
           SchemeDoubt(
             book: book,
@@ -330,7 +348,8 @@ final class Versification {
             rivalMatched: rival == null ? 0 : rivalMatched,
             weak: weak,
             close: close,
-            synodal: synodal,
+            better: better,
+            betterMatched: better == null ? 0 : betterMatched,
           ),
         );
       }
@@ -357,6 +376,10 @@ final class Versification {
 
     return switch (preferred) {
       null => base,
+      VerseScheme.lxx
+          when BookCatalog.byNumber(book)?.testament ==
+              Testament.newTestament =>
+        base,
       final own when base.contains(own) => [
         own,
         ...base.where((s) => s != own),
