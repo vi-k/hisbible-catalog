@@ -249,10 +249,10 @@ void main() {
 
   test('verses of a skipped book are not expected', () {
     final outcome = build(
-      _translation(ot: 31, dc: 40),
+      _translation(ot: 31, dc: 32),
       zip({
         'GEN.usfm': _usfm('GEN', [31]),
-        'TOB.usfm': _usfm('TOB', [30]),
+        'TOB.usfm': _usfm('TOB', [22]),
         'DAG.usfm': _usfm('DAG', [10]),
       }),
     );
@@ -404,9 +404,11 @@ void main() {
       }),
     );
 
+    // Глава в 1000 стихов не совпала ни с одной схемой: и это предупреждение.
     expect(built(outcome).warnings, [
       'GEN 1:1001: verse above $maxVerseNumber, skipped',
       'GEN 201:1: chapter above $maxChapterNumber, skipped',
+      startsWith('GEN: numbering scheme eng is doubtful'),
     ]);
     final bible = BibleModule.open(out());
     addTearDown(bible.close);

@@ -80,6 +80,102 @@ void main() {
     );
   });
 
+  group('doubts', () {
+    BookSchemes schemesOf(Map<int, VerseScheme> s) => BookSchemes(schemes: s);
+    final tobit = BookCatalog.numberOfCode('TOB')!;
+    // Товит LXX без трёх последних стихов глав: ближе к синодальному счёту.
+    final lxxTobit = {...of(VerseScheme.lxx, tobit), 5: 22, 10: 13, 11: 18};
+
+    test('a weak match is a doubt', () {
+      final d = vs
+          .doubts(
+            {tobit: lxxTobit},
+            schemesOf({tobit: VerseScheme.rso}),
+            russianFlag: false,
+            preferred: VerseScheme.lxx,
+          )
+          .single;
+      expect((d.scheme, d.matched, d.chapters), (VerseScheme.rso, 13, 14));
+      expect((d.rival, d.rivalMatched), (VerseScheme.lxx, 11));
+      expect((d.weak, d.close, d.synodal), (true, false, true));
+    });
+
+    test('a book set by hand is not checked', () {
+      expect(
+        vs.doubts(
+          {tobit: lxxTobit},
+          schemesOf({tobit: VerseScheme.lxx}),
+          russianFlag: false,
+          preferred: VerseScheme.lxx,
+          settled: {tobit},
+        ),
+        isEmpty,
+      );
+    });
+
+    test('a scheme chosen by order, not by text, is a doubt', () {
+      // 3 Царств: в главах, где Синодальный и `org` расходятся, глава 4 —
+      // по `org`, глава 5 — по Синодальному, глава 22 — ни по одной.
+      final kings = {...of(VerseScheme.rsc, 110), 4: 20, 22: 50};
+      final d = vs
+          .doubts(
+            {110: kings},
+            schemesOf({110: VerseScheme.rsc}),
+            russianFlag: true,
+          )
+          .single;
+      expect((d.matched, d.rival, d.rivalMatched), (20, VerseScheme.org, 20));
+      // Глава 22 короче, чем у любой схемы, и не считается: 20 из 21.
+      expect((d.weak, d.close, d.synodal), (false, true, false));
+    });
+
+    test('a chapter translated in part says nothing', () {
+      // Бытие: в главах 1 и 2 переведено по несколько стихов.
+      final genesis = {...of(VerseScheme.eng, 10), 1: 5, 2: 3};
+      expect(
+        vs.doubts(
+          {10: genesis},
+          schemesOf({10: VerseScheme.eng}),
+          russianFlag: false,
+        ),
+        isEmpty,
+      );
+    });
+
+    test('one telling chapter settles the scheme', () {
+      // Деяния: `eng` и `org` расходятся только в главе 19, и она по `eng`.
+      expect(
+        vs.doubts(
+          {510: of(VerseScheme.eng, 510)},
+          schemesOf({510: VerseScheme.eng}),
+          russianFlag: false,
+        ),
+        isEmpty,
+      );
+    });
+
+    test('a clean book is no doubt', () {
+      expect(
+        vs.doubts(
+          {520: of(VerseScheme.eng, 520)},
+          schemesOf({520: VerseScheme.eng}),
+          russianFlag: false,
+        ),
+        isEmpty,
+      );
+    });
+
+    test('hints follow the language', () {
+      expect(Versification.hintsOf('uk'), (russianFlag: true, preferred: null));
+      expect(Versification.hintsOf('grc-x-lxx').preferred, VerseScheme.lxx);
+      expect(Versification.hintsOf('la').preferred, VerseScheme.vul);
+      expect(Versification.hintsOf('sr'), (
+        russianFlag: false,
+        preferred: null,
+      ));
+    });
+  });
+
   test('a book matching no scheme is uncertain', () {
     final garbled = {
       for (final e in of(VerseScheme.eng, 230).entries)

@@ -54,3 +54,48 @@ final class BookSchemes {
   /// Схема книги; книга, которой нет в карте, — [VerseScheme.eng].
   VerseScheme of(int book) => schemes[book] ?? VerseScheme.eng;
 }
+
+/// Сомнение в схеме книги модуля: `Versification.doubts`.
+final class SchemeDoubt {
+  /// Сомнение в схеме [scheme] книги [book].
+  const SchemeDoubt({
+    required this.book,
+    required this.scheme,
+    required this.matched,
+    required this.chapters,
+    required this.rival,
+    required this.rivalMatched,
+    required this.weak,
+    required this.close,
+    required this.synodal,
+  });
+
+  /// Номер книги.
+  final int book;
+
+  /// Схема книги в модуле.
+  final VerseScheme scheme;
+
+  /// Сколько глав совпало со [scheme] по последнему стиху.
+  final int matched;
+
+  /// Сколько глав в книге модуля.
+  final int chapters;
+
+  /// Другая схема: та, что совпала не реже ([close]), или лучшая из схем
+  /// с другими длинами глав; `null` — у всех длины те же.
+  final VerseScheme? rival;
+
+  /// Сколько глав совпало с [rival].
+  final int rivalMatched;
+
+  /// [scheme] совпала меньше чем на 95% глав.
+  final bool weak;
+
+  /// В главах, где длины [scheme] и [rival] разные, [rival] совпала
+  /// не реже: схему выбрал порядок, а не текст.
+  final bool close;
+
+  /// Синодальная схема у перевода не на русском, украинском или белорусском.
+  final bool synodal;
+}

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:catalog_builder/src/build/module_build.dart';
+import 'package:catalog_builder/src/build/scheme_doubts.dart';
 import 'package:catalog_builder/src/edition/spelling.dart';
 import 'package:catalog_builder/src/text_helpers.dart';
 import 'package:crypto/crypto.dart' as crypto;
@@ -503,19 +504,11 @@ _Check _check(String path, int expectedVerses) {
         'markup left in $leftovers places: ${places.join(', ')}$more',
       );
     }
-    // Схему книги пишет сборка, а неуверенность она не сообщает: распознаём
-    // заново по последним стихам глав записанного модуля.
-    final detected = Versification.standard.detect(
-      bible.lastVerses(),
-      russianFlag: true,
-    );
+    // Схему книги пишет сборка, а сомнения она не сообщает: проверяем
+    // по последним стихам глав записанного модуля.
     final codes = {for (final b in bible.books) b.number: b.code};
-    for (final number in detected.uncertain.toList()..sort()) {
-      warnings.add(
-        '${codes[number] ?? number}: '
-        'numbering scheme is uncertain: the best scheme matches fewer than '
-        '95% of chapters',
-      );
+    for (final doubt in moduleSchemeDoubts(bible)) {
+      warnings.add(schemeWarning(doubt, codes[doubt.book] ?? '${doubt.book}'));
     }
     for (final scheme in bible.schemes.schemes.values) {
       schemes[scheme] = (schemes[scheme] ?? 0) + 1;

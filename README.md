@@ -91,6 +91,15 @@ the language. Where the builder guesses wrong, set the scheme in
 `"grclxx": {"TOB": "lxx"}`: Tobit of the LXX lacks three verses, and its
 chapters end as in the Russian Synodal. Then rebuild the module (see below).
 
+The build report warns about a book whose scheme is doubtful: the scheme
+matches fewer than 95% of its chapters (a chapter shorter than in every scheme,
+translated in part, does not count), another scheme matches as often in the
+chapters where the two differ, or the scheme is Synodal in a translation not in
+Russian, Ukrainian or Belarusian. A book with a scheme in `overrides.json` is
+not checked. To check modules already built, download them into a folder and
+run `dart run catalog_builder:scheme_doubts <folder> overrides.json <out.tsv>`
+in `packages/catalog_builder`: a line per doubtful book.
+
 ### Rebuilding a module
 
 A module is rebuilt by itself only when its translation gets a new `UpdateDate`

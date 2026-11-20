@@ -216,29 +216,17 @@ final class Versification {
     required bool russianFlag,
     VerseScheme? preferred,
   }) {
-    final base = russianFlag ? _russianOrder : _otherOrder;
     final schemes = <int, VerseScheme>{};
     final uncertain = <int>{};
     for (final MapEntry(key: book, value: lasts) in chapters.entries) {
       if (BookCatalog.byNumber(book)?.silCode == null) {
         continue;
       }
-      final order = switch (preferred) {
-        null => base,
-        final own when base.contains(own) => [
-          own,
-          ...base.where((s) => s != own),
-        ],
-        final own when _sameAsEng(own, book) => [...base, own],
-        final own => [own, ...base],
-      };
+      final order = _order(book, russianFlag, preferred);
       var best = order.first;
       var bestScore = -1;
       for (final scheme in order) {
-        final expected = lastVerses(scheme, book);
-        final score = lasts.entries
-            .where((e) => expected[e.key] == e.value)
-            .length;
+        final score = _score(lasts, scheme, book);
         // Строго больше: при равных очках остаётся схема раньше по порядку.
         if (score > bestScore) {
           best = scheme;
@@ -257,13 +245,139 @@ final class Versification {
     );
   }
 
-  bool _sameAsEng(VerseScheme scheme, int book) {
-    final own = lastVerses(scheme, book);
-    final eng = lastVerses(VerseScheme.eng, book);
+  /// Сомнения в схемах [schemes] книг модуля с последними стихами глав
+  /// [chapters]; [russianFlag] и [preferred] — как у [detect], книги
+  /// [settled] (схема задана руками) не проверяются. Сомнительна книга, где:
+  ///
+  /// - схема совпала меньше чем на 95% глав ([SchemeDoubt.weak]), а у другой
+  ///   схемы длины глав другие. Глава, чей последний стих меньше, чем у любой
+  ///   схемы, — недопереведённая — не считается: о счёте она не говорит;
+  /// - другая схема в главах, где её длины не те же, совпала хоть раз и не
+  ///   реже ([SchemeDoubt.close]): выбор решил порядок схем, а не текст;
+  /// - синодальная схема (`rsc`, `rso`) у перевода не на русском, украинском
+  ///   или белорусском ([SchemeDoubt.synodal]).
+  List<SchemeDoubt> doubts(
+    Map<int, Map<int, int>> chapters,
+    BookSchemes schemes, {
+    required bool russianFlag,
+    VerseScheme? preferred,
+    Set<int> settled = const {},
+  }) {
+    final found = <SchemeDoubt>[];
+    for (final MapEntry(key: book, value: lasts) in chapters.entries) {
+      if (BookCatalog.byNumber(book)?.silCode == null ||
+          settled.contains(book) ||
+          lasts.isEmpty) {
+        continue;
+      }
+      final scheme = schemes.of(book);
+      final own = lastVerses(scheme, book);
+      final matched = _score(lasts, scheme, book);
+      VerseScheme? rival;
+      var rivalMatched = -1;
+      var close = false;
+      for (final other in _order(book, russianFlag, preferred)) {
+        final theirs = lastVerses(other, book);
+        if (other == scheme || _sameLengths(theirs, own)) {
+          continue;
+        }
+        // Главы книги, где у схем разные длины: сколько совпало с каждой.
+        var ownWins = 0;
+        var theirWins = 0;
+        for (final MapEntry(key: c, value: v) in lasts.entries) {
+          if (own[c] == theirs[c]) {
+            continue;
+          }
+          if (v == own[c]) {
+            ownWins++;
+          } else if (v == theirs[c]) {
+            theirWins++;
+          }
+        }
+        final tie = theirWins > 0 && theirWins >= ownWins;
+        final score = _score(lasts, other, book);
+        if (tie && !close || (tie == close && score > rivalMatched)) {
+          rival = other;
+          rivalMatched = score;
+          close = tie;
+        }
+      }
+      final candidates = [scheme, ..._order(book, russianFlag, preferred)];
+      var counted = 0;
+      var countedMatched = 0;
+      for (final MapEntry(key: c, value: v) in lasts.entries) {
+        final ends = [for (final s in candidates) ?lastVerses(s, book)[c]];
+        if (ends.isNotEmpty && ends.every((end) => v < end)) {
+          continue;
+        }
+        counted++;
+        if (own[c] == v) {
+          countedMatched++;
+        }
+      }
+      final weak = rival != null && countedMatched < counted * 0.95;
+      final synodal =
+          !russianFlag &&
+          (scheme == VerseScheme.rsc || scheme == VerseScheme.rso);
+      if (weak || close || synodal) {
+        found.add(
+          SchemeDoubt(
+            book: book,
+            scheme: scheme,
+            matched: matched,
+            chapters: lasts.length,
+            rival: rival,
+            rivalMatched: rival == null ? 0 : rivalMatched,
+            weak: weak,
+            close: close,
+            synodal: synodal,
+          ),
+        );
+      }
+    }
+    found.sort((a, b) => a.book.compareTo(b.book));
 
-    return own.length == eng.length &&
-        own.entries.every((e) => eng[e.key] == e.value);
+    return found;
   }
+
+  /// Подсказки [detect] по языку перевода (BCP 47): русский порядок схем
+  /// у `ru`, `uk`, `be`, схема традиции — `lxx` у `grc`, `vul` у `la`.
+  static ({bool russianFlag, VerseScheme? preferred}) hintsOf(String language) {
+    final base = language.split('-').first;
+
+    return (
+      russianFlag: const {'ru', 'uk', 'be'}.contains(base),
+      preferred: const {'grc': VerseScheme.lxx, 'la': VerseScheme.vul}[base],
+    );
+  }
+
+  // Порядок схем-кандидатов книги [book].
+  List<VerseScheme> _order(int book, bool russianFlag, VerseScheme? preferred) {
+    final base = russianFlag ? _russianOrder : _otherOrder;
+
+    return switch (preferred) {
+      null => base,
+      final own when base.contains(own) => [
+        own,
+        ...base.where((s) => s != own),
+      ],
+      final own when _sameAsEng(own, book) => [...base, own],
+      final own => [own, ...base],
+    };
+  }
+
+  // Число глав [lasts], чей последний стих тот же, что у схемы.
+  int _score(Map<int, int> lasts, VerseScheme scheme, int book) {
+    final expected = lastVerses(scheme, book);
+
+    return lasts.entries.where((e) => expected[e.key] == e.value).length;
+  }
+
+  static bool _sameLengths(Map<int, int> a, Map<int, int> b) =>
+      a.length == b.length && a.entries.every((e) => b[e.key] == e.value);
+
+  bool _sameAsEng(VerseScheme scheme, int book) =>
+      _sameLengths(lastVerses(scheme, book), lastVerses(VerseScheme.eng, book));
 
   /// Переводит место через таблицы SIL; книга без кода SIL — в себя.
   VerseRef _translate(VerseRef ref, _SilRef Function(_SilRef) map) {

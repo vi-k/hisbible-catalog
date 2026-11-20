@@ -309,14 +309,16 @@ void main() {
     );
   });
 
-  test('uncertain numbering scheme is a warning', () async {
+  test('a doubtful numbering scheme is a warning', () async {
+    // Глава 1 длиннее, чем у любой схемы; глава 2 недопереведена и о счёте
+    // не говорит.
     write(
       '01-GEN.usfm',
       [
         r'\id GEN',
         r'\toc1 Бытие',
         r'\c 1',
-        for (var v = 1; v <= 7; v++) '\\v $v Стих $v.',
+        for (var v = 1; v <= 40; v++) '\\v $v Стих $v.',
         r'\c 2',
         for (var v = 1; v <= 3; v++) '\\v $v Стих $v.',
       ].join('\n'),
@@ -325,8 +327,8 @@ void main() {
     expect(
       outcome.warnings,
       contains(
-        'GEN: numbering scheme is uncertain: the best scheme matches '
-        'fewer than 95% of chapters',
+        'GEN: numbering scheme rsc is doubtful (0 of 2 chapters, org 0): '
+        'matches fewer than 95% of chapters',
       ),
     );
     expect(File(out()).existsSync(), isTrue);

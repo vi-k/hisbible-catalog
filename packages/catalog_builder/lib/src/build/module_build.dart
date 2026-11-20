@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:archive/archive.dart';
 import 'package:catalog_builder/src/build/module_validation.dart';
+import 'package:catalog_builder/src/build/scheme_doubts.dart';
 import 'package:catalog_builder/src/catalog/overrides.dart';
 import 'package:catalog_builder/src/ebible/scripts.dart';
 import 'package:catalog_builder/src/ebible/translations_csv.dart';
@@ -82,9 +83,10 @@ final class BuildFailed extends BuildOutcome {
 /// номера в справочнике, без стихов или повторная пропускается и попадает
 /// в [Built.warnings]. Книги идут по номерам, у языков `ru`, `uk` и `be` —
 /// по [BookCatalog.russianOrder]. Схема нумерации каждой книги
-/// распознаётся по последним стихам её глав. Сноски нумеруются по книгам
-/// подряд. Лицензия берётся из `copr.htm` архива, `created` — дата [now],
-/// `version` — [version], по умолчанию `UpdateDate` перевода.
+/// распознаётся по последним стихам её глав; книга с сомнительной схемой
+/// (`moduleSchemeDoubts`) попадает в [Built.warnings]. Сноски нумеруются
+/// по книгам подряд. Лицензия берётся из `copr.htm` архива, `created` — дата
+/// [now], `version` — [version], по умолчанию `UpdateDate` перевода.
 ///
 /// Файл пишется рядом, в `<outPath>.part`, проверяется [validateModule]
 /// и только потом встаёт на место [outPath]. Не прочёлся архив, не
@@ -171,6 +173,10 @@ BuildOutcome buildModule(
 
     return BuildFailed(reasons);
   }
+  final doubts = _schemeWarnings(
+    partPath,
+    (overrides.schemes[t.translationId] ?? const {}).keys.toSet(),
+  );
   final List<int> bytes;
   try {
     bytes = part.readAsBytesSync();
@@ -187,11 +193,27 @@ BuildOutcome buildModule(
     size: bytes.length,
     sha256: crypto.sha256.convert(bytes).toString(),
     books: _bookCounts(books.books),
-    warnings: books.warnings,
+    warnings: [...books.warnings, ...doubts],
     xtLinked: xt.linked,
     xtByHref: xt.byHref,
     xtUnresolved: xt.unresolved,
   );
+}
+
+// Предупреждения о сомнительных схемах книг модуля [path]; книги [settled]
+// заданы руками. Модуль уже прошёл [validateModule] и открывается.
+List<String> _schemeWarnings(String path, Set<int> settled) {
+  final bible = BibleModule.open(path);
+  try {
+    final codes = {for (final b in bible.books) b.number: b.code};
+
+    return [
+      for (final doubt in moduleSchemeDoubts(bible, settled: settled))
+        schemeWarning(doubt, codes[doubt.book] ?? '${doubt.book}'),
+    ];
+  } finally {
+    bible.close();
+  }
 }
 
 bool _isUsfm(String name) {

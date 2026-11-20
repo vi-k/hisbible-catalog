@@ -251,7 +251,7 @@ void main() {
         r'\id GEN',
         r'\toc1 Бытие',
         r'\c 1',
-        for (var v = 1; v <= 7; v++) '\\v $v Стих $v.',
+        for (var v = 1; v <= 40; v++) '\\v $v Стих $v.',
         r'\c 2',
         for (var v = 1; v <= 3; v++) '\\v $v Стих $v.',
       ].join('\n'),
@@ -264,7 +264,7 @@ void main() {
       matches(
         RegExp(
           r'- `russyn`: verses \d+, [^\n]*\n'
-          '  - GEN: numbering scheme is uncertain',
+          '  - GEN: numbering scheme rsc is doubtful',
         ),
       ),
     );
