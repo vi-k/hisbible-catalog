@@ -31,6 +31,10 @@ the edition follows the book. The spelling is modern.
   in italics and square brackets, *[а]* to *[л]*, and verse 35 has none (the
   `\zvl` marker after the verse number). References keep the numbers 24-35.
 - The prologue of Sirach is the introduction of the book, not a heading of 1:1.
+- Esther 1:1 is two pieces, as printed: the Greek addition (the dream of
+  Mordecai) with no number (`\v 1а \zvl\zvl*`), then from a new paragraph
+  `\v 1б \vp 1\vp*` «И было [после сего] во дни Артаксеркса». References
+  to Esther 1:1 lead to the start of the addition.
 - The full book titles are those of the printed book (`От Матфея святое
   благовествование`, `Книга пророка Исаии`); books whose title the printed
   book does not change keep the title of the online edition of the Moscow
