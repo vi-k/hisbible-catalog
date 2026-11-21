@@ -16,8 +16,10 @@ import 'package:hisbible_format/hisbible_format.dart';
 /// говорящего) в конце главы при открытом стихе: выбрасывается и считается
 /// только оно само, а текст после него остаётся в стихе. Всё до первой главы,
 /// кроме полей книги и вступления ([UsfmBook.intros]), выбрасывается
-/// и не считается. Сноска с текстом, которой некуда встать (на `\mt`,
-/// в поле книги, вне стиха), выбрасывается и считается всегда.
+/// и не считается. Сноска с текстом, которой некуда встать (в поле книги,
+/// вне стиха), выбрасывается и считается всегда. Строки `\mt`, `\mt1`,
+/// `\mt2`… до первой главы — строки заглавия книги во вступлении
+/// ([IntroKind.bookTitle], [IntroKind.bookSubtitle]), со своими сносками.
 ///
 /// Своя помета `\zvl а\zvl*` в стихе даёт ему метку вместо номера
 /// ([UsfmVerse.label]): простой текст между пометами без пробелов по краям,
@@ -668,6 +670,7 @@ final class _IntroBuilder {
 }
 
 final _introSection = RegExp(r'^is\d*$');
+final _majorTitle = RegExp(r'^mt(\d*)$');
 final _introItem = RegExp(r'^ili\d*$');
 final _authorAttribute = RegExp(r'\bx-author="([^"]*)"');
 
@@ -700,12 +703,18 @@ List<UsfmIntro> _articleParts(List<MarkupNode> nodes) {
 }
 
 // Вид вступления по маркеру до первой главы; `null` — маркер не вступление
-// (`\mt`, `\mte` и прочие) или не переносится (`\io`, `\iot`, `\ie`;
+// (`\mte` и прочие) или не переносится (`\io`, `\iot`, `\ie`;
 // `\ide` ловит `silent` раньше). `\periph` — название статьи вводных
 // страниц.
 IntroKind? _introKindOf(String name) {
   if (name == 'periph') {
     return IntroKind.article;
+  }
+  if (_majorTitle.firstMatch(name) case final match?) {
+    return switch (match[1]) {
+      '' || '1' => IntroKind.bookTitle,
+      _ => IntroKind.bookSubtitle,
+    };
   }
   if (!name.startsWith('i')) {
     return null;

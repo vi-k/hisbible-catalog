@@ -61,6 +61,7 @@ CREATE TABLE intros (            -- optional, bible only
   book TEXT NOT NULL,            -- book code, or FRT for the preface
   position INTEGER NOT NULL,     -- order in the book, from 0
   kind TEXT NOT NULL,            -- title | paragraph | item | article | author
+                                 -- | bookTitle | bookSubtitle
   text TEXT NOT NULL,            -- markup
   PRIMARY KEY (book, position)
 ) WITHOUT ROWID;
@@ -179,6 +180,16 @@ Notes:
   version ignores the table. Footnotes of an introduction are in `footnotes`
   with `chapter` 0 and `verse` 0; the `<f id>` in the text of a part refers to
   them like any other.
+- The lines of a book title, as the edition prints it above the first
+  chapter, are parts of kind `bookTitle` and `bookSubtitle` at the start of
+  the introduction. `bookTitle` is the main line (`\mt` or `\mt1` in USFM),
+  `bookSubtitle` a smaller one (`\mt2`, `\mt3` and so on): «Первая книга
+  Моисея» above «Бытие». They go in `position` order, so a smaller line may
+  stand above or below the main one, and like other parts they may carry
+  footnotes. A reader that knows them shows them in place of `books.title`;
+  `books.title` stays the one-line title for lists and for readers of an
+  earlier version, which skip these parts. The preface has no title lines:
+  `\mt` in the `FRT` file is dropped.
 - Rows of `intros` with `book` `FRT` are the preface of the module: the front
   matter of the edition, which stands before all books — a title page, a
   foreword. `FRT` is the USFM code of front matter; there is no such row in

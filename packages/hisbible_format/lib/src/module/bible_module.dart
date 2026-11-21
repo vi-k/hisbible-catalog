@@ -492,7 +492,11 @@ final class BibleModule {
           opened = true;
         case IntroKind.author:
           author = part.text;
-        case IntroKind.title || IntroKind.paragraph || IntroKind.item:
+        case IntroKind.title ||
+            IntroKind.paragraph ||
+            IntroKind.item ||
+            IntroKind.bookTitle ||
+            IntroKind.bookSubtitle:
           parts.add(part);
       }
     }

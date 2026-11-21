@@ -133,7 +133,14 @@ UsfmBooks readUsfmBooks(
       if (preface != null) {
         warnings.add('$code: second copy in ${file.name}, skipped');
       } else {
-        preface = usfm.intros;
+        // Строк заглавия у предисловия нет: `\mt` в `FRT` — заглавие
+        // всего издания, его, как и прежде, не переносим.
+        preface = [
+          for (final part in usfm.intros)
+            if (part.kind != IntroKind.bookTitle &&
+                part.kind != IntroKind.bookSubtitle)
+              part,
+        ];
         prefaceNotes = usfm.notes;
         if (usfm.verses.isNotEmpty) {
           warnings.add('$code: verses dropped: ${usfm.verses.length}');

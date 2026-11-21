@@ -240,6 +240,39 @@ void main() {
     }
   });
 
+  test('lines of the book title are written before its introduction', () {
+    final books = readUsfmBooks([
+      _file(
+        '01-GEN.usfm',
+        '\\id GEN\n\\toc1 Бытие\n\\mt2 Первая книга Моисея\n'
+            '\\mt1 Бытие\\f + \\ft сноска\\f*\n\\c 1\n\\p\n\\v 1 В начале\n',
+      ),
+    ]);
+    final path = '${dir.path}/t.hb';
+
+    writeUsfmModule(path, _meta('ru'), books);
+
+    final module = BibleModule.open(path);
+    try {
+      expect(module.books.single.title, 'Бытие');
+      expect(module.intros(10), const [
+        Intro(0, IntroKind.bookSubtitle, 'Первая книга Моисея'),
+        Intro(1, IntroKind.bookTitle, 'Бытие<f id="1" c="a"/>'),
+      ]);
+      expect(module.footnotes(10, 0).single.text, 'сноска');
+    } finally {
+      module.close();
+    }
+  });
+
+  test('the front matter keeps no lines of a book title', () {
+    final books = readUsfmBooks([
+      _file('00-FRT.usfm', '\\id FRT\n\\mt1 Библия\n\\ip Читатель!\n'),
+      _file('01-GEN.usfm', '\\id GEN\n\\c 1\n\\p\n\\v 1 В начале\n'),
+    ]);
+    expect(books.preface.map((part) => part.kind), [IntroKind.paragraph]);
+  });
+
   test('the front matter file is the preface of the module', () {
     final books = readUsfmBooks([
       _file(

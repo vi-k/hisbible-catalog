@@ -602,19 +602,36 @@ void main() {
     expect(book.unknownMarkers, {'ip'});
   });
 
-  test('book headers before the first chapter are not an introduction', () {
+  test('major titles before the first chapter are lines of the book title', () {
     final book = parseUsfm(
-      '\\id GEN\n\\h Genesis\n\\toc1 The Book\n\\mt1 The Book\\f + \\ft n\\f*\n'
-      '\\mt2 Sub\n\\mte End\n\\ms Major\n\\c 1\n\\v 1 x',
+      '\\id GEN\n\\h Genesis\n\\toc1 The Book\n\\mt2 The First Book\n'
+      '\\mt1 Genesis\\f + \\ft n\\f*\n\\mt3 Small\n\\mt Plain\n\\mte End\n'
+      '\\ms Major\n\\imt Intro\n\\c 1\n\\v 1 x',
     );
-    expect(book.intros, isEmpty);
-    expect(book.notes, isEmpty);
+    expect(book.intros.map((i) => (i.kind, plainText(i.nodes))), [
+      (IntroKind.bookSubtitle, 'The First Book'),
+      (IntroKind.bookTitle, 'Genesis'),
+      (IntroKind.bookSubtitle, 'Small'),
+      (IntroKind.bookTitle, 'Plain'),
+      (IntroKind.title, 'Intro'),
+    ]);
+    // Сноска заглавия — сноска вступления, как у `\imt`.
+    expect(book.intros[1].nodes, [
+      const TextRun('Genesis'),
+      const FootnoteRef(1, 'a'),
+    ]);
+    final note = book.notes.single;
+    expect((note.id, note.chapter, note.verse), (1, 0, 0));
     expect(book.header, 'Genesis');
     expect(book.toc1, 'The Book');
-    // Сноска `\mt1` в книгу не идёт, но и не пропадает молча: она
-    // в выброшенных, и отчёт сборки её покажет.
-    expect(book.droppedFragments, 1);
+    expect(book.droppedFragments, 0);
     expect(book.unknownMarkers, isEmpty);
+  });
+
+  test('a major title after a chapter stays unknown', () {
+    final book = parseUsfm('\\id GEN\n\\c 1\n\\mt1 Late\n\\v 1 x');
+    expect(book.intros, isEmpty);
+    expect(book.unknownMarkers, {'mt1'});
   });
 
   test('a verse label stands for the number and leaves the text', () {
