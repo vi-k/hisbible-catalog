@@ -35,6 +35,11 @@ the edition follows the book. The spelling is modern.
   благовествование`, `Книга пророка Исаии`); books whose title the printed
   book does not change keep the title of the online edition of the Moscow
   Patriarchate.
+- The title above the first chapter is as printed: `\mt1` with the full
+  title, and above it `\mt2` for the books of Moses (`Первая книга Моисея`
+  above `Бытие`). Footnotes of the printed titles (Psalms, the Epistle of
+  Jeremiah, Baruch, 1 Maccabees, 3 Esdras, Revelation) and the parallel
+  passage of the Song of Songs (3 Kingdoms 4:32) stand on the `\mt1` line.
 
 None of these is listed in `CHANGES.md`, because they are part of the edition
 and not changes to the base text. Readings of `CHANGES.md` are set with the
