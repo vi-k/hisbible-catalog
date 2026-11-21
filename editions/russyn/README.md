@@ -7,13 +7,17 @@ deuterocanonical ones. The module id is `russyn`, the abbreviation is `RST`.
 
 The text is based on the RusSynodal 1.9.1 module of the CrossWire library
 (Public Domain). It was checked against the edition of the Moscow Patriarchate,
-and the cross-references come from that edition. The spelling is modern.
+and the cross-references come from that edition. It was then read against the
+printed Bible of the Moscow Patriarchate, and where the printed book differs,
+the edition follows the book. The spelling is modern.
 
 ## What is in the text
 
 - Square brackets mark passages that the Synodal translation adds from the
   Septuagint.
 - Italics mark words the translators added for the sense.
+- Dashes and quotation marks are set as in the printed book: a long dash
+  with spaces (` — `) and guillemets (`«»`).
 - Stress marks are kept where the edition has them.
 - Footnotes are the notes of the edition.
 - Cross-references are the parallel passages of the edition. A verse lists
@@ -27,10 +31,14 @@ and the cross-references come from that edition. The spelling is modern.
   in italics and square brackets, *[а]* to *[л]*, and verse 35 has none (the
   `\zvl` marker after the verse number). References keep the numbers 24-35.
 - The prologue of Sirach is the introduction of the book, not a heading of 1:1.
-- The full book titles are those of the edition of the Moscow Patriarchate.
+- The full book titles are those of the printed book (`От Матфея святое
+  благовествование`, `Книга пророка Исаии`); books whose title the printed
+  book does not change keep the title of the online edition of the Moscow
+  Patriarchate.
 
 None of these is listed in `CHANGES.md`, because they are part of the edition
-and not changes to the base text.
+and not changes to the base text. Readings of `CHANGES.md` are set with the
+same dashes and quotation marks as the text.
 
 ## Changes to the base text
 
@@ -39,7 +47,9 @@ a row in `CHANGES.md`: the place, the base reading, the accepted reading and
 the reason. Typesetting errors of the base (a space before a punctuation
 mark, a dash instead of a hyphen inside a word) are corrected; the
 punctuation of a verse and the capitals of pronouns follow the edition of
-the Moscow Patriarchate where it is confirmed by a second witness.
+the Moscow Patriarchate where it is confirmed by a second witness. Readings
+of the printed book are marked `по печатной книге`; footnotes the printed
+book adds or words differently are not listed, like other footnotes.
 
 `spelling.tsv` is the table of old and new spellings: old word, tab, new word.
 The builder applies it to the text, carrying the capital letter over.
