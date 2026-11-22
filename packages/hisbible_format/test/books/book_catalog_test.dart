@@ -16,7 +16,7 @@ void main() {
   test('a color per group of books; the Gospels are red', () {
     int color(int number) => BookCatalog.byNumber(number)!.color;
     int light(int number) => BookCatalog.byNumber(number)!.lightColor;
-    // Группа — один цвет: Быт и Втор, Нав и 3Езд, Иов и Сир, Ис и Дан,
+    // Группа — один цвет: Быт и Втор, Нав и 3 Езд, Иов и Сир, Ис и Дан,
     // Ос и Мал, Мф и Ин, Рим и Евр, Иак и Иуд.
     for (final (a, b) in [
       (10, 50),
