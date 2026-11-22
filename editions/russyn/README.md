@@ -1,7 +1,7 @@
-# Russian Synodal Bible (RST), complete edition
+# Russian Synodal Bible (Син), complete edition
 
 The Synodal translation of 1876 in its complete form: 77 books, including the
-deuterocanonical ones. The module id is `russyn`, the abbreviation is `RST`.
+deuterocanonical ones. The module id is `russyn`, the abbreviation is `Син`.
 
 ## Source and licence
 
