@@ -2,83 +2,63 @@
   "deletions": [
     {
       "release": "build-2026-11-20",
-      "asset": "ces1613-2023-10-20.4.hb"
+      "asset": "russyn-2026-11-20.hb"
+    },
+    {
+      "release": "sources-2026-11-20",
+      "asset": "adz-2026-11-16_usfm.zip"
     },
     {
       "release": "build-2026-11-20",
-      "asset": "eng-Brenton-2026-11-04.hb"
+      "asset": "adz-2026-11-16.hb"
     },
     {
-      "release": "build-2026-11-20",
-      "asset": "eng-lxx2012-2026-03-12.4.hb"
-    },
-    {
-      "release": "build-2026-11-20",
-      "asset": "eng-uk-lxx2012-2025-12-19.4.hb"
-    },
-    {
-      "release": "build-2026-11-20",
-      "asset": "engDRA-2022-11-03.4.hb"
-    },
-    {
-      "release": "build-2026-11-20",
-      "asset": "engWycliffe-2016-11-08.4.hb"
-    },
-    {
-      "release": "build-2026-11-20",
-      "asset": "enggnv-2024-03-16.4.hb"
-    },
-    {
-      "release": "build-2026-11-20",
-      "asset": "englxxup-2026-11-04.2.hb"
-    },
-    {
-      "release": "build-2026-11-20",
-      "asset": "engwyc2017-2019-09-26.4.hb"
-    },
-    {
-      "release": "build-2026-11-20",
-      "asset": "engwyc2018-2019-09-25.4.hb"
-    },
-    {
-      "release": "build-2026-11-20",
-      "asset": "francl-2026-11-20.hb"
-    },
-    {
-      "release": "build-2026-11-20",
-      "asset": "grcbrent-2026-11-04.hb"
-    },
-    {
-      "release": "build-2026-11-20",
-      "asset": "grclxx-2026-02-13.4.hb"
-    },
-    {
-      "release": "build-2026-11-20",
-      "asset": "hrv-2019-12-16.3.hb"
-    },
-    {
-      "release": "build-2026-11-20",
-      "asset": "hui-2014-12-11.3.hb"
-    },
-    {
-      "release": "build-2026-11-20",
-      "asset": "latVUC-2014-08-23.4.hb"
-    },
-    {
-      "release": "build-2026-11-20",
-      "asset": "nld1939-2024-08-06.3.hb"
-    },
-    {
-      "release": "build-2026-11-20",
-      "asset": "nldnbg-2024-08-13.4.hb"
+      "release": "sources-2026-11-11",
+      "asset": "englxxup-2026-11-04_usfm.zip"
     },
     {
       "release": "build-2026-11-20-2",
-      "asset": "swef-2024-12-18.4.hb"
+      "asset": "englxxup-2026-11-04.3.hb"
     },
     {
-      "release": "build-2026-11-20-2",
-      "asset": "tpi-2026-07-15.3.hb"
+      "release": "sources-2026-11-20",
+      "asset": "gvs-2026-11-20_usfm.zip"
+    },
+    {
+      "release": "build-2026-11-20",
+      "asset": "gvs-2026-11-20.hb"
+    },
+    {
+      "release": "sources-2026-11-20",
+      "asset": "mkj-2026-11-19_usfm.zip"
+    },
+    {
+      "release": "build-2026-11-20",
+      "asset": "mkj-2026-11-19.hb"
+    },
+    {
+      "release": "sources-2026-11-20",
+      "asset": "nss-2026-11-19_usfm.zip"
+    },
+    {
+      "release": "build-2026-11-20",
+      "asset": "nss-2026-11-19.hb"
+    },
+    {
+      "release": "sources-2026-11-20",
+      "asset": "rmyArli-2026-11-17_usfm.zip"
+    },
+    {
+      "release": "build-2026-11-20",
+      "asset": "rmyArli-2026-11-17.hb"
+    },
+    {
+      "release": "sources-2026-11-20",
+      "asset": "ronBayash-2026-11-19_usfm.zip"
+    },
+    {
+      "release": "build-2026-11-20",
+      "asset": "ronBayash-2026-11-19.hb"
     }
   ]
 }

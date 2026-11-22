@@ -2,7 +2,7 @@
   "format": 1,
   "catalog": "hisbible",
   "name": "HisBible",
-  "updated": "2026-11-20",
+  "updated": "2026-11-22",
   "modules": [
     {
       "id": "aai",
@@ -413,10 +413,10 @@
         "nt": 7,
         "dc": 0
       },
-      "size": 1323008,
-      "sha256": "c6e11768e93ac5fddd9e04fdaeb827faf15807e75f7bf067fbf7601aed548ada",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20/adz-2026-11-16.hb",
-      "version": "2026-11-16",
+      "size": 1327104,
+      "sha256": "c59d3dfa0e04ee26f8b592639baf03fa45f412c2317e31409bcb73ca68d0191c",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22/adz-2026-11-20.hb",
+      "version": "2026-11-20",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -8759,10 +8759,10 @@
         "nt": 0,
         "dc": 14
       },
-      "size": 5193728,
-      "sha256": "d47d14345ea15e3a9d544ab3cedad2ece31a96b299b2aa56a65bfef9381d3bc7",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/englxxup-2026-11-04.3.hb",
-      "version": "2026-11-04.3",
+      "size": 5197824,
+      "sha256": "549783b231b759379633a91999b239621fd22b38088dbf9f8e61c7162d39be3b",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22/englxxup-2026-11-20.hb",
+      "version": "2026-11-20",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -11593,10 +11593,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 2891776,
-      "sha256": "be1c3b7ab63ebb4f137f9d6afa53bb7d9d05f9501e4d4e6f81401eeb0e5bf64a",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20/gvs-2026-11-20.hb",
-      "version": "2026-11-20",
+      "size": 2895872,
+      "sha256": "79a62d943a7e5d5ad66d4b1f43ca51b3aa891270bf57f0412339c1a18a4563dd",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22/gvs-2026-11-21.hb",
+      "version": "2026-11-21",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -18536,9 +18536,9 @@
         "dc": 0
       },
       "size": 1634304,
-      "sha256": "9d95cc6f96647b779a9513b0fb4e541fc25425630084480e5e787e21d2a8c98e",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20/mkj-2026-11-19.hb",
-      "version": "2026-11-19",
+      "sha256": "b5cdc0b82e34b280ec336f867e36d63d40d638cb82c3abf658e9e85cda3a39af",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22/mkj-2026-11-20.hb",
+      "version": "2026-11-20",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -21499,10 +21499,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 2244608,
-      "sha256": "4bd5b835fcba12922637c8db2276b526fdfce52e963b375fc4345650bf3f8c79",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20/nss-2026-11-19.hb",
-      "version": "2026-11-19",
+      "size": 2256896,
+      "sha256": "e6e40a7985d4db5dd306f9776e5d8748bb134149ed39519840c184d479c1995c",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22/nss-2026-11-20.hb",
+      "version": "2026-11-20",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -24359,10 +24359,10 @@
         "nt": 1,
         "dc": 0
       },
-      "size": 245760,
-      "sha256": "052579d96ba90cae9f76b215653a13b4b578da397b94c7b2071adb4d2e31b678",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20/rmyArli-2026-11-17.hb",
-      "version": "2026-11-17",
+      "size": 249856,
+      "sha256": "dec8be10240c945c6241bbe703afc3c81d0857b6b34b43c1d9172cdc19458af9",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22/rmyArli-2026-11-20.hb",
+      "version": "2026-11-20",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -24542,9 +24542,9 @@
         "dc": 0
       },
       "size": 225280,
-      "sha256": "8a21cab295e83676abea581c07ef97a787bb03ac2bf53ca19f5459407da255fd",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20/ronBayash-2026-11-19.hb",
-      "version": "2026-11-19",
+      "sha256": "431f8c72435ab264b910c3f69a6c69873a7c7ed87918c5ba539624db057106b0",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22/ronBayash-2026-11-20.hb",
+      "version": "2026-11-20",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -24812,9 +24812,9 @@
       "id": "russyn",
       "type": "bible",
       "source": "edition",
-      "abbreviation": "RST",
+      "abbreviation": "Син",
       "name": "Синодальный перевод",
-      "description": "Синодальный перевод 1876 года, полное издание: 77 книг с неканоническими, вставки по Септуагинте в квадратных скобках, ударения и примечания издания, параллельные места. Основа — модуль RusSynodal библиотеки CrossWire, текст сверен с изданием Московской Патриархии; написание современное.",
+      "description": "Синодальный перевод 1876 года, полное издание: 77 книг с неканоническими, вставки по Септуагинте в квадратных скобках, ударения и примечания издания, параллельные места. Основа — модуль RusSynodal библиотеки CrossWire, текст сверен с изданием Московской Патриархии; написание современное. Что исправлено против печатной книги — в статье «Исправления».",
       "language": "ru",
       "languageName": "русский",
       "languageNameEnglish": "Russian",
@@ -24827,10 +24827,10 @@
         "nt": 27,
         "dc": 11
       },
-      "size": 10903552,
-      "sha256": "3fb5c1abf607a59d8018a81e83c2e991a698a0235b7b1ecf9872a2837c3e1eff",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20/russyn-2026-11-20.hb",
-      "version": "2026-11-20",
+      "size": 10932224,
+      "sha256": "04b4d6387e5a222634cc9536ec7db4859c82711fb197fbd3cf8cb52a04ef597b",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22/russyn-2026-11-22.hb",
+      "version": "2026-11-22",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -29095,6 +29095,32 @@
       "sha256": "fc44cfd9222c6c0a446f4cf3720b29b5d8e66f27e6ad06f0a741cbe6a314efb3",
       "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/tsn-2025-05-21.3.hb",
       "version": "2025-05-21.3",
+      "moduleFormat": 2,
+      "generator": "catalog_builder 0.4.0"
+    },
+    {
+      "id": "tsnfb",
+      "type": "bible",
+      "source": "ebible",
+      "abbreviation": "tsnfb",
+      "name": "Baebele ya Kgololesego",
+      "description": "The Holy Bible in the Tswana language of Botswana",
+      "language": "tn",
+      "languageName": "Setswana",
+      "languageNameEnglish": "Tswana",
+      "script": "Latn",
+      "direction": "ltr",
+      "license": "PD",
+      "copyright": "public domain",
+      "books": {
+        "ot": 0,
+        "nt": 1,
+        "dc": 0
+      },
+      "size": 167936,
+      "sha256": "69fe83b701368129a3686a95e3df113074433e278173c3567aabf6412d7b88bf",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22/tsnfb-2026-11-19.hb",
+      "version": "2026-11-19",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
