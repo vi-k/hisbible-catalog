@@ -30729,10 +30729,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 2129920,
-      "sha256": "4a41bf9fd69bb9ebbc36ecf292e2aadc04e18ab294fa90127661cfdcc7246443",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/uvl-2022-11-09.3.hb",
-      "version": "2022-11-09.3",
+      "size": 2134016,
+      "sha256": "11e3e56a3cea4b741b5f80aed974d37589f5bd29681a03ea45934665b0452a94",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/uvl-2022-11-09.4.hb",
+      "version": "2022-11-09.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -30756,9 +30756,9 @@
         "dc": 0
       },
       "size": 3596288,
-      "sha256": "033e02f5e7ede61d6ccc72d39bbc475917964a9016cfbeab3efdbe7410953ede",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/vaa-2025-07-09.3.hb",
-      "version": "2025-07-09.3",
+      "sha256": "115c040d6d02cd511cb009e5f0d53415fad78617e989e53d0081560b0de3db6d",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/vaa-2025-07-09.4.hb",
+      "version": "2025-07-09.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -30781,10 +30781,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 3309568,
-      "sha256": "547bde306d0369d939ea4b38b04d683df887cb381a424107ddbde6d7d886042b",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/vgr-2025-07-09.3.hb",
-      "version": "2025-07-09.3",
+      "size": 3325952,
+      "sha256": "21c2e52167faa1b4c79aad884603d93a6c45b25c9af5196c4768eec4d84a1ba6",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/vgr-2025-07-09.4.hb",
+      "version": "2025-07-09.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -30807,10 +30807,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 4370432,
-      "sha256": "44f1b5d7d2b74b9d469450829aebfc0bfeb1b1dbe17983a1e74d4350418ba67e",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/vid-2025-07-09.3.hb",
-      "version": "2025-07-09.3",
+      "size": 4374528,
+      "sha256": "9fa6f7d5371bab5c5708a0e5faaf7adeb40ad49c4d48ac83fe6765a750c25184",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/vid-2025-07-09.4.hb",
+      "version": "2025-07-09.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -30833,10 +30833,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 6365184,
-      "sha256": "e7edf16a3b3a61ffd3d66a3c0f371f55d19f53a3101b1d96dcc8f40e1d4bd66b",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/vie1934-2022-06-09.3.hb",
-      "version": "2022-06-09.3",
+      "size": 6369280,
+      "sha256": "48fc086844453d0632cd90cbceb626c1223cd8c634c5910ad2a83ec43c63affc",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/vie1934-2022-06-09.4.hb",
+      "version": "2022-06-09.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -30859,10 +30859,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 6598656,
-      "sha256": "8dbb9bd0a26b5b42286b20727a5d7b5e1d61acda5bfa8d676db5918baa9ad9d5",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/vieovcb-2025-06-25.3.hb",
-      "version": "2025-06-25.3",
+      "size": 6602752,
+      "sha256": "86854c1db5dcd89e917df83a0455ae5ddf6ab9a4d9b0878af3a153225b997379",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/vieovcb-2025-06-25.4.hb",
+      "version": "2025-06-25.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -30886,9 +30886,9 @@
         "dc": 0
       },
       "size": 2306048,
-      "sha256": "5bf5d37ba5a0b05c2827f8f6579c52d88b29d14d74dc691e2cc0b9909958c3bc",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/viv-2012-11-26.3.hb",
-      "version": "2012-11-26.3",
+      "sha256": "03abb295e8e021fea4d520872b4d2870afc9515721945956a3e64b98a8253d9d",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/viv-2012-11-26.4.hb",
+      "version": "2012-11-26.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -30911,10 +30911,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1683456,
-      "sha256": "41bb9a43703d38ef587e27e81c5ea5c4a3ab9de106f46cc51d105726eb0e1d08",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/vmyNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 1687552,
+      "sha256": "945373ae98ffa9582867b2508a93cf07695174a8b5f798b7b44220acfb164a80",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/vmyNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -30938,9 +30938,9 @@
         "dc": 0
       },
       "size": 2273280,
-      "sha256": "e67a2833fa412bc71371376feba47d48f2249aa19c471df15779f9f946e9c9b2",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/waj-2012-10-23.3.hb",
-      "version": "2012-10-23.3",
+      "sha256": "87389d17f3736b2854586ab50dcecafdcee576c5c31aa819323901b5b1caf456",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/waj-2012-10-23.4.hb",
+      "version": "2012-10-23.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -30963,10 +30963,10 @@
         "nt": 24,
         "dc": 0
       },
-      "size": 5197824,
-      "sha256": "c31258febd141f249df47a1ffc51dd52026bf17c1954b6ef6ef9e3d392fa73d9",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wal-2022-03-11.3.hb",
-      "version": "2022-03-11.3",
+      "size": 5201920,
+      "sha256": "01ec4ffa918ff6362e624f89066ed776fb0134e2d6a37a3a4b635090587e685a",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wal-2022-03-11.4.hb",
+      "version": "2022-03-11.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -30989,10 +30989,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 2273280,
-      "sha256": "62750ff4f79b5c40630cdf7c87bcf424225599cdb1fba56c7a5b9c18329fd9f7",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wapNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 2285568,
+      "sha256": "f951c7804a9a69c7ab3bdc0cdefa3c5e71a068e001932932af4eb67fbefbe2e4",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wapNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31015,10 +31015,10 @@
         "nt": 2,
         "dc": 0
       },
-      "size": 700416,
-      "sha256": "691144b4cbec818909cf5d9e17e60a11172938c63c34810401a2af0917786d94",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wat-2016-04-13.3.hb",
-      "version": "2016-04-13.3",
+      "size": 708608,
+      "sha256": "120cf85a9e609d37140af9a51efe0778a42a85852f67442abec641c8d32e2655",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wat-2016-04-13.4.hb",
+      "version": "2016-04-13.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31041,10 +31041,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1400832,
-      "sha256": "899804d74a7e5c824fc8177b845790b90da64e4cc649337602cb317ad4032793",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wbi-2020-11-10.3.hb",
-      "version": "2020-11-10.3",
+      "size": 1404928,
+      "sha256": "2d5252b8be06a45dda2e2683662a2dc6accaf5a1a3acd7f1c4fa459581e5339a",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wbi-2020-11-10.4.hb",
+      "version": "2020-11-10.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31068,9 +31068,9 @@
         "dc": 0
       },
       "size": 4128768,
-      "sha256": "7dfc36d94c1f9fa33579bb5062310c6412bd8e822459b57a49fc87f3e8a43439",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wbp-2026-02-24.3.hb",
-      "version": "2026-02-24.3",
+      "sha256": "a19d728c9eb292c1b0cf42c307ec601ef0baa19ccff1b6ac5c9b61938c684e34",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wbp-2026-02-24.4.hb",
+      "version": "2026-02-24.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31094,9 +31094,9 @@
         "dc": 0
       },
       "size": 1605632,
-      "sha256": "34519ddfebee10d4640a3e11556ecb6d755133c61e0f9cf957fd6233053e334f",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wbq-2025-07-09.3.hb",
-      "version": "2025-07-09.3",
+      "sha256": "28c2fa7c2fe481f9db43ef77a2aed9064a8fb03d12e6151cea8d8e82ff950261",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wbq-2025-07-09.4.hb",
+      "version": "2025-07-09.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31120,9 +31120,9 @@
         "dc": 0
       },
       "size": 913408,
-      "sha256": "9d771ad644667e2c3242b4230bf0030a718b7539c0ded8f254020f865a34a8d2",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wed-2017-08-30.3.hb",
-      "version": "2017-08-30.3",
+      "sha256": "95cd3ce22707ce235ff729412cf67a9aa1841f477d26a63dae22706c64af2e91",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wed-2017-08-30.4.hb",
+      "version": "2017-08-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31146,9 +31146,9 @@
         "dc": 0
       },
       "size": 196608,
-      "sha256": "7facc8c9b74088bd4bd26c3521365890acb3ecd96456f01ce9804536ebb32b46",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wed-topura-2014-12-11.3.hb",
-      "version": "2014-12-11.3",
+      "sha256": "40cf739a6445fb67ffe7f002ed137cf2fb0ab3953e8c4a10b2ac5f017a27c5e5",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wed-topura-2014-12-11.4.hb",
+      "version": "2014-12-11.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31171,10 +31171,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1765376,
-      "sha256": "31e70a2859f47271fff278d13e1c57ec29b9b4493e52cbed41f3fc5ae54510ac",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wer-2012-10-23.3.hb",
-      "version": "2012-10-23.3",
+      "size": 1769472,
+      "sha256": "0dd821b736edd30b06c9c584546e2911085f19fb953ebd1b1eaf1309ea36609e",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wer-2012-10-23.4.hb",
+      "version": "2012-10-23.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31197,10 +31197,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 3088384,
-      "sha256": "2a36564852a2aab2ea2e2feee49e53c365b285b6cf7a4998f8489cfdf566ec7f",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wim-2026-07-30.3.hb",
-      "version": "2026-07-30.3",
+      "size": 3092480,
+      "sha256": "f5164750c66fac3b929e837b150877d23e570c956bd8d7760b5600dc103a72c9",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wim-2026-07-30.4.hb",
+      "version": "2026-07-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31223,10 +31223,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1847296,
-      "sha256": "534bae858327f46203edcf4e1d5225b1680e17c5c1bcd12e386e5f537536e11d",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wiu-2012-11-26.3.hb",
-      "version": "2012-11-26.3",
+      "size": 1851392,
+      "sha256": "87ad4e8f27836c7b80b364bffae8d52fb40005eb4034bd2e4ae8f04357fac6b7",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wiu-2012-11-26.4.hb",
+      "version": "2012-11-26.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31249,10 +31249,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1974272,
-      "sha256": "381d5a0b096862d7e5b51f9d2f713d97bdbaf3e0cd41bb58d9749ee47eb865a6",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wiv-2022-08-19.3.hb",
-      "version": "2022-08-19.3",
+      "size": 1978368,
+      "sha256": "1c62e7dfdd5f68774bccf8dc87dba677d2e132e33ff5f4503c29ebc0476d7633",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wiv-2022-08-19.4.hb",
+      "version": "2022-08-19.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31276,9 +31276,9 @@
         "dc": 0
       },
       "size": 405504,
-      "sha256": "96c2125f381d95bf1c695ce7cec66d96617787cc008a2df290dd441b691e706b",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wja-2025-07-09.3.hb",
-      "version": "2025-07-09.3",
+      "sha256": "1d31ff19e3162a9db90610dbe0f8a1fc3f8763f230b06a17fe3a66ebf0f6c2f2",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wja-2025-07-09.4.hb",
+      "version": "2025-07-09.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31301,10 +31301,10 @@
         "nt": 2,
         "dc": 0
       },
-      "size": 36864,
-      "sha256": "3a3daa091e57256332ae565511ba5a5406a33993d22f91b54b0ce3b619f58636",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wlg-2024-08-01.3.hb",
-      "version": "2024-08-01.3",
+      "size": 40960,
+      "sha256": "4024bddf1847528589ae8f079f6e54d7fa96a55f59d0c64425d8772badb68e5f",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wlg-2024-08-01.4.hb",
+      "version": "2024-08-01.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31327,10 +31327,10 @@
         "nt": 23,
         "dc": 0
       },
-      "size": 2912256,
-      "sha256": "aa021135965282edf9250dac4fc63a5a134b2ec72d7596f1309cbebfad6e7c8e",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wlo-2025-07-10.3.hb",
-      "version": "2025-07-10.3",
+      "size": 2908160,
+      "sha256": "7968ddf4d099286a282ea954499edc0fc3c203de13ba773c8ab0fbe0f9259f75",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wlo-2025-07-10.4.hb",
+      "version": "2025-07-10.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31354,9 +31354,9 @@
         "dc": 0
       },
       "size": 876544,
-      "sha256": "1ce04c0baaca0fdc002b29e2ccb8c45f1ecd1c8bd28014d09d1f70dedd8bfa31",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wmt-2019-05-14.3.hb",
-      "version": "2019-05-14.3",
+      "sha256": "9f16c8ac913002ab7da3e10418413cbe35daa2dfc8a3389ffcb9689f6bcdceb2",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wmt-2019-05-14.4.hb",
+      "version": "2019-05-14.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31380,9 +31380,9 @@
         "dc": 0
       },
       "size": 1523712,
-      "sha256": "25f579dc33f99fb74e5672f676fafc755d8c3a78f0c0dad8ab5a33e2dd31e945",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wmw-2016-06-30.3.hb",
-      "version": "2016-06-30.3",
+      "sha256": "999eeb8e3c2ff3349898550974bffbb55c54f2a8df06b266cf5b2a8df9d26067",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wmw-2016-06-30.4.hb",
+      "version": "2016-06-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31405,10 +31405,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 2686976,
-      "sha256": "eae806a3ed0c9a4f3fe752c11e7e03b4f41ce1f439f6aee959e664ef98c2abfc",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wnc-2012-10-23.3.hb",
-      "version": "2012-10-23.3",
+      "size": 2691072,
+      "sha256": "dc536cbe3863187189b230cadb87a651bb64eb525896dbe962b1f1932a37b3c1",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wnc-2012-10-23.4.hb",
+      "version": "2012-10-23.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31431,10 +31431,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1667072,
-      "sha256": "0614b05699cd42f0a17e07cfa4a7fb5c366f143c7f9bdb7ecd4a155a465a5c46",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wnu-2012-11-26.3.hb",
-      "version": "2012-11-26.3",
+      "size": 1671168,
+      "sha256": "c354f6b7fcf95a08f61dac17d91372450b0f0cd71f24b0f5e9495205e46379b4",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wnu-2012-11-26.4.hb",
+      "version": "2012-11-26.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31457,10 +31457,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1277952,
-      "sha256": "fedc67406b973fb07d3f1a73cdef8a0d5fc235d8e1745b44045c221492120422",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wol2010-2020-07-09.3.hb",
-      "version": "2020-07-09.3",
+      "size": 1282048,
+      "sha256": "b716988d943047e71badaf7689e4343cd1d7df9c47020e81eef77c85a3979924",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wol2010-2020-07-09.4.hb",
+      "version": "2020-07-09.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31483,10 +31483,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 5500928,
-      "sha256": "7aa6508f4d3fc3ae497ed8239a8a07391eb4b896d83791ad6232d24caaa8a0fa",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wolmbs-2025-04-18.3.hb",
-      "version": "2025-04-18.3",
+      "size": 5505024,
+      "sha256": "3aa1744b0d047949a4aca1a63fb1a9c6f6a04e9d566c950c8401602d71dcd5e7",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wolmbs-2025-04-18.4.hb",
+      "version": "2025-04-18.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31509,10 +31509,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 2195456,
-      "sha256": "d9152031939e815d05613aebb414efb51e651ea3f17337439aaff2f25ca46ccc",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wos-2013-02-02.3.hb",
-      "version": "2013-02-02.3",
+      "size": 2199552,
+      "sha256": "3b4d132d1d513ed09bf602a093a2cb88b40164665ad6689cd96d7c8cba139bf0",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wos-2013-02-02.4.hb",
+      "version": "2013-02-02.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31535,10 +31535,10 @@
         "nt": 22,
         "dc": 0
       },
-      "size": 2805760,
-      "sha256": "66149f9005772e6020242207961c89a666a620f3030afdc6ff0a25b0d2f31b62",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wrk-2024-12-28.3.hb",
-      "version": "2024-12-28.3",
+      "size": 2809856,
+      "sha256": "042ec8293f44d0f6f4a016db946d1af64adb19f6ae5642cca29b41062a52edb9",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wrk-2024-12-28.4.hb",
+      "version": "2024-12-28.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31562,9 +31562,9 @@
         "dc": 0
       },
       "size": 356352,
-      "sha256": "412b485c21b3cd54221bb39fe8404c7a56c51b48a2b901a93951b3d54504a1e8",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wro-2019-05-16.3.hb",
-      "version": "2019-05-16.3",
+      "sha256": "af0f718038bd06619e107f35410769eccd1f2dd91bcef5201c5ac922f858c1f5",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wro-2019-05-16.4.hb",
+      "version": "2019-05-16.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31587,10 +31587,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 2260992,
-      "sha256": "61006a46788507def16f2a175706b172903a32a443bcc9bd01248fded3b206d2",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wrs-2020-04-23.3.hb",
-      "version": "2020-04-23.3",
+      "size": 2265088,
+      "sha256": "b3ec1ccacab16415d8a8f90a32a6b28c3094e7d09d1059e306fcac51a7e670aa",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wrs-2020-04-23.4.hb",
+      "version": "2020-04-23.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31614,9 +31614,9 @@
         "dc": 0
       },
       "size": 3072000,
-      "sha256": "1944e9a5e866db145b404e41ea98f4f1803049f7fc9f83b3792d3a99e636f301",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wsk-2016-11-07.3.hb",
-      "version": "2016-11-07.3",
+      "sha256": "f8e18da14d7c05b39a121ff6fa298c12474607303d9efff8cec3a8332db868c2",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wsk-2016-11-07.4.hb",
+      "version": "2016-11-07.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31640,9 +31640,9 @@
         "dc": 0
       },
       "size": 1544192,
-      "sha256": "b7d6f3cb7d56367530368ad9f88405c250379c3f91b063e646b77c30be85ab7c",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/wuv-2012-11-26.3.hb",
-      "version": "2012-11-26.3",
+      "sha256": "1a558005ee2984ff855313f2f61e432e49cbc5f5c43fb8167d90a7e9461e970a",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/wuv-2012-11-26.4.hb",
+      "version": "2012-11-26.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31665,10 +31665,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 3457024,
-      "sha256": "51b16d7e0f5703513b4e947f576f0771eb9c6b59241e829a45bcc03259e8053b",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/xavNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 3461120,
+      "sha256": "a4cb1488e3367c38f9d570c81d39efe49b07c6f905526d52e15c04535b16af83",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/xavNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31692,9 +31692,9 @@
         "dc": 0
       },
       "size": 380928,
-      "sha256": "ce1b9703be83f87c2bdcc7466c0ad1b1e269cbb4b5ac7b3edd5abf7d95247a2a",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/xbi-w-2013-08-21.3.hb",
-      "version": "2013-08-21.3",
+      "sha256": "8e403ec00a1fe3b46abd042b7e06e141b48b29ccf9a9f5cd8d4e3edfe0ede4c0",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/xbi-w-2013-08-21.4.hb",
+      "version": "2013-08-21.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31717,10 +31717,10 @@
         "nt": 3,
         "dc": 0
       },
-      "size": 409600,
-      "sha256": "4a32caa52bf52c1d094c2ffe67f7c5804c46880ec28655adf4481f5ad8efe491",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/xbi-y-2013-08-21.3.hb",
-      "version": "2013-08-21.3",
+      "size": 413696,
+      "sha256": "f992139b1a9a1597188d7168ae720542e08f4b45b5377132473525d277a70958",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/xbi-y-2013-08-21.4.hb",
+      "version": "2013-08-21.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31743,10 +31743,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1777664,
-      "sha256": "a17c0b475be14dbe090dcee2c1d51d683307829e875e2714eabd12eb3d280a53",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/xed-2015-03-17.3.hb",
-      "version": "2015-03-17.3",
+      "size": 1781760,
+      "sha256": "0e4aeebe8bd0a7349d7edf62c8e60a0b2e0a2db24cbed4e3fdffa57757365c53",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/xed-2015-03-17.4.hb",
+      "version": "2015-03-17.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31770,9 +31770,9 @@
         "dc": 0
       },
       "size": 2605056,
-      "sha256": "e476d64b932af438bc4e9299a55aa455607c3c25bfdf9e91454e2a2cefcc34e1",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/xla-2012-01-20.3.hb",
-      "version": "2012-01-20.3",
+      "sha256": "d76c5c747d62a52d8d3dea6f92ed40c4ddd95467098944990d9e35b36f035696",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/xla-2012-01-20.4.hb",
+      "version": "2012-01-20.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31796,9 +31796,9 @@
         "dc": 0
       },
       "size": 1511424,
-      "sha256": "7ce6ccdca09c7708c6c801ec15332bb183be2e2d391b4329783b191a7dbb3a29",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/xnj-2023-04-14.3.hb",
-      "version": "2023-04-14.3",
+      "sha256": "4ccd608ed2c45b15f27e5f8dbefd9dcf5953011bdb1af6385aa51732986157b6",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/xnj-2023-04-14.4.hb",
+      "version": "2023-04-14.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31822,9 +31822,9 @@
         "dc": 0
       },
       "size": 1765376,
-      "sha256": "8b925b841b8cb3eccb17ce032810a34322e8772fa5a124dec7221e48a24aa0aa",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/xnn-2018-04-23.3.hb",
-      "version": "2018-04-23.3",
+      "sha256": "aa204a47152c1fe3c448723b81195a4a8aa840e6629d36744668e8aa751c09f4",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/xnn-2018-04-23.4.hb",
+      "version": "2018-04-23.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31847,10 +31847,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1515520,
-      "sha256": "f9aa566e616d11975327f69d93bc4f85f7e41074468424564a3f5cf863c50810",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/xon-2015-03-17.3.hb",
-      "version": "2015-03-17.3",
+      "size": 1519616,
+      "sha256": "3d2fe31cada4631f5df6d52a416d05066d6dcd5eb10aeca9d3b39f4db33235b3",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/xon-2015-03-17.4.hb",
+      "version": "2015-03-17.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31874,9 +31874,9 @@
         "dc": 0
       },
       "size": 2842624,
-      "sha256": "9fb1c884dbeb248c16020ff35ae3f35855d15aa4155557b53c2ec708fb2fcd91",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/xsi-2013-02-09.3.hb",
-      "version": "2013-02-09.3",
+      "sha256": "4850b9288d60d0bbd1d689219b9b0e629a8a88aae719eccd62f51910f3614e61",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/xsi-2013-02-09.4.hb",
+      "version": "2013-02-09.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31900,9 +31900,9 @@
         "dc": 0
       },
       "size": 450560,
-      "sha256": "12b7cf3523ba4064c210d03db4b8a22642043375131b55fd1bfe9bee3abdc1e0",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/xsn-2025-07-10.3.hb",
-      "version": "2025-07-10.3",
+      "sha256": "d041e2e11e6d6d72082d3f36c200a64f0f77021ecadbe613a2a63c67ed962bdd",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/xsn-2025-07-10.4.hb",
+      "version": "2025-07-10.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31925,10 +31925,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1974272,
-      "sha256": "68c1ed0bba00916744ff1a43c1932a244e1e7009b3c880af423ac1931db12caa",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/xtdNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 1978368,
+      "sha256": "8bc9f48335fae857e2570a4a0b84761c9cf669da1a3437c0593016cdcbf2bbf2",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/xtdNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31951,10 +31951,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 2072576,
-      "sha256": "1638a8d7561c753e193e4a94e4f52e19e3cbd486a2595c766d1cb02e9d932f2e",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/xtmNTpp-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 2076672,
+      "sha256": "8332b089dc4622bd53e6c4da8e9ef40bb08c0cbd047a5a2d782559fb950572ff",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/xtmNTpp-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -31977,10 +31977,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 2027520,
-      "sha256": "5133f9a89b8ebf88f572e966bd2df050d27932103c560e61d25b7f2c1efdeb99",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/yaaNT-2018-11-16.3.hb",
-      "version": "2018-11-16.3",
+      "size": 2031616,
+      "sha256": "21c78d01299d0b63364317215a4eae6292ef1b812829814dbb10b1e8ccbcc3d9",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/yaaNT-2018-11-16.4.hb",
+      "version": "2018-11-16.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32003,10 +32003,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1933312,
-      "sha256": "c13c7ee9b99a2acec61beb8bd53d54e03554830f2bbded78b03b3061ca5a3553",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/yadNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 1937408,
+      "sha256": "2d657c8195be8fda1ebddffc47b132a11464296a2dd7862c8dda6ba3fc17e73e",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/yadNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32030,9 +32030,9 @@
         "dc": 0
       },
       "size": 1441792,
-      "sha256": "de92505af87b805624d420f805552dc06dd2f4fdf5f53a9aa38d9b445def333b",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/yaf-2025-07-10.3.hb",
-      "version": "2025-07-10.3",
+      "sha256": "cc42e5500ad9dc0973506fdf0feaab22dc9e6ae33704c01f027cb3f80fcbbfd5",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/yaf-2025-07-10.4.hb",
+      "version": "2025-07-10.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32055,10 +32055,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 6037504,
-      "sha256": "58a80872ded3ccc434536f80d08a0224a4caef33294020dd7920d74a44a807d3",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/yal-2025-07-10.3.hb",
-      "version": "2025-07-10.3",
+      "size": 6045696,
+      "sha256": "94596e4185149005145bd0b943318e7be45cd110d83d1a43cfce4fa8471b0dc6",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/yal-2025-07-10.4.hb",
+      "version": "2025-07-10.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32081,10 +32081,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1630208,
-      "sha256": "e4b74614b37f4eb663d01fc0f0a4256b53d1959844a06772bdb5b5f42f2da0c0",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/yao-2023-04-18.3.hb",
-      "version": "2023-04-18.3",
+      "size": 1642496,
+      "sha256": "75e37f385e8c50079fd86c432c9ea80155f2dec24526cace8a8158630ace10f5",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/yao-2023-04-18.4.hb",
+      "version": "2023-04-18.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32107,10 +32107,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 6942720,
-      "sha256": "3035d704fe796362b6692ef22e05ce1b8731b22a206c82ba2130e541b3a9bd6b",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/yap-2017-12-21.3.hb",
-      "version": "2017-12-21.3",
+      "size": 6946816,
+      "sha256": "c08732826a114a520a5f1cade7e88031fd2b178b3c61866a34e1863ed77b7c82",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/yap-2017-12-21.4.hb",
+      "version": "2017-12-21.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32133,10 +32133,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 2097152,
-      "sha256": "ab517768144c062090d53217cdda1b46aaf086668c9ab42f7aa12f9dd70238c7",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/yaqNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 2101248,
+      "sha256": "31e6c552d727330382337ce4a35717297afba80ced5232dd661c81130b187f6e",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/yaqNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32159,10 +32159,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1941504,
-      "sha256": "a19ffcb5e6b9aa3c442e8928e1823e564dab0db640575e316d271bd92c702086",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/yby-2012-01-20.3.hb",
-      "version": "2012-01-20.3",
+      "size": 1945600,
+      "sha256": "807282c4e5098457f75bbc97508228ec185cbc13e8612b75025f8ad6291e5851",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/yby-2012-01-20.4.hb",
+      "version": "2012-01-20.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32186,9 +32186,9 @@
         "dc": 0
       },
       "size": 2469888,
-      "sha256": "65b5e4424c6f05abb81fe1d8bb2175ba9e2104352b7544a6c55ffa501683b854",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/ycn-2014-08-06.3.hb",
-      "version": "2014-08-06.3",
+      "sha256": "ab7d807a6fc09df42cc30e63c4971647708b2573891857b74f0b901fd6ea3afd",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/ycn-2014-08-06.4.hb",
+      "version": "2014-08-06.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32211,10 +32211,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 2211840,
-      "sha256": "aba7f06d651b91860f044e4ed9ab49b910f7bdf9d728ae7b3b6f8d7f7e693f2f",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/ydd-2025-07-10.3.hb",
-      "version": "2025-07-10.3",
+      "size": 2215936,
+      "sha256": "f6e9aa00a490f69cd58d8bd934c0b8428ebcab0e29784cd604af3585a4f0339e",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/ydd-2025-07-10.4.hb",
+      "version": "2025-07-10.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32238,9 +32238,9 @@
         "dc": 0
       },
       "size": 2371584,
-      "sha256": "adbd189e706701468f6cdc3af498d3ea8f084c6861437bfd416c2208f77a5e12",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/yer-2025-07-10.3.hb",
-      "version": "2025-07-10.3",
+      "sha256": "8c634feb2e5ba4b0fe52c53eced5740b9180df7edf8e7966be6eb3def1f61f82",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/yer-2025-07-10.4.hb",
+      "version": "2025-07-10.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32263,10 +32263,10 @@
         "nt": 1,
         "dc": 0
       },
-      "size": 36864,
-      "sha256": "25dfc3267a170c2997b58fceae88d460620ebcefc0499b5b87bbb1004e4a544a",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/yij-2019-08-20.3.hb",
-      "version": "2019-08-20.3",
+      "size": 40960,
+      "sha256": "a5dd726a7a8d7aae523e6391e40a41b41ea416c49f33048e0d79ee08d5d819ff",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/yij-2019-08-20.4.hb",
+      "version": "2019-08-20.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32290,9 +32290,9 @@
         "dc": 0
       },
       "size": 1859584,
-      "sha256": "1288d878386a7c58982427b6dbdc9198307b830c91f89ab27947d132c86b306f",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/yka-2015-06-30.3.hb",
-      "version": "2015-06-30.3",
+      "sha256": "39c502c195505c08848c0cafb289cfa133922d6ec52ae143bc6062c1cbea857a",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/yka-2015-06-30.4.hb",
+      "version": "2015-06-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32316,9 +32316,9 @@
         "dc": 0
       },
       "size": 2412544,
-      "sha256": "00ef5ed362f417df2e37051b5e7080eea307323e5b95627594967f8c5ffc94d3",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/yle-2025-08-30.3.hb",
-      "version": "2025-08-30.3",
+      "sha256": "a5d3780d2b88b8bc354d0d1fbc6cb5f4b3462bdaf0d2ca64aec2b8c91a81353b",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/yle-2025-08-30.4.hb",
+      "version": "2025-08-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32342,9 +32342,9 @@
         "dc": 0
       },
       "size": 2842624,
-      "sha256": "45c0d60048368d5fe7b907abe61804ca895e82830b11274b995536608fb50cd3",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/yml-2026-09-30.3.hb",
-      "version": "2026-09-30.3",
+      "sha256": "1d874eb8c39e10e10566f1f3f3e1cfe6a7e3cd245a517a82ab87c9793e8aa5a4",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/yml-2026-09-30.4.hb",
+      "version": "2026-09-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32368,9 +32368,9 @@
         "dc": 0
       },
       "size": 753664,
-      "sha256": "ba7b3f052d573e918b194c8e25168943431d97f3c71516354c9426e2a7d6e328",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/ymp-2025-07-10.3.hb",
-      "version": "2025-07-10.3",
+      "sha256": "ecf874d42f72387cff0da695b59fa6b937f624bf506a991a13726311a2114d88",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/ymp-2025-07-10.4.hb",
+      "version": "2025-07-10.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32393,10 +32393,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1572864,
-      "sha256": "912ef7f6277e8e296cc03fcddf125ac6359c1573d1d4a4f0831acd81e98f81df",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/yns-2025-07-10.3.hb",
-      "version": "2025-07-10.3",
+      "size": 1576960,
+      "sha256": "84ce19986abbd0dceba609f49307c1b8ee53c8fb67352507121e9957ad1b82f3",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/yns-2025-07-10.4.hb",
+      "version": "2025-07-10.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32419,10 +32419,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1880064,
-      "sha256": "e237a7e07c79c500e4a62c7bcb9d2f7b8703c51933af5798c5b800aff2538d11",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/yom-2025-06-25.3.hb",
-      "version": "2025-06-25.3",
+      "size": 1884160,
+      "sha256": "43feed190390a5692c99eb84386cd2d45ebb326e665541a0029d6d2b09c362d0",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/yom-2025-06-25.4.hb",
+      "version": "2025-06-25.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32446,9 +32446,9 @@
         "dc": 0
       },
       "size": 2605056,
-      "sha256": "0e1567facf391b412e8c0c51d1f8325a33eb122ed3f78edf4e6757d87bf2e804",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/yon-2012-10-23.3.hb",
-      "version": "2012-10-23.3",
+      "sha256": "75ff335f65ad8692180771d4591f49ba16ae5bfd724c5acf9b890a4763ddc91e",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/yon-2012-10-23.4.hb",
+      "version": "2012-10-23.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32471,10 +32471,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 7127040,
-      "sha256": "a3d06dc15c478a575c997cb63a0884b93fe170cf85fa8d81576eb399ca4c0492",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/yor-2025-06-25.3.hb",
-      "version": "2025-06-25.3",
+      "size": 7131136,
+      "sha256": "d44ca5a019076ae353bd5297cb6907535f277c757721fa66a2ea81047a99339d",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/yor-2025-06-25.4.hb",
+      "version": "2025-06-25.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32497,10 +32497,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1495040,
-      "sha256": "c5633a89bb599f47901cf73e56975c6945fe5509f972e89b3a5b12feeb5dbe1f",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/yrb-2012-01-20.3.hb",
-      "version": "2012-01-20.3",
+      "size": 1499136,
+      "sha256": "b2d01439040e8a1ae72c6a22e27ac34ed92b956b99ce3155e04787ed7eb0a75f",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/yrb-2012-01-20.4.hb",
+      "version": "2012-01-20.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32523,10 +32523,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1892352,
-      "sha256": "52dfcd1d9c502da4bb3721de87f3d6731c9090e134a9468b69414811a27de0aa",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/yreNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 1896448,
+      "sha256": "7eedcaefd1d25365f3f43ca446f645244f95ed4bfeab1c5dd18aa6f5bd4c83e2",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/yreNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32549,10 +32549,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1753088,
-      "sha256": "e7c6ae0685546fa0d14fbe8cd098713d07887384f6b886c17c8b99f2d00cf32c",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/yss-yamano-2014-01-09.3.hb",
-      "version": "2014-01-09.3",
+      "size": 1757184,
+      "sha256": "ad5462029a89122ae85396ee220bdc02232176b434f9f8664f39547c44f3de1b",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/yss-yamano-2014-01-09.4.hb",
+      "version": "2014-01-09.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32575,10 +32575,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1810432,
-      "sha256": "27159d052c56d77d977c575e530ca3f67b96ac6d8940512b9a2ae3f9a17ecc2c",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/yss-yawu-2012-10-23.3.hb",
-      "version": "2012-10-23.3",
+      "size": 1814528,
+      "sha256": "113320ea2dbae65a85d00e7c551a0dd20c40158e75bbbe3e0241ae9f60d2e634",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/yss-yawu-2012-10-23.4.hb",
+      "version": "2012-10-23.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32601,10 +32601,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 2461696,
-      "sha256": "c0227e37780f5a5bc95bc6ddd92e912e647c1f4abb612773925f8dc5c6c69e5c",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/yuj-2014-01-09.3.hb",
-      "version": "2014-01-09.3",
+      "size": 2465792,
+      "sha256": "c36b5f57d444a3218bfe4ca0e649c85fd02ba36fa5bc2560c209cb987d119ab2",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/yuj-2014-01-09.4.hb",
+      "version": "2014-01-09.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32627,10 +32627,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 2592768,
-      "sha256": "805af7810082ae988de79fd194676383b7f9079a31d0811f16b84967f65b8524",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/yut-2014-01-09.3.hb",
-      "version": "2014-01-09.3",
+      "size": 2596864,
+      "sha256": "691c85bd3cdf585ceae22acbb81bf795d3ed0ac726c62e10e24e8f730e4b3275",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/yut-2014-01-09.4.hb",
+      "version": "2014-01-09.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32653,10 +32653,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 2068480,
-      "sha256": "ce89451d1cc1ce632baa4ad67fd6f8566602551f6062d12a5fbaf4e3a4ac4ab2",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/yuw-2016-09-21.3.hb",
-      "version": "2016-09-21.3",
+      "size": 2072576,
+      "sha256": "5670cd9f6ea445744459ee68ed4c4e58ce3263d1f19a1790cbf137a7f56d3dac",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/yuw-2016-09-21.4.hb",
+      "version": "2016-09-21.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32679,10 +32679,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 2662400,
-      "sha256": "012176210f83ea47e751078c8e9aefed4a342c67d19711390ab99e9e2f0ce026",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/yvaNT-2025-07-10.3.hb",
-      "version": "2025-07-10.3",
+      "size": 2670592,
+      "sha256": "4e9d7472b8f232bc015a27a95103721a4798e0b4283a99a5d09e0fda5ee2e657",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/yvaNT-2025-07-10.4.hb",
+      "version": "2025-07-10.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32705,10 +32705,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1970176,
-      "sha256": "16235293bcbc7e85deec86f352a4aeb0d435ebf1a125764c1ba55a80ffe03a3b",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zaaNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 1982464,
+      "sha256": "acbb0e4ec24d1e77cd49ef1f9876e299864979eb96ab51ca451fe16ad1d50291",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zaaNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32731,10 +32731,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1486848,
-      "sha256": "3d40b169700bed5c2b968aa791ab76ae50e8877dea866c8473272b226f32da07",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zabNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 1490944,
+      "sha256": "d764b930c6879ccb9f14d34eca48727e7ad43a91abdf63f749e8ab2d281aac59",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zabNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32757,10 +32757,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1990656,
-      "sha256": "bd7d80493b9799645f1bf3d0f8fc9038d6fa3ae82d767693ac4dc7a7e4533938",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zacNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 1994752,
+      "sha256": "b402ef4e3235945e94f6b4d6a486367fc661b68162023a8ed227ccea5692e6f8",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zacNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32783,10 +32783,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1650688,
-      "sha256": "b3987dc895d06907818ce818a7bcff653e66d6f88a4c6dc876481d61e9ffea40",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zadNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 1654784,
+      "sha256": "adf7afdfea831269a7211b24373f451fc6c5b240c8c18271f0c2293470840aba",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zadNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32809,10 +32809,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1441792,
-      "sha256": "d0c6fcea8f9b8c280bc2f141526ccb5b3824da8f402756ad4392693932a37816",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zaiNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 1445888,
+      "sha256": "8cc7b009a502453af6978310282cbce31893e9ffc294a7d4bbcb8969ed147232",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zaiNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32835,10 +32835,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1515520,
-      "sha256": "3ab1f142bdf3af032ad84ed7d25c0cd2e6763f9a5a062faf88519724fb72f3f4",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zaj-2025-05-20.3.hb",
-      "version": "2025-05-20.3",
+      "size": 1523712,
+      "sha256": "6e8428f7ad39056858e0a81e03a0d9fff6e8188e607424b4b1c0a85ae7cc5340",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zaj-2025-05-20.4.hb",
+      "version": "2025-05-20.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32862,9 +32862,9 @@
         "dc": 0
       },
       "size": 2035712,
-      "sha256": "1851417447fe497c85479b9061c79f9c403f62ed57886d33ac4a6091a7ae908d",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zajp-2025-05-20.3.hb",
-      "version": "2025-05-20.3",
+      "sha256": "06427ed17a4c2aef6c7d9ef2dbad217dc6a46552c112e3f058c3753905af63e1",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zajp-2025-05-20.4.hb",
+      "version": "2025-05-20.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32888,9 +32888,9 @@
         "dc": 0
       },
       "size": 1908736,
-      "sha256": "b30136ae3775cd4a901ed3433316dedbe4b3b5df198cb91584111f983829748d",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zak-2025-05-13.3.hb",
-      "version": "2025-05-13.3",
+      "sha256": "f594f6cf3374b6217cc65f34f6f8ba2f03cbbfa2c7d842718ac2809ab4cbec98",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zak-2025-05-13.4.hb",
+      "version": "2025-05-13.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32913,10 +32913,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 2658304,
-      "sha256": "d19a5a1d9e9043b7701debb0d6dd57a60e86c8b7aa82018e9b9c783285bed332",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zamNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 2662400,
+      "sha256": "98c4d9e3aff1a11ed0940e8cde11edd7cc1a73fe60192b59eb3e1bb306ac7f81",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zamNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32939,10 +32939,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1540096,
-      "sha256": "feb28ed56adea7ce066aae91b1eec5a828ef591a6bb0d81b6290e1efaac956e8",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zaoNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 1544192,
+      "sha256": "093e4186d00a26866ac94ac2d2f64d20dbcfdf25aabee7aa7c6377246a8abdf9",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zaoNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32965,10 +32965,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1499136,
-      "sha256": "6f9eacf343447f6501013a56a4ecc91a33b72b09c9a9ab6e54044a7b3f9d9074",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zapNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 1503232,
+      "sha256": "d53ece6605a87f0555d58ebd03746de44de75bc7be44f112194b411858e2db0c",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zapNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -32991,10 +32991,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 2514944,
-      "sha256": "f369d47b4d8ed2ae09d6969a0ba43a3a480db99b188b06d25573c0e915862399",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zarNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 2519040,
+      "sha256": "0aac4e77d694872661d28f0a686034d4ebac0a6ae3c0e4d3cd77d82df30bb677",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zarNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -33017,10 +33017,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1585152,
-      "sha256": "6f11232276169582804bc0fc3b7aeb04b260cb022a469f2d3623cb27314778a3",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zasNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 1589248,
+      "sha256": "008cbbdeaa7c218138605851c1e2b80cef3fb23440f055ac99e309a6c2827774",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zasNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -33043,10 +33043,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 2265088,
-      "sha256": "a865e58fa19cb37b1b86650cce8e436d1d395e0c090e66e1244eb317b18a4e05",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zatNTps-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 2269184,
+      "sha256": "b8445d2b3dd1ef2fa251b9154d49540b2c4d58cc48707e85ce89a08b8b4be414",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zatNTps-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -33069,10 +33069,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 2179072,
-      "sha256": "4c0cbebbcd77b293f64d593fc5f4aa7c29aa0d498dfddabdc41386b02886efee",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zavNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 2183168,
+      "sha256": "123a733a0e42c1d4a3a4f6e64377038f8e81af455b08309bec1ce69a6806d1f4",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zavNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -33095,10 +33095,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1544192,
-      "sha256": "1f71ef18e423bb35434e2c6a4845b1a381d55e68736481f25aac2127981e8f2f",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zawNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 1548288,
+      "sha256": "ef368c6265bd723554c5d6a29f85db53db8b60259fd003c979ed856071f473b7",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zawNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -33122,9 +33122,9 @@
         "dc": 0
       },
       "size": 335872,
-      "sha256": "1383942879ca4f368e296bfef494a9fa623f1be12c5c7b43727e0d31a2a03ced",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zbu-2025-07-10.3.hb",
-      "version": "2025-07-10.3",
+      "sha256": "3aa04abb2308d1cb1e08c05f0fc73d3baf57108e37050a822ceb56c1fddbcdaa",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zbu-2025-07-10.4.hb",
+      "version": "2025-07-10.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -33147,10 +33147,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1642496,
-      "sha256": "b4cd5bb0da71bd79e3316a1bd14808dc1e35a9174a69293181af8861821d105e",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zcaNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 1646592,
+      "sha256": "461e0c14ba46db65d00f042a821156e85d03d9a21aa97061639f27df03a40ac6",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zcaNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -33173,10 +33173,10 @@
         "nt": 26,
         "dc": 0
       },
-      "size": 1327104,
-      "sha256": "5f95cbef3757554c25f8e5ecc903a2b869df89bf3ab636709a7bd68a80d971b5",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zgam-2020-09-02.3.hb",
-      "version": "2020-09-02.3",
+      "size": 1331200,
+      "sha256": "5b71854834682c9806dbb17316be46a36971055722efaa344e50a6da66180497",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zgam-2020-09-02.4.hb",
+      "version": "2020-09-02.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -33200,9 +33200,9 @@
         "dc": 0
       },
       "size": 1855488,
-      "sha256": "fef210f4719042b2949da86fb0bcd59217f3c6b8ef19fb184f4905ee6396a6a3",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zia-2022-06-21.3.hb",
-      "version": "2022-06-21.3",
+      "sha256": "be7435a67b6e2cc123ab9b195d6dc041f7feeaf0d7f13f56e04e4839fb4bb482",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zia-2022-06-21.4.hb",
+      "version": "2022-06-21.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -33225,10 +33225,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 2056192,
-      "sha256": "91e193da3df6ba1a04ca1e9e392b76cab2f6228ee916b36a59a3e908406c61dc",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zin-2025-07-10.3.hb",
-      "version": "2025-07-10.3",
+      "size": 2060288,
+      "sha256": "bb772214a9dd5ed4e04d30d38a3f9b65c8717d1ce776b82e5da7614c47de6eda",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zin-2025-07-10.4.hb",
+      "version": "2025-07-10.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -33252,9 +33252,9 @@
         "dc": 0
       },
       "size": 1400832,
-      "sha256": "46f91fbcbe72b3c6667331f085a5fe75e6c68828f486b27831fd1d3811ea79b5",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/ziw-2018-02-06.3.hb",
-      "version": "2018-02-06.3",
+      "sha256": "03a2d6970559b972e0efd8d517f021eed0667d59c043c7be91ea529b2cba54c0",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/ziw-2018-02-06.4.hb",
+      "version": "2018-02-06.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -33277,10 +33277,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1490944,
-      "sha256": "16082ef118ad1f3391725c172575d20a6896fcd182452957157854d06f088816",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zlmKSZI-2014-04-01.3.hb",
-      "version": "2014-04-01.3",
+      "size": 1495040,
+      "sha256": "4496bdfd2485163f5f6c1b93d56474f616a4610e6f9b33df62d931e331ffdb26",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zlmKSZI-2014-04-01.4.hb",
+      "version": "2014-04-01.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -33303,10 +33303,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1843200,
-      "sha256": "0727ad1fd29bc86e128287c4d044f10474e613a069ce6f9b701cfb2f429cd3db",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zosNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 1847296,
+      "sha256": "a1474272df0f4fd93d42de19da6d08191632e9fbf6f8d91278d75bc0fcba8685",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zosNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -33329,10 +33329,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 2084864,
-      "sha256": "6e36f1851757ceee9c0949cb8e8218dec12ea22253b80fd83656da11e3ec13e7",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zpcNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 2088960,
+      "sha256": "0df5abd4c8fd17ea61ff7803fbb3a0e0f9bdccc07bab32a6b9b44c64151f3c8b",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zpcNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -33355,10 +33355,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1863680,
-      "sha256": "ce4e4f326323fa17623dc26e1df2775031cf8a98a9c44c49b8e3632262da0c5b",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zplNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 1867776,
+      "sha256": "112ab851e087db5eb0f7ef0e3efd93f2c8d57701f589bce35704a652b9b48a9d",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zplNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -33381,10 +33381,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1716224,
-      "sha256": "efa50a38c5066a23af9851be3f9dfe832e547de8513672ea0377fdb09766ee1a",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zpmNT-2018-11-16.3.hb",
-      "version": "2018-11-16.3",
+      "size": 1720320,
+      "sha256": "5af175075167f407a7b645a3af8c6584c3f7fea1a295884fc73ee63578416359",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zpmNT-2018-11-16.4.hb",
+      "version": "2018-11-16.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -33407,10 +33407,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1507328,
-      "sha256": "1458fd6422863531899d03cb2aa5f64904570d9bc65284041a1a9020b37c53f9",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zpoNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 1511424,
+      "sha256": "c3ed113cec652604a57494f2f3a8a14816615c1cded864879e362c57dcfe06c9",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zpoNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -33433,10 +33433,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1908736,
-      "sha256": "e8f71faf682ad2da3a07344677542fe1fcd93a25b0e6dbbc3ef5edb4f2cc4d5d",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zpqNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 1912832,
+      "sha256": "50abaebcf3cb3bf7655b748c0f180bd85844c40276b84241e8268d730c7d701e",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zpqNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -33459,10 +33459,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1912832,
-      "sha256": "9fc91b18fd6b4863314e67627d56fb68a6321691cc3a445777c59ecb3715d6cf",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zpuNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 1916928,
+      "sha256": "af994ec1643675a4bb8a79a3ddf3edf13852f30002b7705ae034d38cd8505c8d",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zpuNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -33485,10 +33485,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 2183168,
-      "sha256": "840f04fa4589b9906ae288e539c19100bb299edd848514d97dd546c7c95ece88",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zpvNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 2187264,
+      "sha256": "c934bd3370ebd1f1ee8fe61ad0632d1faeb490f090277810e7895dd3f5475cb7",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zpvNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -33511,10 +33511,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1835008,
-      "sha256": "222e2e0443db6cbc68f59af86d5bc8cf0317ddb1cd82c3a1f0c9275bb88614f9",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zpzNTpp-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 1839104,
+      "sha256": "2cd282ee6e521be089000391b2063a06c625d9bf09bad4b1473262a804649398",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zpzNTpp-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -33537,10 +33537,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1998848,
-      "sha256": "259d64d16ecfc0d951c4caac9dda428cc38bc54c5b4874a604ebab2bc67f3566",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zsrNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 2002944,
+      "sha256": "26926c84ff7abe91b3035965f4d3c9dc660d87a3330d6beb8ea08fc24438cda2",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zsrNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -33563,10 +33563,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1617920,
-      "sha256": "b41b5a73001d414af7586e10fc592365dd849e86b9a836da8744bd778c3e6a32",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/ztp-2025-07-10.3.hb",
-      "version": "2025-07-10.3",
+      "size": 1622016,
+      "sha256": "3091c4a8e9d94a11615688c954be8b890502daea70d6ae5756706121f90ef721",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/ztp-2025-07-10.4.hb",
+      "version": "2025-07-10.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -33589,10 +33589,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1409024,
-      "sha256": "4ad18f1fb25732d0d315f35670f3a3bf9b6eafe61d26e032658f5d6e1f816c40",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/ztqNT-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 1413120,
+      "sha256": "daac67fd2a777539ac3d32381f7c2563fe496eab3c9f99382e79d2ed139221c9",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/ztqNT-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -33615,10 +33615,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 2314240,
-      "sha256": "fb59309fe7d4c985a565ac9ee64d4e0523fd80db6c60b91cb7554565ab78057b",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/ztyNTps-2014-04-30.3.hb",
-      "version": "2014-04-30.3",
+      "size": 2318336,
+      "sha256": "522e2bfb4b2f6370e8d04fd30e88ab0905a16efc89c8f437ef286a4d97986148",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/ztyNTps-2014-04-30.4.hb",
+      "version": "2014-04-30.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -33641,10 +33641,10 @@
         "nt": 27,
         "dc": 0
       },
-      "size": 1662976,
-      "sha256": "f22b12066176ef60e26e0f30b84bf66271df1467d285ab309ea99bdaf3d38abc",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-20-2/zypNT-2014-04-22.3.hb",
-      "version": "2014-04-22.3",
+      "size": 1667072,
+      "sha256": "98adc453caa7ef31b711f89070a3aba09db838842ad3541025d1f51f3fe8da84",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22-2/zypNT-2014-04-22.4.hb",
+      "version": "2014-04-22.4",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     }
