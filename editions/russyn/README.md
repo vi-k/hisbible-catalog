@@ -59,6 +59,10 @@ punctuation of a verse and the capitals of pronouns follow the edition of
 the Moscow Patriarchate where it is confirmed by a second witness. Readings
 of the printed book are marked `по печатной книге`; footnotes the printed
 book adds or words differently are not listed, like other footnotes.
+Where the module departs from the printed book (its typos: pronouns referring
+to God that it sets lowercase, unlike the rest of the book) the rows are marked
+`опечатка печатной книги`, and the article «Исправления» of the front pages
+(`usfm/00-FRT.usfm`) lists them for the reader.
 
 `spelling.tsv` is the table of old and new spellings: old word, tab, new word.
 The builder applies it to the text, carrying the capital letter over.
@@ -66,7 +70,8 @@ The builder applies it to the text, carrying the capital letter over.
 ## Files
 
 - `edition.json`: module description.
-- `usfm/`: one USFM file per book.
+- `usfm/`: one USFM file per book; `00-FRT.usfm` holds the front pages
+  (the article «Исправления»).
 - `CHANGES.md`: log of changes to the base text.
 - `spelling.tsv`: spelling table.
 
