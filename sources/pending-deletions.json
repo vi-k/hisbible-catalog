@@ -1,92 +1,64 @@
 {
   "deletions": [
     {
-      "release": "build-2026-11-22",
-      "asset": "eng-Brenton-2026-11-04.2.hb"
+      "release": "build-2026-11-23",
+      "asset": "eng-Brenton-2026-11-04.3.hb"
+    },
+    {
+      "release": "build-2026-11-23",
+      "asset": "eng-web-2026-11-13.3.hb"
+    },
+    {
+      "release": "build-2026-11-23",
+      "asset": "eng-web-c-2026-10-30.5.hb"
+    },
+    {
+      "release": "build-2026-11-23",
+      "asset": "eng-webbe-2026-10-30.5.hb"
+    },
+    {
+      "release": "build-2026-11-23",
+      "asset": "engasvbt-2026-11-13.3.hb"
+    },
+    {
+      "release": "build-2026-11-23",
+      "asset": "englxxup-2026-11-20.1.hb"
     },
     {
       "release": "build-2026-11-22",
-      "asset": "eng-kjv-2026-11-15.2.hb"
+      "asset": "engourb-2024-12-05.4.hb"
+    },
+    {
+      "release": "build-2026-11-23",
+      "asset": "engwebu-2026-11-17.2.hb"
+    },
+    {
+      "release": "build-2026-11-23",
+      "asset": "frasbl-2026-10-30.5.hb"
+    },
+    {
+      "release": "build-2026-11-23",
+      "asset": "grcbrent-2026-11-04.3.hb"
+    },
+    {
+      "release": "build-2026-11-23",
+      "asset": "grclxx-2026-02-13.7.hb"
     },
     {
       "release": "build-2026-11-22",
-      "asset": "eng-rv-2026-10-30.4.hb"
+      "asset": "nld1939-2024-08-06.5.hb"
     },
     {
-      "release": "build-2026-11-22",
-      "asset": "eng-web-2026-11-13.2.hb"
+      "release": "build-2026-11-23",
+      "asset": "porbrbsl-2026-10-08.5.hb"
     },
     {
-      "release": "build-2026-11-22",
-      "asset": "eng-web-c-2026-10-30.4.hb"
+      "release": "build-2026-11-23",
+      "asset": "spabll-2026-10-30.5.hb"
     },
     {
-      "release": "build-2026-11-22",
-      "asset": "eng-webbe-2026-10-30.4.hb"
-    },
-    {
-      "release": "build-2026-11-22",
-      "asset": "engasvbt-2026-11-13.2.hb"
-    },
-    {
-      "release": "build-2026-11-22",
-      "asset": "engkjvcpb-2026-11-09.3.hb"
-    },
-    {
-      "release": "build-2026-11-22",
-      "asset": "englxxup-2026-11-20.hb"
-    },
-    {
-      "release": "build-2026-11-22",
-      "asset": "engwebu-2026-11-17.1.hb"
-    },
-    {
-      "release": "build-2026-11-22",
-      "asset": "engwyc2017-2019-09-26.6.hb"
-    },
-    {
-      "release": "build-2026-11-22",
-      "asset": "engwyc2018-2019-09-25.6.hb"
-    },
-    {
-      "release": "build-2026-11-22",
-      "asset": "frasbl-2026-10-30.4.hb"
-    },
-    {
-      "release": "build-2026-11-22",
-      "asset": "grcbrent-2026-11-04.2.hb"
-    },
-    {
-      "release": "build-2026-11-22",
-      "asset": "grclxx-2026-02-13.6.hb"
-    },
-    {
-      "release": "build-2026-11-22",
-      "asset": "hrv-2019-12-16.5.hb"
-    },
-    {
-      "release": "build-2026-11-22",
-      "asset": "hui-2014-12-11.5.hb"
-    },
-    {
-      "release": "build-2026-11-22",
-      "asset": "pon2006a-2017-09-08.4.hb"
-    },
-    {
-      "release": "build-2026-11-22",
-      "asset": "porbrbsl-2026-10-08.4.hb"
-    },
-    {
-      "release": "build-2026-11-22-2",
-      "asset": "spabll-2026-10-30.4.hb"
-    },
-    {
-      "release": "build-2026-11-22-2",
-      "asset": "spablm-2026-10-30.4.hb"
-    },
-    {
-      "release": "build-2026-11-22-2",
-      "asset": "tpi-2026-07-15.5.hb"
+      "release": "build-2026-11-23",
+      "asset": "spablm-2026-10-30.5.hb"
     }
   ]
 }
