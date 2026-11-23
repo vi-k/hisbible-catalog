@@ -243,9 +243,26 @@ void main() {
 
   test('a book without SIL code is left out', () {
     final m = vs.detect({
-      192: {1: 10},
+      305: {1: 10},
+    }, russianFlag: true);
+    expect(m.of(305), VerseScheme.eng);
+    expect(m.uncertain, isEmpty);
+  });
+
+  test('Additions to Esther are left out and map to themselves', () {
+    // `ESG` бывает и всей греческой Есфирью, и главами 10–16 дополнений:
+    // карте схемы книга не верит.
+    final m = vs.detect({
+      192: {10: 13, 11: 1, 16: 24},
     }, russianFlag: true);
     expect(m.of(192), VerseScheme.eng);
     expect(m.uncertain, isEmpty);
+    expect(vs.lastVerses(VerseScheme.eng, 192), isEmpty);
+    for (final scheme in VerseScheme.values) {
+      expect(
+        vs.toCanonical(const VerseRef(192, 13, 1), scheme),
+        const VerseRef(192, 13, 1),
+      );
+    }
   });
 }

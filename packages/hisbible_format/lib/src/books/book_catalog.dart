@@ -20,8 +20,9 @@ abstract final class BookCatalog {
   /// Номер книги по коду из [codeOf] или `null`, если код не распознан.
   ///
   /// Код `H<номер>` годится только для книги без кода SIL: у книги с кодом
-  /// единственный код — её код SIL. Номер, который не помещается в `int`,
-  /// — тоже `null`.
+  /// единственный код — её код SIL. Исключение — книги, у которых кода SIL
+  /// прежде не было ([_formerlyNumeric]): их старый код читается и дальше.
+  /// Номер, который не помещается в `int`, — тоже `null`.
   static int? numberOfCode(String code) {
     final known = bySilCode(code);
     if (known != null) {
@@ -36,10 +37,17 @@ abstract final class BookCatalog {
       return null;
     }
 
-    return byNumber(number)?.silCode == null ? number : null;
+    return byNumber(number)?.silCode == null ||
+            _formerlyNumeric.contains(number)
+        ? number
+        : null;
   }
 
   static final _numericCode = RegExp(r'^H([1-9]\d*)$');
+
+  // Книги, которые получили код SIL позже: модули, записанные раньше, держат
+  // их под `H<номер>`. Дополнения к Есфири — `ESG` с 0.17.2.
+  static const _formerlyNumeric = {192};
 
   /// Порядок книг в Синодальном переводе: 78 книг.
   static const List<int> russianOrder = [
@@ -404,6 +412,10 @@ abstract final class BookCatalog {
       ruLong: 'Дополнения к Есфири',
       enShort: 'EsthGr',
       enLong: 'Additions to Esther',
+      // В USFM под `ESG` бывают и одни дополнения (KJVA, RV: главы 10–16),
+      // и вся греческая Есфирь (WEB): обе — эта книга (слово владельца
+      // 2026-11-23).
+      silCode: 'ESG',
     ),
     BookInfo(
       number: 220,

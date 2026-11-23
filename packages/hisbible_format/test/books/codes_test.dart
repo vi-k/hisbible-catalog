@@ -10,7 +10,12 @@ void main() {
       );
     }
     expect(BookCatalog.codeOf(10), 'GEN');
-    expect(BookCatalog.codeOf(192), 'H192');
+    expect(BookCatalog.codeOf(305), 'H305');
+    // Дополнения к Есфири пишутся кодом USFM, а старый код модулей,
+    // записанных раньше, читается и дальше.
+    expect(BookCatalog.codeOf(192), 'ESG');
+    expect(BookCatalog.numberOfCode('ESG'), 192);
+    expect(BookCatalog.numberOfCode('H192'), 192);
     expect(BookCatalog.numberOfCode('H999'), 999);
     expect(BookCatalog.numberOfCode('XYZ'), isNull);
   });

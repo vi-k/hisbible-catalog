@@ -191,9 +191,10 @@ final class Versification {
 
   /// Последний стих каждой главы книги в схеме: глава → стих.
   ///
-  /// Книга без кода SIL или без строки в файле схемы — пустая карта.
+  /// Книга без кода SIL или без строки в файле схемы — пустая карта, как
+  /// и книга, чьих строк не берём (`ESG`).
   Map<int, int> lastVerses(VerseScheme scheme, int book) {
-    final code = BookCatalog.byNumber(book)?.silCode;
+    final code = _VrsTable._mappedCode(book);
     if (code == null) {
       return const {};
     }
@@ -213,7 +214,8 @@ final class Versification {
   /// не те же, что у `eng`, — иначе греческий Новый Завет звался бы
   /// Септуагинтой. В Новом Завете `lxx` не предлагается вовсе: у Деяний
   /// и 2 Коринфянам её длины те же, что у `org`, а Септуагинта — Ветхий
-  /// Завет. Книга без кода SIL в карту не попадает.
+  /// Завет. Книга без кода SIL в карту не попадает, как и книга, чьих строк
+  /// не берём (`ESG`).
   BookSchemes detect(
     Map<int, Map<int, int>> chapters, {
     required bool russianFlag,
@@ -222,7 +224,7 @@ final class Versification {
     final schemes = <int, VerseScheme>{};
     final uncertain = <int>{};
     for (final MapEntry(key: book, value: lasts) in chapters.entries) {
-      if (BookCatalog.byNumber(book)?.silCode == null) {
+      if (_VrsTable._mappedCode(book) == null) {
         continue;
       }
       final order = _order(book, russianFlag, preferred);
@@ -276,7 +278,7 @@ final class Versification {
   }) {
     final found = <SchemeDoubt>[];
     for (final MapEntry(key: book, value: lasts) in chapters.entries) {
-      if (BookCatalog.byNumber(book)?.silCode == null ||
+      if (_VrsTable._mappedCode(book) == null ||
           settled.contains(book) ||
           lasts.isEmpty) {
         continue;
@@ -404,7 +406,7 @@ final class Versification {
 
   /// Переводит место через таблицы SIL; книга без кода SIL — в себя.
   VerseRef _translate(VerseRef ref, _SilRef Function(_SilRef) map) {
-    final code = BookCatalog.byNumber(ref.book)?.silCode;
+    final code = _VrsTable._mappedCode(ref.book);
     if (code == null) {
       return ref;
     }
@@ -474,8 +476,19 @@ final class _VrsTable {
   /// Код SIL Молитвы Манассии.
   static const manasseh = 'MAN';
 
-  // Книги, которых нет в справочнике.
+  // Книги, чьи строки соответствия не берём. `PS2` и `EZA` нет
+  // в справочнике. `ESG` у переводов — то вся греческая Есфирь, то одни
+  // дополнения с главами 10–16, и карта схемы верна только для первой:
+  // книга переводит места в себя, как книга без кода SIL.
   static const _foreignBooks = {'ESG', 'PS2', 'EZA'};
+
+  // Код SIL книги, если таблицы схем о ней что-то говорят: у книги без кода
+  // и у книги из [_foreignBooks] — `null`.
+  static String? _mappedCode(int book) {
+    final code = BookCatalog.byNumber(book)?.silCode;
+
+    return code == null || _foreignBooks.contains(code) ? null : code;
+  }
 
   // Справочник держит Молитву Манассии, Сусанну и Вила отдельными книгами.
   // Строки `2CH = MAN` идут в карту молитвы раньше этой проверки.

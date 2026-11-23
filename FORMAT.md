@@ -114,7 +114,11 @@ Notes:
 
 - `book` columns hold book codes: the USFM code (`GEN`, `PSA`, `MAT`) or
   `H<number>` for a book that has no USFM code; the number is a book number of
-  the HisBible book list (`BookCatalog` in `hisbible_format`).
+  the HisBible book list (`BookCatalog` in `hisbible_format`). Additions to
+  Esther (192) are `ESG` since `hisbible_format` 0.17.2; a reader still takes
+  their former code `H192`. `ESG` is either the whole Greek Esther (WEB) or
+  only the additions, chapters 10–16 (KJV, RV); no scheme maps it, and its
+  places map to themselves.
 - A reader skips verses of a book that is not in `books`, and books whose code
   it does not know. A Bible has at least one verse of a book from `books`.
 - `scheme` is the verse numbering of the book, named as the SIL versification

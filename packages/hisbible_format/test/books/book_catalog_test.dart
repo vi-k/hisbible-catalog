@@ -47,7 +47,7 @@ void main() {
     expect(codes.toSet(), hasLength(codes.length));
     expect(
       BookCatalog.all.where((b) => b.silCode == null).map((b) => b.number),
-      [192, 305],
+      [305],
     );
   });
 
