@@ -192,6 +192,7 @@ void main() {
         (42, 1, HeadingKind.title, 1),
         (42, 2, HeadingKind.section, 2),
         (42, 2, HeadingKind.section, 3),
+        (43, 1, HeadingKind.section, 1),
       ],
     );
     expect(book.headings[2].nodes, [
@@ -206,7 +207,63 @@ void main() {
       const ParagraphBreak(),
       const TextRun('Thirsts'),
     ]);
+    expect(book.droppedFragments, 0);
+  });
+
+  test('a heading before a chapter number stands over its first verse', () {
+    final book = parseUsfm(
+      '\\id MAT\n\\c 1\n\\v 1 a\\f + \\ft x\\f*\n'
+      '\\s1 Next\\f + \\ft hn\\f*\n\\c 2\n\\s2 Own\n\\p\n'
+      r'\v 1 b\f + \ft y\f*',
+    );
+    expect(
+      [
+        for (final h in book.headings)
+          (h.chapter, h.verse, h.level, plainText(h.nodes)),
+      ],
+      [(2, 1, 1, 'Next'), (2, 1, 2, 'Own')],
+    );
+    expect(book.headings.first.nodes, [
+      const TextRun('Next'),
+      const FootnoteRef(2, 'a'),
+    ]);
+    expect(
+      book.notes.map(
+        (n) => (n.id, n.chapter, n.verse, n.caller, plainText(n.nodes)),
+      ),
+      [(1, 1, 1, 'a', 'x'), (2, 2, 1, 'a', 'hn'), (3, 2, 1, 'b', 'y')],
+    );
+    expect(book.verses[1].nodes, [
+      const TextRun('b'),
+      const FootnoteRef(3, 'b'),
+    ]);
+    expect(book.droppedFragments, 0);
+  });
+
+  test('text after a heading before a chapter number is dropped', () {
+    final book = parseUsfm(
+      '\\id MAT\n\\c 1\n\\v 1 a\n\\s1 Head\n\\p tail\\f + \\ft t\\f*\n'
+      '\\c 2\n\\v 1 b\\f + \\ft n\\f*',
+    );
+    expect(book.verses.map((v) => plainText(v.nodes)), ['a', 'b']);
+    expect([for (final h in book.headings) (h.chapter, h.verse)], [(2, 1)]);
+    expect(
+      book.notes.map((n) => (n.id, n.chapter, n.caller, plainText(n.nodes))),
+      [(1, 2, 'a', 'n')],
+    );
     expect(book.droppedFragments, 1);
+  });
+
+  test('a speaker label before a chapter number with no text after it', () {
+    final book = parseUsfm(
+      '\\id SNG\n\\c 1\n\\v 17 a\n\\sp Bride\n\\c 2\n\\v 1 b',
+    );
+    expect(
+      [for (final h in book.headings) (h.chapter, h.verse, plainText(h.nodes))],
+      [(2, 1, 'Bride')],
+    );
+    expect(book.verses.map((v) => plainText(v.nodes)), ['a', 'b']);
+    expect(book.droppedFragments, 0);
   });
 
   test('heading levels are clamped to 1..3', () {
@@ -546,9 +603,15 @@ void main() {
     expect(title.verses.single.nodes, [const TextRun('I will thank')]);
     expect(title.droppedFragments, 1);
     final label = parseUsfm(
-      '\\id SNG\n\\c 1\n\\sp Lover\n\\p text\n\\c 2\n\\v 1 x',
+      '\\id SNG\n\\c 1\n\\sp Lover\n\\p text\n\\c 2\n\\v 1 x\n\\c 3\n\\p y',
     );
-    expect(label.headings, isEmpty);
+    expect(
+      [
+        for (final h in label.headings)
+          (h.chapter, h.verse, plainText(h.nodes)),
+      ],
+      [(2, 1, 'Lover text')],
+    );
     expect(label.verses.single.nodes, [const TextRun('x')]);
     expect(label.droppedFragments, 1);
   });

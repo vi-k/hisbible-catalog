@@ -10,11 +10,15 @@ import 'package:hisbible_format/hisbible_format.dart';
 /// Заголовок стоит над следующим стихом своей главы и открытого стиха
 /// не закрывает: текст после заголовка остаётся в открытом стихе. До первого
 /// стиха главы такой текст дописывается к заголовку через пробел. Заголовок
-/// без следующего стиха в главе выбрасывается вместе со всем текстом после
-/// него до конца главы; текст вне стиха тоже выбрасывается; и то и другое
-/// считается в [UsfmBook.droppedFragments]. Исключение — `\sp` (имя
-/// говорящего) в конце главы при открытом стихе: выбрасывается и считается
-/// только оно само, а текст после него остаётся в стихе. Всё до первой главы,
+/// без следующего стиха в главе переходит со своими сносками в следующую
+/// главу и стоит над её первым стихом: так часто пишут заголовок главы перед
+/// `\c`. Текст открытого стиха после такого заголовка выбрасывается.
+/// Заголовок без стиха в конце книги выбрасывается вместе со всем текстом
+/// после него; текст вне стиха тоже выбрасывается; и то и другое считается
+/// в [UsfmBook.droppedFragments]. Исключение — `\sp` (имя говорящего)
+/// в конце главы при открытом стихе, когда после него есть текст:
+/// выбрасывается и считается только оно само, а текст после него остаётся
+/// в стихе. Всё до первой главы,
 /// кроме полей книги и вступления ([UsfmBook.intros]), выбрасывается
 /// и не считается. Сноска с текстом, которой некуда встать (в поле книги,
 /// вне стиха), выбрасывается и считается всегда. Строки `\mt`, `\mt1`,
@@ -451,6 +455,19 @@ final class _Content {
     hasText = hasText || tail.hasText;
   }
 
+  // Меняет знаки сносок по [refs] (по старому номеру).
+  void renumber(Map<int, FootnoteRef> refs) {
+    if (refs.isEmpty) {
+      return;
+    }
+    closeAll();
+    final root = _top..flush();
+    final nodes = _renumber(root.children, refs);
+    root.children
+      ..clear()
+      ..addAll(nodes);
+  }
+
   // Закрывает всё и отдаёт разметку без пробелов в конце.
   List<MarkupNode> finish() {
     closeAll();
@@ -762,7 +779,8 @@ final class _HeadingBuilder {
     required this.speaker,
   });
 
-  final int chapter;
+  // Глава заголовка; заголовок перед `\c` переходит в следующую.
+  int chapter;
   final HeadingKind kind;
   final int level;
 
@@ -771,7 +789,7 @@ final class _HeadingBuilder {
 
   // Сколько сносок было до заголовка: к стольким откатываются, если
   // заголовок выброшен.
-  final int firstNote;
+  int firstNote;
   final _Content content = _Content();
   final List<_NoteBuilder> notes = [];
 
@@ -797,7 +815,7 @@ final class _NoteBuilder {
   });
 
   int id;
-  final int chapter;
+  int chapter;
   int? verse;
   final FootnoteKind kind;
   String caller;
@@ -864,6 +882,9 @@ final class _Parser {
   final List<_VerseBuilder> _verses = [];
   final List<_HeadingBuilder> _headings = [];
   final List<_HeadingBuilder> _pendingHeadings = [];
+
+  // Заголовки перед `\c`: встанут над первым стихом следующей главы.
+  List<_HeadingBuilder> _carriedHeadings = [];
   final List<_NoteBuilder> _notes = [];
   final List<_IntroBuilder> _intros = [];
   final List<MarkupNode> _breaks = [];
@@ -1129,7 +1150,7 @@ final class _Parser {
         _unknown.add(name);
         _breakParagraph(const ParagraphBreak());
       case _Paragraph.chapter:
-        _endChapter();
+        _endChapter(carry: true);
         _awaitNumber = _Paragraph.chapter;
       case _Paragraph.verse:
         _carried = _targetKind == _Target.verse ? _target.closeAll() : [];
@@ -1252,6 +1273,7 @@ final class _Parser {
       final parsed = int.tryParse(_leadingDigits.stringMatch(number) ?? '');
       _chapter = parsed ?? _chapter + 1;
       _inChapters = true;
+      _takeCarried();
     } else {
       _startVerse(number);
     }
@@ -1347,7 +1369,9 @@ final class _Parser {
     }
   }
 
-  void _endChapter() {
+  // Закрывает главу; [carry] — перед `\c`: заголовки, которые не дождались
+  // стиха, переходят в следующую главу.
+  void _endChapter({bool carry = false}) {
     _endLabel();
     if (_note != null) {
       _closeNote();
@@ -1355,7 +1379,7 @@ final class _Parser {
     _carried = [];
     _setTarget(_Target.drop);
     if (_pendingHeadings.isNotEmpty) {
-      _dropPendingHeadings();
+      _dropPendingHeadings(carry: carry);
     }
     _breaks.clear();
     _verse = null;
@@ -1364,36 +1388,50 @@ final class _Parser {
     _callers = 0;
   }
 
-  // Заголовки без стиха в конце главы выбрасываются вместе с текстом
-  // после них и со всеми их сносками. Исключение — `\sp` в открытом стихе
-  // до первого другого заголовка: выбрасывается только имя говорящего,
-  // текст после него остаётся в стихе.
-  void _dropPendingHeadings() {
+  // Заголовки без стиха в конце главы. Перед `\c` ([carry]) они со своими
+  // сносками переходят в следующую главу: так часто пишут заголовок главы
+  // перед её номером. В конце книги они выбрасываются со всеми сносками.
+  // Текст открытого стиха после них выбрасывается всегда. Исключение —
+  // `\sp` в открытом стихе до первого другого заголовка: выбрасывается
+  // только имя говорящего, текст после него остаётся в стихе; перед `\c`
+  // так — только когда этот текст есть.
+  void _dropPendingHeadings({required bool carry}) {
     final pending = [..._pendingHeadings];
     _pendingHeadings.clear();
     final verse = _verse;
     var labels = 0;
-    if (verse != null) {
+    if (verse != null &&
+        (!carry || pending.any((heading) => heading.tail?.hasText ?? false))) {
       while (labels < pending.length && pending[labels].speaker) {
         labels++;
       }
     }
+    final kept = carry ? pending.sublist(labels) : <_HeadingBuilder>[];
     final removed = <_NoteBuilder>{};
     for (final (index, heading) in pending.indexed) {
-      if (heading.content.finish().isNotEmpty) {
-        _dropped++;
+      if (index < labels || !carry) {
+        if (heading.content.finish().isNotEmpty) {
+          _dropped++;
+        }
+        removed.addAll(heading.notes);
       }
-      removed.addAll(heading.notes);
       if (index >= labels) {
         final tail = heading.tail?..closeAll();
         if (tail != null && tail.hasText) {
           _dropped++;
         }
+        heading.tail = null;
       }
     }
     if (labels < pending.length) {
-      // Сноски выброшенного текста — последние в книге.
-      removed.addAll(_notes.skip(pending[labels].firstNote));
+      // Сноски выброшенного текста — последние в книге; сноски заголовков,
+      // которые переходят в следующую главу, остаются.
+      final keptNotes = {for (final heading in kept) ...heading.notes};
+      removed.addAll(
+        _notes
+            .skip(pending[labels].firstNote)
+            .where((note) => !keptNotes.contains(note)),
+      );
     }
     final refs = <int, FootnoteRef>{};
     if (removed.isNotEmpty) {
@@ -1420,6 +1458,44 @@ final class _Parser {
         verse?.content.append(tail, refs: refs);
       }
     }
+    if (kept.isEmpty) {
+      return;
+    }
+    // Сноски перенесённых заголовков — последние в книге.
+    var firstNote = pending[labels].firstNote;
+    for (final heading in kept) {
+      heading
+        ..firstNote = firstNote
+        ..content.renumber(refs);
+      firstNote += heading.notes.length;
+    }
+    _carriedHeadings = kept;
+  }
+
+  // Ставит заголовки, перенесённые из конца прошлой главы, в начало новой:
+  // знаки их сносок `+` — первые по порядку в ней.
+  void _takeCarried() {
+    final carried = _carriedHeadings;
+    _carriedHeadings = [];
+    if (carried.isEmpty) {
+      return;
+    }
+    final refs = <int, FootnoteRef>{};
+    for (final heading in carried) {
+      heading.chapter = _chapter;
+      for (final note in heading.notes) {
+        note.chapter = _chapter;
+        if (note.auto) {
+          note.caller = _autoCaller(_callers++);
+          refs[note.id] = FootnoteRef(note.id, note.caller);
+        }
+      }
+    }
+    for (final heading in carried) {
+      heading.content.renumber(refs);
+    }
+    _pendingHeadings.addAll(carried);
+    _heading = carried.last;
   }
 
   void _openNote(String name) {
