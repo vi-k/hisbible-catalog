@@ -9,6 +9,8 @@ const markupStyleTags = {
   MarkupStyle.quote: 'qt',
   MarkupStyle.note: 'n',
   MarkupStyle.heading: 'h',
+  MarkupStyle.bold: 'b',
+  MarkupStyle.smallCaps: 'sc',
 };
 
 /// Записывает дерево узлов строкой разметки модуля.

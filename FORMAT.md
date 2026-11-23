@@ -390,6 +390,8 @@ tags. Everything outside tags is text as is; whitespace is significant.
 | `<qt>…</qt>` | quotation |
 | `<n>…</n>` | note inside the text |
 | `<h>…</h>` | heading inside the text |
+| `<b>…</b>` | bold (USFM `\bd`; `\bdit` is `<b><em>…</em></b>`) |
+| `<sc>…</sc>` | small capitals (USFM `\sc`) |
 | `<w s="H7225 H853" m="HNcfsa">…</w>` | a word with Strong numbers (`s`, space separated) and morphology (`m`); both attributes are optional |
 | `<f id="12" c="a"/>` | footnote reference: `id` of a `footnotes` row, `c` the mark |
 | `<x r="MAT.1.1">…</x>` | link to a place, `r` in the form of `ref:` without the prefix, in the numbering of this module |

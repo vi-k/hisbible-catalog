@@ -399,7 +399,7 @@ void main() {
       '\\id GEN\n\\c 1\n\\v 1 \\va 2\\va*\\vp 1b\\vp*'
       r'\w In|strong="H0430,H08804" x-morph="He,R"\w* '
       r'\w the|lemma="x"\w* \w be|strong="H1 G02"\w* '
-      r'\em e\em* \it i\it* \qt q\qt* \bd b\bd* \sc s\sc* '
+      r'\em e\em* \it i\it* \qt q\qt* \bd b\bd* \sc s\sc* \bdit bi\bdit* '
       r'\rq Mt 1\rq*\fig pic|src="a.jpg"\fig*x~y // z',
     ).verses.single;
     expect(v.nodes, [
@@ -416,7 +416,25 @@ void main() {
       const StyledSpan(MarkupStyle.emphasis, [TextRun('i')]),
       const TextRun(' '),
       const StyledSpan(MarkupStyle.quote, [TextRun('q')]),
-      const TextRun(' b s x\u00A0y z'),
+      const TextRun(' '),
+      const StyledSpan(MarkupStyle.bold, [TextRun('b')]),
+      const TextRun(' '),
+      const StyledSpan(MarkupStyle.smallCaps, [TextRun('s')]),
+      const TextRun(' '),
+      const StyledSpan(MarkupStyle.bold, [
+        StyledSpan(MarkupStyle.emphasis, [TextRun('bi')]),
+      ]),
+      const TextRun(' x\u00A0y z'),
+    ]);
+  });
+
+  test('bold italic carries over a verse and closes whole', () {
+    final book = parseUsfm('\\id MAT\n\\c 1\n\\v 1 \\bdit a\n\\v 2 b\\bdit* c');
+    expect(book.verses[1].nodes, [
+      const StyledSpan(MarkupStyle.bold, [
+        StyledSpan(MarkupStyle.emphasis, [TextRun('b')]),
+      ]),
+      const TextRun(' c'),
     ]);
   });
 

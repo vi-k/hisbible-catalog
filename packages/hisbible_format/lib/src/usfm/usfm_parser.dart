@@ -128,20 +128,14 @@ const _styles = {
   'em': MarkupStyle.emphasis,
   'it': MarkupStyle.emphasis,
   'qt': MarkupStyle.quote,
+  'bd': MarkupStyle.bold,
+  'sc': MarkupStyle.smallCaps,
 };
 
-const _plainMarkers = {
-  'bd',
-  'bdit',
-  'sc',
-  'tl',
-  'bk',
-  'pn',
-  'k',
-  'qs',
-  'jmp',
-  'no',
-};
+// Жирный курсив: жирный участок, внутри него выделение.
+const _boldItalicMarker = 'bdit';
+
+const _plainMarkers = {'tl', 'bk', 'pn', 'k', 'qs', 'jmp', 'no'};
 
 const _droppedCharacterMarkers = {'rq', 'va', 'ca', 'fig'};
 
@@ -1071,6 +1065,13 @@ final class _Parser {
     }
     if (_styles[name] case final style?) {
       _openCharacter(_FrameKind.style, name, style: style);
+      return;
+    }
+    if (name == _boldItalicMarker) {
+      // Внутреннее выделение названо иначе: `\bdit*` закрывает внешний
+      // участок, а с ним и его.
+      _openCharacter(_FrameKind.style, name, style: MarkupStyle.bold);
+      _current.open(_FrameKind.style, '$name:em', style: MarkupStyle.emphasis);
       return;
     }
     if (name == 'xt') {
