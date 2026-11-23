@@ -729,7 +729,21 @@ void _writeText(
       heading.verse,
       heading.kind,
       heading.level,
-      writeMarkup(_shiftNotes(heading.nodes, offset)),
+      // Места в заголовке — строка параллельных мест `\r` или `\xt`
+      // в заголовке — становятся ссылками, как в сносках.
+      writeMarkup(
+        _shiftNotes(
+          resolveXtLinks(
+            heading.nodes,
+            names,
+            book: number,
+            chapter: heading.chapter,
+            exists: exists,
+            stats: xt,
+          ),
+          offset,
+        ),
+      ),
       part: heading.part,
     );
   }

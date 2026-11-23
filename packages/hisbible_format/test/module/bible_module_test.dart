@@ -661,6 +661,10 @@ void main() {
       ..execute(
         "INSERT INTO headings VALUES ('MAT', 1, 6, 0, 'section', 1, 'Birth')",
       )
+      // Заголовок незнакомого вида читатель пропускает.
+      ..execute(
+        "INSERT INTO headings VALUES ('MAT', 1, 6, 1, 'future', 1, 'Odd')",
+      )
       ..execute(
         "INSERT INTO verse_numbers VALUES ('MAT', 1, 1, '1–6а'), "
         "('MAT', 1, 6, '6б–11')",

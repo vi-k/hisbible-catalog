@@ -667,6 +667,36 @@ void main() {
     }
   });
 
+  test('places under a heading become links', () {
+    final books = readUsfmBooks([
+      _file(
+        'a.usfm',
+        '\\id MAT\n\\toc2 Мф\n\\c 3\n\\s1 Иоанн\n\\r (Мф 3:1-2; Ин 9:9)\n'
+            '\\p\n\\v 1 а\n\\v 2 б\n',
+      ),
+    ]);
+    final path = '${dir.path}/r.hb';
+
+    writeUsfmModule(path, _meta('ru'), books);
+
+    final module = BibleModule.open(path);
+    try {
+      expect(
+        [for (final h in module.headings(470, 3)) (h.kind, h.level, h.text)],
+        [
+          (HeadingKind.section, 1, 'Иоанн'),
+          (
+            HeadingKind.parallel,
+            2,
+            '(<x r="MAT.3.1-MAT.3.2">Мф 3:1-2</x>; Ин 9:9)',
+          ),
+        ],
+      );
+    } finally {
+      module.close();
+    }
+  });
+
   test('Zechariah 4 keeps its pieces', () {
     final books = readUsfmBooks([
       _file(

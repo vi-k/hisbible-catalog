@@ -189,13 +189,18 @@ void main() {
       [for (final h in book.headings) (h.chapter, h.verse, h.kind, h.level)],
       [
         (42, 1, HeadingKind.major, 1),
+        (42, 1, HeadingKind.parallel, 1),
         (42, 1, HeadingKind.title, 1),
         (42, 2, HeadingKind.section, 2),
+        (42, 2, HeadingKind.parallel, 2),
         (42, 2, HeadingKind.section, 3),
         (43, 1, HeadingKind.section, 1),
       ],
     );
-    expect(book.headings[2].nodes, [
+    expect(book.headings[1].nodes, [
+      const CrossrefLink(null, [TextRun('(42-72)')]),
+    ]);
+    expect(book.headings[3].nodes, [
       const TextRun('Part '),
       const StyledSpan(MarkupStyle.divineName, [TextRun('Lord')]),
     ]);

@@ -194,7 +194,7 @@ final _numbered = RegExp(r'^(pi|q|qm|li|s|ms|mt|mte)(\d*)$');
   switch (name) {
     case 'id' || 'h' || 'toc1' || 'toc2' || 'toc3' || 'cl':
       return (_Paragraph.field, null);
-    case 'rem' || 'ide' || 'usfm' || 'sts' || 'mr' || 'sr' || 'r' || 'cp':
+    case 'rem' || 'ide' || 'usfm' || 'sts' || 'cp':
       return (_Paragraph.silent, null);
     case 'periph':
       return (_Paragraph.header, null);
@@ -212,7 +212,7 @@ final _numbered = RegExp(r'^(pi|q|qm|li|s|ms|mt|mte)(\d*)$');
       return (_Paragraph.continuation, null);
     case 'qr' || 'qc':
       return (_Paragraph.line, 0);
-    case 'd' || 'sp':
+    case 'd' || 'sp' || 'r' || 'mr' || 'sr':
       return (_Paragraph.heading, null);
   }
   final match = _numbered.firstMatch(name);
@@ -975,7 +975,13 @@ final class _Parser {
               part: heading.part,
               kind: heading.kind,
               level: heading.level,
-              nodes: nodes,
+              // Строка мест без своих `\xt` — вся ссылка: места в ней
+              // разберёт `resolveXtLinks` по тексту.
+              nodes:
+                  heading.kind == HeadingKind.parallel &&
+                      nodes.every((node) => node is TextRun)
+                  ? [CrossrefLink(null, nodes)]
+                  : nodes,
             ),
       ],
       notes: [
@@ -1171,6 +1177,10 @@ final class _Parser {
         final (headingKind, level) = switch (name) {
           'd' => (HeadingKind.title, 1),
           'sp' => (HeadingKind.section, 3),
+          // Места под большим разделом — первого уровня, под разделом —
+          // второго.
+          'mr' => (HeadingKind.parallel, 1),
+          'r' || 'sr' => (HeadingKind.parallel, 2),
           _ when name.startsWith('ms') => (HeadingKind.major, digit ?? 1),
           _ => (HeadingKind.section, digit ?? 1),
         };

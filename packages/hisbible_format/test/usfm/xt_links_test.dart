@@ -296,4 +296,24 @@ void main() {
     );
     expect((stats.linked, stats.byHref, stats.unresolved), (2, 1, 1));
   });
+
+  test('a line of parallel places in brackets with dots and hyphens', () {
+    expect(
+      writeMarkup(resolve('(Мф 26.26-29; Ин 3:1‑8, 4.2–5.3)')),
+      '(<x r="MAT.26.26-MAT.26.29">Мф 26.26-29</x>; '
+      '<x r="JHN.3.1-JHN.3.8">Ин 3:1‑8</x>, '
+      '<x r="JHN.4.2-JHN.5.3">4.2–5.3</x>)',
+    );
+    expect(
+      writeMarkup(resolve('[Быт 1:1]; (2.3)')),
+      '[<x r="GEN.1.1">Быт 1:1</x>]; (<x r="GEN.2.3">2.3</x>)',
+    );
+  });
+
+  test('a verse after a comma is not the chapter of a dotted place', () {
+    expect(
+      writeMarkup(resolve('Ин 3:16, 4.2')),
+      '<x r="JHN.3.16">Ин 3:16</x>, <x r="JHN.4.2">4.2</x>',
+    );
+  });
 }

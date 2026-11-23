@@ -196,23 +196,30 @@ List<MarkupNode> _resolveNode(
   }
 }
 
-// Глава и стих: `3:16`, с буквой части стиха после номера.
+// Глава и стих: `3:16` или `3.16`, с буквой части стиха после номера;
+// между началом и концом — дефис, неразрывный дефис или тире.
 const _letterPart = r'(?:[a-zа-я](?![\p{L}\d]))?';
+const _dash = r'\s*[-‐‑–—]\s*';
 final _chapterVerse = RegExp(
-  r'(\d{1,4}):(\d{1,4})(?!\d)'
+  r'(\d{1,4})[:.](\d{1,4})(?!\d)'
   '$_letterPart'
-  r'(?:\s*[-–—]\s*(\d{1,4})(?!\d)(?::(\d{1,4})(?!\d))?'
+  '(?:$_dash'
+  r'(\d{1,4})(?!\d)(?:[:.](\d{1,4})(?!\d))?'
   '$_letterPart)?',
   unicode: true,
 );
 final _wordAfter = RegExp(r'\s+\p{Lu}', unicode: true);
 final _verseOnly = RegExp(
-  r'(\d{1,4})(?![\d:])'
+  r'(\d{1,4})(?![\d:]|\.\d)'
   '$_letterPart'
-  r'(?:\s*[-–—]\s*(\d{1,4})(?![\d:])'
+  '(?:$_dash'
+  r'(\d{1,4})(?![\d:]|\.\d)'
   '$_letterPart)?',
   unicode: true,
 );
+
+// Открывающие скобки перед местом: `(Мк 1:1–8; Лк 3:1–9)`.
+const _opening = '([';
 
 // Разобранное место: оно же, позиция за ним, книга и глава для
 // следующего.
@@ -254,7 +261,10 @@ typedef _Place = ({RefRange range, int end, int book, int chapter});
 
   var pos = 0;
   while (pos < text.length) {
-    final start = _skipSpaces(text, pos);
+    var start = _skipSpaces(text, pos);
+    while (start < text.length && _opening.contains(text[start])) {
+      start = _skipSpaces(text, start + 1);
+    }
     if (placeAt(start, verseToo: false) case final first?) {
       take(first, start);
       pos = first.end;
