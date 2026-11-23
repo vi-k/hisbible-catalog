@@ -236,12 +236,12 @@ void main() {
       _translation(ot: 31),
       zip({
         'GEN.usfm': _usfm('GEN', [31]),
-        'DAG.usfm': _usfm('DAG', [10]),
+        'XXA.usfm': _usfm('XXA', [10]),
       }),
     );
 
     final module = built(outcome);
-    expect(module.warnings, [contains('DAG')]);
+    expect(module.warnings, [contains('XXA')]);
     final bible = BibleModule.open(out());
     addTearDown(bible.close);
     expect([for (final b in bible.books) b.code], ['GEN']);
@@ -253,11 +253,33 @@ void main() {
       zip({
         'GEN.usfm': _usfm('GEN', [31]),
         'TOB.usfm': _usfm('TOB', [22]),
-        'DAG.usfm': _usfm('DAG', [10]),
+        'XXA.usfm': _usfm('XXA', [10]),
       }),
     );
 
-    expect(built(outcome).warnings, ['DAG: not in the book catalog, skipped']);
+    expect(built(outcome).warnings, ['XXA: not in the book catalog, skipped']);
+  });
+
+  test('Greek Daniel and psalm 151 count in the Old Testament', () {
+    // eBible считает их неканоническими, модуль держит в Данииле
+    // и Псалтири.
+    final outcome = build(
+      _translation(ot: 37, dc: 17),
+      zip({
+        'GEN.usfm': _usfm('GEN', [31]),
+        'PSA.usfm': _usfm('PSA', [6]),
+        'DAG.usfm': _usfm('DAG', [10]),
+        'PS2.usfm': _usfm('PS2', [7]),
+      }),
+    );
+
+    expect(built(outcome).warnings, [
+      'DAG: read as DAN',
+      'PS2: read as PSA 151',
+    ]);
+    final bible = BibleModule.open(out());
+    addTearDown(bible.close);
+    expect([for (final b in bible.books) b.code], ['GEN', 'PSA', 'DAN']);
   });
 
   test('russian and english books without an abbreviation take ours', () {

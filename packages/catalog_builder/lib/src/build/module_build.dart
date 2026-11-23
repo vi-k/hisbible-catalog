@@ -167,6 +167,7 @@ BuildOutcome buildModule(
     partPath,
     t,
     skippedVerses: books.skippedVerses,
+    movedVerses: books.movedVerses,
   );
   if (reasons.isNotEmpty) {
     _delete(part);

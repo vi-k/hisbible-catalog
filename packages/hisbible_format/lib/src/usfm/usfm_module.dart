@@ -51,6 +51,7 @@ final class UsfmBooks {
     required this.books,
     required this.skippedVerses,
     required this.warnings,
+    this.movedVerses = 0,
     this.preface = const [],
     this.prefaceNotes = const [],
   });
@@ -65,9 +66,14 @@ final class UsfmBooks {
   /// Книги в порядке чтения; [ordered] ставит их в порядок модуля.
   final List<UsfmBookEntry> books;
 
-  /// Стихи книг вне справочника: `translations.csv` их считает, а в модуль
-  /// они не идут.
+  /// Стихи, которые `translations.csv` считает, а в модуль они не идут:
+  /// книг вне справочника и греческого Даниила, который повторяет `DAN`.
   final int skippedVerses;
+
+  /// Стихи, которые `translations.csv` считает неканоническими, а модуль
+  /// держит в Ветхом Завете: греческий Даниил на месте Даниила и 151-й
+  /// псалом.
+  final int movedVerses;
 
   /// Что пропущено или выброшено. [writeUsfmModule] дописывает сюда своё.
   final List<String> warnings;
@@ -81,6 +87,7 @@ final class UsfmBooks {
   UsfmBooks ordered(String language) => UsfmBooks(
     books: [...books]..sort(_orderOf(language)),
     skippedVerses: skippedVerses,
+    movedVerses: movedVerses,
     warnings: warnings,
     preface: preface,
     prefaceNotes: prefaceNotes,
@@ -111,6 +118,17 @@ final class UsfmBooks {
 /// и [UsfmBooks.prefaceNotes], а стихи в нём выбрасываются
 /// с предупреждением. [onProgress] — доля прочитанных
 /// файлов от 0 до 1.
+///
+/// Греческий Даниил (`DAG`) и 151-й псалом (`PS2`) своих книг
+/// в справочнике не имеют (слово владельца 2026-11-23):
+/// - `DAG` без `DAN` — Даниил модуля;
+/// - `DAG` рядом с `DAN` даёт только дополнения, которых в модуле нет
+///   отдельными книгами: 3:24–90 — Песнь трёх отроков 1:1–67, глава 13 —
+///   Сусанна, глава 14 — Вил; прочее повторяет `DAN` и выбрасывается;
+/// - `PS2` — псалом 151 Псалтири, если в ней его нет; из нескольких глав
+///   `PS2` берётся первая.
+/// Выброшенное из них считается в [UsfmBooks.skippedVerses], взятое
+/// в Даниил и Псалтирь — в [UsfmBooks.movedVerses].
 UsfmBooks readUsfmBooks(
   Iterable<UsfmSource> files, {
   void Function(double fraction)? onProgress,
@@ -122,6 +140,7 @@ UsfmBooks readUsfmBooks(
   final numbers = <int>{};
   List<UsfmIntro>? preface;
   var prefaceNotes = const <UsfmNote>[];
+  final greek = <String, UsfmBook>{};
   for (final (index, file) in sorted.indexed) {
     final usfm = parseUsfm(decodeUsfm(file.bytes));
     final code = usfm.code;
@@ -146,6 +165,14 @@ UsfmBooks readUsfmBooks(
           warnings.add('$code: verses dropped: ${usfm.verses.length}');
         }
       }
+    } else if ((code == _greekDaniel || code == _psalm151) &&
+        usfm.verses.isNotEmpty) {
+      if (greek.containsKey(code)) {
+        warnings.add('$code: second copy in ${file.name}, skipped');
+      } else {
+        greek[code] = usfm;
+        _noteProblems(usfm, warnings);
+      }
     } else if (number == null || info == null) {
       warnings.add('$code: not in the book catalog, skipped');
       skippedVerses += usfm.verses.length;
@@ -155,29 +182,246 @@ UsfmBooks readUsfmBooks(
       warnings.add('$code: second copy in ${file.name}, skipped');
     } else {
       books.add((number: number, info: info, usfm: usfm));
-      final articles = usfm.intros
-          .where((part) => part.kind == IntroKind.article)
-          .length;
-      if (articles > 0) {
-        warnings.add('$code: \\periph outside FRT, read as a title: $articles');
-      }
-      if (usfm.droppedFragments > 0) {
-        warnings.add('$code: dropped fragments: ${usfm.droppedFragments}');
-      }
-      if (usfm.unknownMarkers.isNotEmpty) {
-        final markers = usfm.unknownMarkers.toList()..sort();
-        warnings.add('$code: unknown markers: ${markers.join(', ')}');
-      }
+      _noteProblems(usfm, warnings);
     }
     onProgress?.call((index + 1) / sorted.length);
   }
+  final daniel = _addGreekDaniel(greek[_greekDaniel], books, numbers, warnings);
+  final psalm = _addPsalm151(greek[_psalm151], books, warnings);
 
   return UsfmBooks(
     books: books,
-    skippedVerses: skippedVerses,
+    skippedVerses: skippedVerses + daniel.skipped + psalm.skipped,
+    movedVerses: daniel.moved + psalm.moved,
     warnings: warnings,
     preface: preface ?? const [],
     prefaceNotes: prefaceNotes,
+  );
+}
+
+// Коды USFM греческого Даниила и 151-го псалма: книг справочника у них нет,
+// их текст [readUsfmBooks] раскладывает по другим книгам.
+const _greekDaniel = 'DAG';
+const _psalm151 = 'PS2';
+
+// Что из греческого Даниила берётся отдельными книгами, когда в модуле
+// есть `DAN`: код книги, глава `DAG`, первый и последний стих.
+const _danielAdditions = [
+  ('S3Y', 3, 24, 90),
+  ('SUS', 13, 1, maxVerseNumber),
+  ('BEL', 14, 1, maxVerseNumber),
+];
+
+// Предупреждения о прочитанной книге [usfm]: `\periph` вне `FRT`,
+// выброшенные куски и незнакомые маркеры.
+void _noteProblems(UsfmBook usfm, List<String> warnings) {
+  final code = usfm.code;
+  final articles = usfm.intros
+      .where((part) => part.kind == IntroKind.article)
+      .length;
+  if (articles > 0) {
+    warnings.add('$code: \\periph outside FRT, read as a title: $articles');
+  }
+  if (usfm.droppedFragments > 0) {
+    warnings.add('$code: dropped fragments: ${usfm.droppedFragments}');
+  }
+  if (usfm.unknownMarkers.isNotEmpty) {
+    final markers = usfm.unknownMarkers.toList()..sort();
+    warnings.add('$code: unknown markers: ${markers.join(', ')}');
+  }
+}
+
+UsfmBookEntry _entry(UsfmBook usfm) {
+  final number = BookCatalog.numberOfCode(usfm.code)!;
+
+  return (number: number, info: BookCatalog.byNumber(number)!, usfm: usfm);
+}
+
+// Сколько кусков книги выброшено и сколько взято в Ветхий Завет.
+typedef _Taken = ({int skipped, int moved});
+
+// Кладёт греческого Даниила [dag] в [books] (см. [readUsfmBooks]).
+_Taken _addGreekDaniel(
+  UsfmBook? dag,
+  List<UsfmBookEntry> books,
+  Set<int> numbers,
+  List<String> warnings,
+) {
+  if (dag == null) {
+    return (skipped: 0, moved: 0);
+  }
+  final daniel = BookCatalog.numberOfCode('DAN')!;
+  if (numbers.add(daniel)) {
+    books.add(_entry(_copy(dag, code: 'DAN')));
+    warnings.add('DAG: read as DAN');
+
+    return (skipped: 0, moved: dag.verses.length);
+  }
+  var taken = 0;
+  for (final (code, chapter, from, to) in _danielAdditions) {
+    final slice = _slice(
+      dag,
+      code,
+      chapter: chapter,
+      from: from,
+      to: to,
+      shift: from - 1,
+    );
+    if (slice.verses.isEmpty) {
+      continue;
+    }
+    if (!numbers.add(BookCatalog.numberOfCode(code)!)) {
+      warnings.add('DAG: $code is already there, chapter $chapter skipped');
+      continue;
+    }
+    books.add(_entry(slice));
+    taken += slice.verses.length;
+    warnings.add('DAG: chapter $chapter read as $code');
+  }
+  final rest = dag.verses.length - taken;
+  if (rest > 0) {
+    warnings.add('DAG: repeats DAN, verses dropped: $rest');
+  }
+
+  return (skipped: rest, moved: 0);
+}
+
+// Дописывает 151-й псалом [ps2] к Псалтири [books] (см. [readUsfmBooks]).
+_Taken _addPsalm151(
+  UsfmBook? ps2,
+  List<UsfmBookEntry> books,
+  List<String> warnings,
+) {
+  if (ps2 == null) {
+    return (skipped: 0, moved: 0);
+  }
+  final psalms = BookCatalog.numberOfCode('PSA')!;
+  final index = books.indexWhere((book) => book.number == psalms);
+  final psa = index < 0 ? null : books[index].usfm;
+  if (psa == null) {
+    warnings.add('PS2: no PSA, skipped');
+
+    return (skipped: ps2.verses.length, moved: 0);
+  }
+  if (psa.verses.any((verse) => verse.chapter == 151)) {
+    warnings.add('PS2: PSA 151 is already there, skipped');
+
+    return (skipped: ps2.verses.length, moved: 0);
+  }
+  final first = ps2.verses.first.chapter;
+  var lastNote = 0;
+  for (final note in psa.notes) {
+    lastNote = note.id > lastNote ? note.id : lastNote;
+  }
+  final psalm = _slice(
+    ps2,
+    'PSA',
+    chapter: first,
+    from: 0,
+    to: maxVerseNumber,
+    shift: 0,
+    newChapter: 151,
+    noteShift: lastNote,
+  );
+  books[index] = _entry(
+    _copy(
+      psa,
+      verses: [...psa.verses, ...psalm.verses],
+      headings: [...psa.headings, ...psalm.headings],
+      notes: [...psa.notes, ...psalm.notes],
+    ),
+  );
+  warnings.add('PS2: read as PSA 151');
+  final rest = ps2.verses.length - psalm.verses.length;
+  if (rest > 0) {
+    warnings.add('PS2: chapters after $first skipped');
+  }
+
+  return (skipped: rest, moved: psalm.verses.length);
+}
+
+// Книга [book] с другим кодом или с другими кусками, заголовками
+// и сносками.
+UsfmBook _copy(
+  UsfmBook book, {
+  String? code,
+  List<UsfmVerse>? verses,
+  List<UsfmHeading>? headings,
+  List<UsfmNote>? notes,
+}) => UsfmBook(
+  code: code ?? book.code,
+  intros: book.intros,
+  verses: verses ?? book.verses,
+  headings: headings ?? book.headings,
+  notes: notes ?? book.notes,
+  droppedFragments: book.droppedFragments,
+  unknownMarkers: book.unknownMarkers,
+  header: book.header,
+  toc1: book.toc1,
+  toc2: book.toc2,
+  toc3: book.toc3,
+  chapterLabel: book.chapterLabel,
+);
+
+// Стихи [from]–[to] главы [chapter] книги [book] с её заголовками
+// и сносками — книгой [code] в одну главу [newChapter]: номера стихов
+// меньше на [shift], номера сносок больше на [noteShift]. Названий
+// и вступления у неё нет.
+UsfmBook _slice(
+  UsfmBook book,
+  String code, {
+  required int chapter,
+  required int from,
+  required int to,
+  required int shift,
+  int newChapter = 1,
+  int noteShift = 0,
+}) {
+  bool inside(int c, int v) => c == chapter && v >= from && v <= to;
+
+  return UsfmBook(
+    code: code,
+    intros: const [],
+    verses: [
+      for (final verse in book.verses)
+        if (inside(verse.chapter, verse.verse))
+          UsfmVerse(
+            chapter: newChapter,
+            verse: verse.verse - shift,
+            nodes: _shiftNotes(verse.nodes, noteShift),
+            verseEnd: verse.verseEnd == null ? null : verse.verseEnd! - shift,
+            part: verse.part,
+            partEnd: verse.partEnd,
+            label: verse.label,
+            number: verse.number,
+          ),
+    ],
+    headings: [
+      for (final heading in book.headings)
+        if (inside(heading.chapter, heading.verse))
+          UsfmHeading(
+            chapter: newChapter,
+            verse: heading.verse - shift,
+            kind: heading.kind,
+            level: heading.level,
+            nodes: _shiftNotes(heading.nodes, noteShift),
+            part: heading.part,
+          ),
+    ],
+    notes: [
+      for (final note in book.notes)
+        if (inside(note.chapter, note.verse))
+          UsfmNote(
+            id: note.id + noteShift,
+            chapter: newChapter,
+            verse: note.verse - shift,
+            kind: note.kind,
+            caller: note.caller,
+            nodes: _shiftNotes(note.nodes, noteShift),
+          ),
+    ],
+    droppedFragments: 0,
+    unknownMarkers: const {},
   );
 }
 

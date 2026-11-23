@@ -17,13 +17,18 @@ import 'package:hisbible_format/hisbible_format.dart';
 ///   больше чем на 2% ожидаемого: |стихов − ожидаемое| × 50 > ожидаемое.
 ///   Ожидается 0 — стихов этой части быть не должно. Слитые стихи
 ///   (`\v 16-17`) считаются одним, как в `translations.csv`.
-///   [skippedVerses] — стихи книг вне справочника (`DAG`, `ESG`, `PS2`):
-///   сборка их пропускает, и из ожидаемого `DCverses` они вычитаются
-///   (не ниже 0).
+///   [skippedVerses] — стихи, которых сборка в модуль не берёт
+///   (`UsfmBooks.skippedVerses`: книги вне справочника, греческий Даниил,
+///   который повторяет `DAN`); из ожидаемого `DCverses` они вычитаются
+///   (не ниже 0). [movedVerses] — стихи, которые eBible считает
+///   неканоническими, а модуль держит в Ветхом Завете (греческий Даниил
+///   на месте Даниила, 151-й псалом): из `DCverses` они вычитаются,
+///   к `OTverses` прибавляются.
 List<String> validateModule(
   String path,
   EbibleTranslation translation, {
   int skippedVerses = 0,
+  int movedVerses = 0,
 }) {
   final BibleModule bible;
   try {
@@ -32,7 +37,7 @@ List<String> validateModule(
     return ['the module does not open: ${e.problem}'];
   }
   try {
-    return _check(bible, translation, skippedVerses);
+    return _check(bible, translation, skippedVerses, movedVerses);
   } on Exception catch (e) {
     return ['the module does not read: $e'];
   } finally {
@@ -49,6 +54,7 @@ List<String> _check(
   BibleModule bible,
   EbibleTranslation translation,
   int skippedVerses,
+  int movedVerses,
 ) {
   final reasons = <String>[];
   var ot = 0;
@@ -90,13 +96,13 @@ List<String> _check(
     );
   }
   for (final (part, actual, column, expected) in [
-    ('Old Testament', ot, 'OTverses', translation.otVerses),
+    ('Old Testament', ot, 'OTverses', translation.otVerses + movedVerses),
     ('New Testament', nt, 'NTverses', translation.ntVerses),
     (
       'deuterocanonical books',
       dc,
       'DCverses',
-      math.max(0, translation.dcVerses - skippedVerses),
+      math.max(0, translation.dcVerses - skippedVerses - movedVerses),
     ),
   ]) {
     if ((actual - expected).abs() * 50 > expected) {

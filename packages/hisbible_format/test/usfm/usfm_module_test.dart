@@ -115,6 +115,151 @@ void main() {
     }
   });
 
+  group('Greek Daniel and Psalm 151', () {
+    const greekDaniel =
+        '\\id DAG\n\\h Daniel (Greek)\n'
+        '\\c 3\n\\p\n\\v 23 Fell down.\n'
+        '\\s Song\n\\v 24 They walked\\f + \\ft walked\\f* in the fire.\n'
+        '\\v 90 Bless.\n\\v 91 The king.\n'
+        '\\c 13\n\\p\n\\v 1 Susanna.\n'
+        '\\c 14\n\\p\n\\v 1 Bel.\n';
+    final daniel = BookCatalog.numberOfCode('DAN')!;
+    final song = BookCatalog.numberOfCode('S3Y')!;
+    final susanna = BookCatalog.numberOfCode('SUS')!;
+    final bel = BookCatalog.numberOfCode('BEL')!;
+    final psalms = BookCatalog.numberOfCode('PSA')!;
+
+    test('DAG without DAN is the Daniel of the module', () {
+      final books = readUsfmBooks([_file('a.usfm', greekDaniel)]);
+
+      final book = books.books.single;
+      expect(book.number, daniel);
+      expect(book.usfm.header, 'Daniel (Greek)');
+      expect(book.usfm.verses.map((v) => (v.chapter, v.verse)), [
+        (3, 23),
+        (3, 24),
+        (3, 90),
+        (3, 91),
+        (13, 1),
+        (14, 1),
+      ]);
+      expect(books.skippedVerses, 0);
+      expect(books.movedVerses, 6);
+      expect(books.warnings, contains('DAG: read as DAN'));
+    });
+
+    test('DAG next to DAN gives only the additions', () {
+      final books = readUsfmBooks([
+        _file('a.usfm', '\\id DAN\n\\c 3\n\\p\n\\v 23 Fell down.\n'),
+        _file('b.usfm', greekDaniel),
+      ]);
+
+      expect(books.books.map((book) => book.number), [
+        daniel,
+        song,
+        susanna,
+        bel,
+      ]);
+      final s3y = books.books[1].usfm;
+      expect(s3y.verses.map((v) => (v.chapter, v.verse)), [(1, 1), (1, 67)]);
+      expect(s3y.headings.single.verse, 1);
+      expect(s3y.notes.single.verse, 1);
+      expect(plainText(books.books[2].usfm.verses.single.nodes), 'Susanna.');
+      // 3:23 и 3:91 повторяют `DAN`.
+      expect(books.skippedVerses, 2);
+      expect(books.movedVerses, 0);
+      expect(books.warnings, contains('DAG: repeats DAN, verses dropped: 2'));
+
+      final path = '${dir.path}/m.hb';
+      writeUsfmModule(path, _meta('en'), books);
+      final module = BibleModule.open(path);
+      try {
+        expect(module.chapter(song, 1).map((v) => v.verse), [1, 67]);
+        expect(module.chapter(bel, 1).single.text, 'Bel.');
+      } finally {
+        module.close();
+      }
+    });
+
+    test('an addition the module has as a book is not taken twice', () {
+      final books = readUsfmBooks([
+        _file('a.usfm', '\\id DAN\n\\c 3\n\\p\n\\v 23 Fell down.\n'),
+        _file('b.usfm', greekDaniel),
+        _file('c.usfm', _book('SUS', verse: 'Own Susanna.')),
+      ]);
+
+      final own = books.books.singleWhere((book) => book.number == susanna);
+      expect(plainText(own.usfm.verses.single.nodes), 'Own Susanna.');
+      expect(
+        books.warnings,
+        contains('DAG: SUS is already there, chapter 13 skipped'),
+      );
+    });
+
+    test('PS2 is psalm 151 with its notes after those of the psalter', () {
+      final books = readUsfmBooks([
+        _file(
+          'a.usfm',
+          '\\id PSA\n\\c 150\n\\p\n\\v 1 Praise\\f + \\ft one\\f*.\n',
+        ),
+        _file(
+          'b.usfm',
+          '\\id PS2\n\\c 1\n\\d Title\n\\p\n'
+              '\\v 1 I was small\\f + \\ft two\\f*.\n'
+              '\\c 151\n\\p\n\\v 1 I was small.\n',
+        ),
+      ]);
+
+      final psa = books.books.single;
+      expect(psa.number, psalms);
+      expect(psa.usfm.verses.map((v) => (v.chapter, v.verse)), [
+        (150, 1),
+        (151, 1),
+      ]);
+      expect(psa.usfm.notes.map((note) => (note.id, note.chapter)), [
+        (1, 150),
+        (2, 151),
+      ]);
+      expect(psa.usfm.verses.last.nodes.whereType<FootnoteRef>().single.id, 2);
+      expect(books.skippedVerses, 1);
+      expect(books.movedVerses, 1);
+      expect(
+        books.warnings,
+        containsAll(['PS2: read as PSA 151', 'PS2: chapters after 1 skipped']),
+      );
+
+      final path = '${dir.path}/m.hb';
+      writeUsfmModule(path, _meta('en'), books);
+      final module = BibleModule.open(path);
+      try {
+        expect(module.chapter(psalms, 151).single.text, contains('I was'));
+      } finally {
+        module.close();
+      }
+    });
+
+    test('PS2 without the psalter or next to psalm 151 is skipped', () {
+      const ps2 = '\\id PS2\n\\c 1\n\\p\n\\v 1 I was small.\n';
+      final alone = readUsfmBooks([
+        _file('a.usfm', _book('GEN')),
+        _file('b.usfm', ps2),
+      ]);
+      final twice = readUsfmBooks([
+        _file('a.usfm', '\\id PSA\n\\c 151\n\\p\n\\v 1 Own.\n'),
+        _file('b.usfm', ps2),
+      ]);
+
+      expect(alone.books.map((book) => book.number), [10]);
+      expect(alone.warnings, contains('PS2: no PSA, skipped'));
+      expect((alone.skippedVerses, alone.movedVerses), (1, 0));
+      expect(twice.books.single.usfm.verses, hasLength(1));
+      expect(
+        twice.warnings,
+        contains('PS2: PSA 151 is already there, skipped'),
+      );
+    });
+  });
+
   test('a scheme set by hand beats the detected one', () {
     final books = readUsfmBooks([
       _file('a.usfm', _book('GEN')),
