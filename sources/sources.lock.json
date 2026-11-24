@@ -7861,6 +7861,13 @@
       "asset": "tsnfb-2026-11-19_usfm.zip",
       "fetched": "2026-11-22"
     },
+    "tsnsa": {
+      "updateDate": "2026-11-23",
+      "sha256": "897532a920cb743247dc894736681ab74d9fcee38e0f725d4a367edce5c422f6",
+      "release": "sources-2026-11-24",
+      "asset": "tsnsa-2026-11-23_usfm.zip",
+      "fetched": "2026-11-24"
+    },
     "tsw": {
       "updateDate": "2025-07-09",
       "sha256": "42de5b9bbb373ef6db613ccb7c96634323c49351c4a750fee43042b0e4f6ab7a",
