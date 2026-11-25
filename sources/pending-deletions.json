@@ -1,3 +1,24 @@
 {
-  "deletions": []
+  "deletions": [
+    {
+      "release": "build-2026-11-22",
+      "asset": "tsnfb-2026-11-19.hb"
+    },
+    {
+      "release": "sources-2026-11-22",
+      "asset": "adz-2026-11-20_usfm.zip"
+    },
+    {
+      "release": "build-2026-11-24",
+      "asset": "adz-2026-11-20.1.hb"
+    },
+    {
+      "release": "sources-2026-11-24",
+      "asset": "ronBayash-2026-11-23_usfm.zip"
+    },
+    {
+      "release": "build-2026-11-24",
+      "asset": "ronBayash-2026-11-23.hb"
+    }
+  ]
 }

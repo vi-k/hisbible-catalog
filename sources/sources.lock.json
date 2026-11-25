@@ -106,11 +106,11 @@
       "fetched": "2026-10-26"
     },
     "adz": {
-      "updateDate": "2026-11-20",
-      "sha256": "f49ae5c439c2b12cd96e3f11174db7662e961a136cb04a784c5cb6fbc5815378",
-      "release": "sources-2026-11-22",
-      "asset": "adz-2026-11-20_usfm.zip",
-      "fetched": "2026-11-22"
+      "updateDate": "2026-11-24",
+      "sha256": "c55f93d6369ab1b96e41a9fd6e7498a39d00531bd68cbc9f8438a7ef6eb288ba",
+      "release": "sources-2026-11-25",
+      "asset": "adz-2026-11-24_usfm.zip",
+      "fetched": "2026-11-25"
     },
     "aeb": {
       "updateDate": "2025-04-26",
@@ -6630,11 +6630,11 @@
       "fetched": "2026-10-26"
     },
     "ronBayash": {
-      "updateDate": "2026-11-23",
-      "sha256": "1bd420599cccb359e3078eefd40aa9706b8f6c3896e8ab6bf9fb3b5cf24b8d4c",
-      "release": "sources-2026-11-24",
-      "asset": "ronBayash-2026-11-23_usfm.zip",
-      "fetched": "2026-11-24"
+      "updateDate": "2026-11-24",
+      "sha256": "bf9779471c966fdc777568fcc29ab849050076bca707ce73d22f637ccc68f945",
+      "release": "sources-2026-11-25",
+      "asset": "ronBayash-2026-11-24_usfm.zip",
+      "fetched": "2026-11-25"
     },
     "ronbl": {
       "updateDate": "2026-10-28",
@@ -7853,6 +7853,13 @@
       "release": "sources-2026-10-26-2",
       "asset": "tsn-2025-05-21_usfm.zip",
       "fetched": "2026-10-26"
+    },
+    "tsnfb": {
+      "updateDate": "2026-11-19",
+      "sha256": "e88d36f9e91ab38ad44db642db7a5d4bf3d4e9d491ea56e0f6bd79d83b4f1b23",
+      "release": "sources-2026-11-25",
+      "asset": "tsnfb-2026-11-19_usfm.zip",
+      "fetched": "2026-11-25"
     },
     "tsnsa": {
       "updateDate": "2026-11-24",

@@ -2,7 +2,7 @@
   "format": 1,
   "catalog": "hisbible",
   "name": "HisBible",
-  "updated": "2026-11-24",
+  "updated": "2026-11-25",
   "modules": [
     {
       "id": "aai",
@@ -414,9 +414,9 @@
         "dc": 0
       },
       "size": 1343488,
-      "sha256": "d252fb490bcabfae7efb174572d5c0f05ceb04ac4fe73d506ef382fc6b31445c",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-24/adz-2026-11-20.1.hb",
-      "version": "2026-11-20.1",
+      "sha256": "2dcac7a01a874e171631915b9cd16b02aafdfe49e10b4c8e8e72effc0aa449db",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-25/adz-2026-11-24.hb",
+      "version": "2026-11-24",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -24542,9 +24542,9 @@
         "dc": 0
       },
       "size": 233472,
-      "sha256": "29300ee03758886f2881c3ae08037df1b8b3ca19cb12caf9f0e3a149660c32da",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-24/ronBayash-2026-11-23.hb",
-      "version": "2026-11-23",
+      "sha256": "5c15436a7cc7329335e4bfc7ff958642c4972cb94d2b0d2233a1f32f8d7100e3",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-25/ronBayash-2026-11-24.hb",
+      "version": "2026-11-24",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
@@ -29114,13 +29114,13 @@
       "copyright": "public domain",
       "books": {
         "ot": 0,
-        "nt": 1,
+        "nt": 4,
         "dc": 0
       },
-      "size": 167936,
-      "sha256": "69fe83b701368129a3686a95e3df113074433e278173c3567aabf6412d7b88bf",
-      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-22/tsnfb-2026-11-19.hb",
-      "version": "2026-11-19",
+      "size": 712704,
+      "sha256": "5ad5eab736720360f007985dd618167d4989bbbe376ed23d7dfd80c78729964a",
+      "url": "https://github.com/vi-k/hisbible-catalog/releases/download/build-2026-11-25/tsnfb-2026-11-19.1.hb",
+      "version": "2026-11-19.1",
       "moduleFormat": 2,
       "generator": "catalog_builder 0.4.0"
     },
