@@ -167,26 +167,36 @@ final class FootnoteRef extends MarkupNode {
 /// Новая строка стихов внутри стиха с отступом.
 final class LineBreak extends MarkupNode {
   /// Создаёт перенос строки с отступом [indent] (0..4).
-  const LineBreak({this.indent = 0});
+  const LineBreak({this.indent = 0, this.align = ParagraphAlign.start});
 
   /// Глубина отступа.
   final int indent;
 
+  /// Выравнивание строки: USFM `\qc` — по середине, `\qr` — по концу.
+  final ParagraphAlign align;
+
   @override
   bool operator ==(Object other) =>
-      other is LineBreak && other.indent == indent;
+      other is LineBreak && other.indent == indent && other.align == align;
 
   @override
-  int get hashCode => Object.hash(LineBreak, indent);
+  int get hashCode => Object.hash(LineBreak, indent, align);
 
   @override
-  String toString() => 'LineBreak($indent)';
+  String toString() => align == ParagraphAlign.start
+      ? 'LineBreak($indent)'
+      : 'LineBreak($indent, ${align.name})';
 }
 
 /// Начало нового абзаца (`<p/>`, `<p m="1"/>`, `<p b="1"/>`).
 final class ParagraphBreak extends MarkupNode {
   /// Создаёт разрыв абзаца.
-  const ParagraphBreak({this.continues = false, this.gap = false});
+  const ParagraphBreak({
+    this.continues = false,
+    this.gap = false,
+    this.indent = 0,
+    this.align = ParagraphAlign.start,
+  });
 
   /// Абзац продолжает прошлый после цитаты или стихов — USFM `\m`: печатают
   /// его без красной строки.
@@ -196,20 +206,48 @@ final class ParagraphBreak extends MarkupNode {
   /// строфы в стихах.
   final bool gap;
 
+  /// Отступ всего абзаца, 0..4 ступени: USFM `\pi#`, `\mi`, абзацы письма
+  /// `\pm`, `\pmo`, `\pmc`.
+  final int indent;
+
+  /// Выравнивание абзаца: USFM `\pc` — по середине; `\pr`, `\pmr`, `\cls` —
+  /// по концу строки.
+  final ParagraphAlign align;
+
   @override
   bool operator ==(Object other) =>
       other is ParagraphBreak &&
       other.continues == continues &&
-      other.gap == gap;
+      other.gap == gap &&
+      other.indent == indent &&
+      other.align == align;
 
   @override
-  int get hashCode => Object.hash(ParagraphBreak, continues, gap);
+  int get hashCode =>
+      Object.hash(ParagraphBreak, continues, gap, indent, align);
 
   @override
   String toString() {
-    final flags = [if (continues) 'continues', if (gap) 'gap'];
+    final flags = [
+      if (continues) 'continues',
+      if (gap) 'gap',
+      if (indent > 0) 'indent $indent',
+      if (align != ParagraphAlign.start) align.name,
+    ];
     return 'ParagraphBreak(${flags.join(', ')})';
   }
+}
+
+/// Выравнивание абзаца или строки стихов.
+enum ParagraphAlign {
+  /// По началу строки: обычный абзац.
+  start,
+
+  /// По середине.
+  center,
+
+  /// По концу строки: справа, а в письме справа налево — слева.
+  end,
 }
 
 bool _sameNodes(List<MarkupNode> a, List<MarkupNode> b) {

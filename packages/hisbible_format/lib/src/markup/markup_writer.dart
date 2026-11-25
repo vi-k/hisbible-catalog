@@ -54,18 +54,41 @@ void _write(List<MarkupNode> nodes, StringBuffer out) {
         }
       case FootnoteRef(:final id, :final caller):
         out.write('<f id="$id" c="${_escapeAttribute(caller)}"/>');
-      case LineBreak(:final indent):
-        final clamped = indent.clamp(0, 4);
-        out.write(clamped == 0 ? '<l/>' : '<l i="$clamped"/>');
-      case ParagraphBreak(:final continues, :final gap):
+      case LineBreak(:final indent, :final align):
+        out
+          ..write('<l')
+          ..write(_indent(indent))
+          ..write(_align(align))
+          ..write('/>');
+      case ParagraphBreak(
+        :final continues,
+        :final gap,
+        :final indent,
+        :final align,
+      ):
         out
           ..write('<p')
           ..write(continues ? ' m="1"' : '')
           ..write(gap ? ' b="1"' : '')
+          ..write(_indent(indent))
+          ..write(_align(align))
           ..write('/>');
     }
   }
 }
+
+// Атрибут отступа: пусто у нуля.
+String _indent(int indent) {
+  final clamped = indent.clamp(0, 4);
+  return clamped == 0 ? '' : ' i="$clamped"';
+}
+
+// Атрибут выравнивания: пусто у начала строки.
+String _align(ParagraphAlign align) => switch (align) {
+  ParagraphAlign.start => '',
+  ParagraphAlign.center => ' a="c"',
+  ParagraphAlign.end => ' a="e"',
+};
 
 String _escape(String text) => text
     .replaceAll('&', '&amp;')

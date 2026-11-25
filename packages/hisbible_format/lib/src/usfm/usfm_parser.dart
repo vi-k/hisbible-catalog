@@ -196,7 +196,16 @@ final _numbered = RegExp(r'^(pi|q|qm|li|s|ms|mt|mte)(\d*)$');
       return (_Paragraph.chapter, null);
     case 'v':
       return (_Paragraph.verse, null);
-    case 'p' || 'pm':
+    case 'p' ||
+        'po' ||
+        'pc' ||
+        'pr' ||
+        'mi' ||
+        'pm' ||
+        'pmo' ||
+        'pmc' ||
+        'pmr' ||
+        'cls':
       return (_Paragraph.paragraph, null);
     case 'b':
       return (_Paragraph.blank, null);
@@ -1163,13 +1172,22 @@ final class _Parser {
         _carried = _targetKind == _Target.verse ? _target.closeAll() : [];
         _awaitNumber = _Paragraph.verse;
       case _Paragraph.paragraph:
-        _breakParagraph(const ParagraphBreak());
+        _breakParagraph(_paragraphBreakOf(name, digit));
       case _Paragraph.blank:
         _breakParagraph(const ParagraphBreak(gap: true));
       case _Paragraph.flush:
         _breakParagraph(const ParagraphBreak(continues: true));
       case _Paragraph.line:
-        _breakParagraph(LineBreak(indent: digit ?? 1));
+        _breakParagraph(
+          LineBreak(
+            indent: digit ?? 1,
+            align: switch (name) {
+              'qc' => ParagraphAlign.center,
+              'qr' => ParagraphAlign.end,
+              _ => ParagraphAlign.start,
+            },
+          ),
+        );
       case _Paragraph.continuation:
         _continueParagraph();
       case _Paragraph.heading when !_inChapters:
@@ -1221,6 +1239,21 @@ final class _Parser {
     }
   }
 
+  // Разрыв абзацного маркера [name] с цифрой [digit]: письма, отступы
+  // и выравнивание; без красной строки — абзацы, которые её не имеют.
+  ParagraphBreak _paragraphBreakOf(String name, int? digit) => switch (name) {
+    'pc' => const ParagraphBreak(continues: true, align: ParagraphAlign.center),
+    'pr' ||
+    'pmr' ||
+    'cls' => const ParagraphBreak(continues: true, align: ParagraphAlign.end),
+    'mi' || 'pmo' || 'pmc' => const ParagraphBreak(continues: true, indent: 1),
+    'pm' => const ParagraphBreak(indent: 1),
+    _ when _numbered.firstMatch(name)?[1] == 'pi' => ParagraphBreak(
+      indent: (digit ?? 1).clamp(1, 4),
+    ),
+    _ => const ParagraphBreak(),
+  };
+
   void _breakParagraph(MarkupNode node) {
     _continueParagraph();
     if (!_inChapters) {
@@ -1233,7 +1266,14 @@ final class _Parser {
       final gap = node.gap || _breaks.any((b) => b is ParagraphBreak && b.gap);
       _breaks.clear();
       if (_chapterHasVerse) {
-        _breaks.add(ParagraphBreak(continues: node.continues, gap: gap));
+        _breaks.add(
+          ParagraphBreak(
+            continues: node.continues,
+            gap: gap,
+            indent: node.indent,
+            align: node.align,
+          ),
+        );
       }
     } else if (_breaks.isNotEmpty && _breaks.last is LineBreak) {
       _breaks.last = node;

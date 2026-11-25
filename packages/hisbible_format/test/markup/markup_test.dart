@@ -64,6 +64,43 @@ void main() {
     );
   });
 
+  test('a paragraph and a line keep their indent and alignment', () {
+    final nodes = [
+      const ParagraphBreak(indent: 2),
+      const TextRun('a'),
+      const ParagraphBreak(continues: true, align: ParagraphAlign.center),
+      const TextRun('b'),
+      const ParagraphBreak(gap: true, indent: 1, align: ParagraphAlign.end),
+      const TextRun('c'),
+      const LineBreak(align: ParagraphAlign.end),
+      const TextRun('d'),
+      const LineBreak(indent: 1, align: ParagraphAlign.center),
+    ];
+    final text = [
+      '<p i="2"/>a<p m="1" a="c"/>b<p b="1" i="1" a="e"/>c',
+      '<l a="e"/>d<l i="1" a="c"/>',
+    ].join();
+    expect(writeMarkup(nodes), text);
+    expect(parseMarkup(text), nodes);
+    // Незнакомое выравнивание и отступ за пределами — по началу и 0..4.
+    expect(parseMarkup('<p a="x" i="9"/><l a="r" i="-1"/>'), [
+      const ParagraphBreak(indent: 4),
+      const LineBreak(),
+    ]);
+    expect(
+      const ParagraphBreak(indent: 1, align: ParagraphAlign.end).toString(),
+      'ParagraphBreak(indent 1, end)',
+    );
+    expect(
+      const LineBreak(align: ParagraphAlign.center).toString(),
+      'LineBreak(0, center)',
+    );
+    expect(
+      const ParagraphBreak(align: ParagraphAlign.center),
+      isNot(const ParagraphBreak()),
+    );
+  });
+
   test('writes plain line break and bare tagged word', () {
     expect(
       writeMarkup([
@@ -88,6 +125,10 @@ void main() {
         TaggedWord([TextRun('c')], strong: ['G1']),
       ]),
       for (var i = 0; i <= 4; i++) LineBreak(indent: i),
+      for (final align in ParagraphAlign.values) ...[
+        LineBreak(indent: 1, align: align),
+        ParagraphBreak(indent: 2, align: align),
+      ],
       const TaggedWord(
         [
           TextRun('God'),

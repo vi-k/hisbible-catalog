@@ -114,11 +114,14 @@ class _Parser {
           ParagraphBreak(
             continues: attributes['m'] == '1',
             gap: attributes['b'] == '1',
+            indent: _indentOf(attributes),
+            align: _alignOf(attributes),
           ),
         );
       case 'l':
-        final indent = int.tryParse(attributes['i'] ?? '') ?? 0;
-        _add(LineBreak(indent: indent.clamp(0, 4)));
+        _add(
+          LineBreak(indent: _indentOf(attributes), align: _alignOf(attributes)),
+        );
       case 'f':
         final id = int.tryParse(attributes['id'] ?? '');
         if (id != null) {
@@ -206,3 +209,16 @@ class _Parser {
     }
   }
 }
+
+// Отступ `i` тега `<p>` или `<l>`, 0..4.
+int _indentOf(Map<String, String> attributes) =>
+    (int.tryParse(attributes['i'] ?? '') ?? 0).clamp(0, 4);
+
+// Выравнивание `a` тега `<p>` или `<l>`: `c` — по середине, `e` — по концу;
+// иное — по началу.
+ParagraphAlign _alignOf(Map<String, String> attributes) =>
+    switch (attributes['a']) {
+      'c' => ParagraphAlign.center,
+      'e' => ParagraphAlign.end,
+      _ => ParagraphAlign.start,
+    };

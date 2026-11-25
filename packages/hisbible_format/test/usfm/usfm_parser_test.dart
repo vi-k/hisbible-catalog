@@ -316,20 +316,71 @@ void main() {
       const TextRun('One'),
       const ParagraphBreak(),
       const TextRun('two'),
-      const LineBreak(),
+      const LineBreak(align: ParagraphAlign.end),
       const TextRun('Amen'),
     ]);
     expect(book.verses[1].nodes, [
       const ParagraphBreak(gap: true),
       const TextRun('Three'),
-      const ParagraphBreak(),
+      const ParagraphBreak(indent: 2),
       const TextRun('four'),
       const LineBreak(indent: 3),
       const TextRun('five'),
-      const LineBreak(),
+      const LineBreak(align: ParagraphAlign.center),
       const TextRun('six'),
       const ParagraphBreak(continues: true),
       const TextRun('seven eight'),
+    ]);
+  });
+
+  test('centred, right and indented paragraphs and a letter', () {
+    final book = parseUsfm(
+      '\\id ACT\n\\c 15\n\\p\n\\v 23 One\n\\pmo Brothers,\n'
+      '\\pm greetings\n\\pmc Farewell.\n\\pmr Amen\n\\cls Paul\n'
+      '\\v 24 \\pc KING\n\\pr right\n\\mi indented\n\\pi plain\n'
+      '\\pi3 deep\n\\po letter',
+    );
+    expect(book.unknownMarkers, isEmpty);
+    expect(book.verses[0].nodes, [
+      const TextRun('One'),
+      const ParagraphBreak(continues: true, indent: 1),
+      const TextRun('Brothers,'),
+      const ParagraphBreak(indent: 1),
+      const TextRun('greetings'),
+      const ParagraphBreak(continues: true, indent: 1),
+      const TextRun('Farewell.'),
+      const ParagraphBreak(continues: true, align: ParagraphAlign.end),
+      const TextRun('Amen'),
+      const ParagraphBreak(continues: true, align: ParagraphAlign.end),
+      const TextRun('Paul'),
+    ]);
+    expect(book.verses[1].nodes, [
+      const ParagraphBreak(continues: true, align: ParagraphAlign.center),
+      const TextRun('KING'),
+      const ParagraphBreak(continues: true, align: ParagraphAlign.end),
+      const TextRun('right'),
+      const ParagraphBreak(continues: true, indent: 1),
+      const TextRun('indented'),
+      const ParagraphBreak(indent: 1),
+      const TextRun('plain'),
+      const ParagraphBreak(indent: 3),
+      const TextRun('deep'),
+      const ParagraphBreak(),
+      const TextRun('letter'),
+    ]);
+  });
+
+  test('a blank line keeps the indent and the alignment of the paragraph '
+      'after it', () {
+    final book = parseUsfm('\\id MAT\n\\c 27\n\\p\n\\v 37 One\n\\b\n\\pc KING');
+    expect(book.verses[0].nodes, [
+      const TextRun('One'),
+      const ParagraphBreak(
+        continues: true,
+        gap: true,
+        align: ParagraphAlign.center,
+      ),
+      const TextRun('KING'),
     ]);
   });
 

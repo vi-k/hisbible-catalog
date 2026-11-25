@@ -382,7 +382,10 @@ tags. Everything outside tags is text as is; whitespace is significant.
 | `<p/>` | paragraph break |
 | `<p m="1"/>` | paragraph break where the paragraph goes on with the sentence before it, after a quotation or poetry lines (USFM `\m`); it is printed without a first-line indent |
 | `<p b="1"/>` | paragraph break after a blank line (USFM `\b`): a section break in prose or a stanza break in poetry; combines with `m="1"` |
+| `<p i="1"/>` … `<p i="4"/>` | paragraph indented as a whole by 1..4 steps: USFM `\pi#`, `\mi` (with `m="1"`), the paragraphs of a letter `\pm`, `\pmo` and `\pmc` (the last two with `m="1"`); combines with `m="1"` and `b="1"` |
+| `<p a="c"/>`, `<p a="e"/>` | paragraph aligned to the centre (USFM `\pc`) or to the end of the line — right, or left in right-to-left text (USFM `\pr`, `\pmr`, `\cls`); written with `m="1"`, combines with `b="1"` and `i` |
 | `<l/>`, `<l i="1"/>` … `<l i="4"/>` | new poetry line with indent 0..4 |
+| `<l a="c"/>`, `<l a="e"/>` | poetry line aligned to the centre (USFM `\qc`) or to the end of the line (USFM `\qr`); combines with `i` |
 | `<wj>…</wj>` | words of Christ |
 | `<add>…</add>` | words added by the translators |
 | `<em>…</em>` | emphasis |
@@ -401,7 +404,8 @@ Entities are `&amp;`, `&lt;`, `&gt;`, and `&quot;`. Style tags may nest.
 Readers are tolerant: an unknown tag is dropped and its text kept; an unclosed
 tag is closed at the end; an extra closing tag is skipped; `<f>` without a
 numeric `id` is dropped; `<x>` without a readable `r` keeps its text; an indent
-outside 0..4 is clamped. A reader that does not use Strong numbers shows a
+outside 0..4 is clamped; an unknown `a` is the start of the line, and a reader
+that does not align or indent paragraphs ignores `a` and `i` of `<p/>`. A reader that does not use Strong numbers shows a
 `<w>` word as its text.
 
 ## Links in commentaries
