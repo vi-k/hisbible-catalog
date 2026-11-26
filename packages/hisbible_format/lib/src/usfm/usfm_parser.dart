@@ -31,6 +31,13 @@ import 'package:hisbible_format/hisbible_format.dart';
 /// неё заканчивает метку. Вне стиха помета выбрасывается с текстом.
 /// Так же `\vp 1–6а\vp*` даёт стиху номер, как его печатает издание
 /// ([UsfmVerse.number]); пустой `\vp` номера не даёт.
+///
+/// Таблица в главе — строки [TableRow] и ячейки [TableCell] (`\tr`, `\th#`,
+/// `\tc#` с `r` и `c`; `\tc1-2` — по первой цифре). Строка, которая
+/// начинается не с первого столбца, получает пустые ячейки до него. Строка
+/// таблицы перед `\v` стоит в начале нового стиха, как `\p`; пустая ячейка
+/// из пробелов и неразрывных пробелов остаётся ячейкой. Вне глав таблица —
+/// разрыв абзаца, в сноске — её простой текст.
 UsfmBook parseUsfm(String text) => _Parser(text).parse();
 
 // ---------------------------------------------------------------------------
@@ -85,7 +92,8 @@ List<_Token> _lex(String source) {
     final name = match[1]!;
     final closing = match[2]!.isNotEmpty;
     var end = match.end;
-    if (name.contains('-')) {
+    // Объединённая ячейка таблицы `\tc1-2` — не веха.
+    if (name.contains('-') && !_tableCell.hasMatch(name)) {
       // Веха выбрасывается вместе с атрибутами до `\*`, но не дальше
       // следующего маркера и конца строки: незакрытая веха не съедает текст.
       var stop = source.indexOf(r'\', end);
@@ -179,9 +187,20 @@ enum _Paragraph {
 
   // Заголовок над стихом.
   heading,
+
+  // Строка (`\tr`) или ячейка таблицы; цифра ячейки — номер её столбца.
+  table,
 }
 
 final _numbered = RegExp(r'^(pi|q|qm|li|s|ms|mt|mte)(\d*)$');
+
+// Ячейка таблицы: `\th#`, `\thr#`, `\thc#`, `\tc#`, `\tcr#`, `\tcc#`;
+// у объединённой (`\tc1-2`) номер — первая цифра.
+final _tableCell = RegExp(r'^t(h|c)(r|c)?(\d+)(-\d+)?$');
+
+// Дальше этого столбца пустыми ячейками не добивают: опечатка в номере
+// (`\tc100`) не даёт сотни ячеек. В книгах eBible столбцов не больше пяти.
+const _maxTableColumn = 32;
 
 // Абзацный маркер [name] и цифра в нём; `null` — маркер незнакомый.
 (_Paragraph, int?)? _paragraphOf(String name) {
@@ -217,6 +236,11 @@ final _numbered = RegExp(r'^(pi|q|qm|li|s|ms|mt|mte)(\d*)$');
       return (_Paragraph.line, 0);
     case 'd' || 'sp' || 'r' || 'mr' || 'sr':
       return (_Paragraph.heading, null);
+    case 'tr':
+      return (_Paragraph.table, null);
+  }
+  if (_tableCell.firstMatch(name) case final cell?) {
+    return (_Paragraph.table, int.tryParse(cell[3]!));
   }
   final match = _numbered.firstMatch(name);
   if (match != null) {
@@ -437,8 +461,7 @@ final class _Content {
       }
     } else if (nodes.isNotEmpty &&
         !_lastSpace &&
-        nodes.first is! LineBreak &&
-        nodes.first is! ParagraphBreak &&
+        !_isBreak(nodes.first) &&
         nodes.first is! FootnoteRef) {
       nodes.insert(0, const TextRun(' '));
     }
@@ -448,7 +471,7 @@ final class _Content {
     closeAll();
     final root = _top..flush();
     for (final node in nodes) {
-      if (node is LineBreak || node is ParagraphBreak) {
+      if (_isBreak(node)) {
         addBreak(node);
       } else {
         root.add(node);
@@ -664,7 +687,18 @@ String _trimRightSpaces(String text) {
   return text.substring(0, end);
 }
 
+// Разрыв строки, абзаца, строки или ячейки таблицы.
+bool _isBreak(MarkupNode node) =>
+    node is LineBreak ||
+    node is ParagraphBreak ||
+    node is TableRow ||
+    node is TableCell;
+
 bool _hasNonSpace(String text) => text.replaceAll(' ', '').isNotEmpty;
+
+// Текст из одних пробелов и неразрывных пробелов: так пишут пустую ячейку
+// таблицы.
+final _blank = RegExp(r'^[ \u00A0]*$');
 
 final _spaces = RegExp(r'[ \t\r\n\f\v]+');
 
@@ -891,6 +925,9 @@ final class _Parser {
   final List<_NoteBuilder> _notes = [];
   final List<_IntroBuilder> _intros = [];
   final List<MarkupNode> _breaks = [];
+
+  // Сразу после `\tr`: ячейки ещё не было.
+  bool _rowStart = false;
   final Set<String> _unknown = {};
   int _dropped = 0;
 
@@ -1029,8 +1066,15 @@ final class _Parser {
     if (_label case (_, _, final buffer)?) {
       buffer.write(cleaned);
     }
-    if (_inVerse && !_target.dropping && _hasNonSpace(cleaned)) {
-      _flushBreaks();
+    if (_inVerse && !_target.dropping) {
+      if (!_blank.hasMatch(cleaned)) {
+        _flushBreaks();
+      } else if (_breaks.isNotEmpty) {
+        // Пробелы и неразрывные пробелы после разрыва (пустая ячейка таблицы)
+        // разрывы не сбрасывают и в стих не идут: иначе разрывы строки
+        // таблицы, которая начинает стих, ушли бы хвостом в прошлый.
+        return;
+      }
     }
     _current.write(cleaned);
   }
@@ -1107,10 +1151,13 @@ final class _Parser {
       _openCharacter(_FrameKind.plain, name);
       return;
     }
-    if (note != null && paragraph == null) {
+    if (note != null &&
+        (paragraph == null || paragraph.$1 == _Paragraph.table)) {
       // Незнакомый маркер внутри сноски — её часть с простым текстом,
-      // а не абзац: текст сноски не уходит в стих.
-      _unknown.add(name);
+      // а не абзац: текст сноски не уходит в стих. Таблица в сноске — так же.
+      if (paragraph == null) {
+        _unknown.add(name);
+      }
       note.content
         ..closeAll()
         ..open(_FrameKind.plain, name);
@@ -1190,6 +1237,26 @@ final class _Parser {
         );
       case _Paragraph.continuation:
         _continueParagraph();
+      case _Paragraph.table when !_inChapters:
+        _breakParagraph(const ParagraphBreak());
+      case _Paragraph.table when name == 'tr':
+        _breakParagraph(const TableRow());
+        _rowStart = true;
+      case _Paragraph.table:
+        final cell = _tableCell.firstMatch(name)!;
+        final align = switch (cell[2]) {
+          'r' => ParagraphAlign.end,
+          'c' => ParagraphAlign.center,
+          _ => ParagraphAlign.start,
+        };
+        if (_rowStart) {
+          // Строка, которая начинается не с первого столбца, получает
+          // пустые ячейки до своего: столбец — порядок ячейки в строке.
+          for (var i = 1; i < (digit ?? 1).clamp(1, _maxTableColumn); i++) {
+            _breakParagraph(const TableCell());
+          }
+        }
+        _breakParagraph(TableCell(header: cell[1] == 'h', align: align));
       case _Paragraph.heading when !_inChapters:
         _setTarget(_Target.silent);
       case _Paragraph.heading:
@@ -1256,10 +1323,15 @@ final class _Parser {
 
   void _breakParagraph(MarkupNode node) {
     _continueParagraph();
+    _rowStart = false;
     if (!_inChapters) {
       return;
     }
-    if (node is ParagraphBreak) {
+    if (node is TableRow || node is TableCell) {
+      // Строки и ячейки таблицы копятся подряд и прочих разрывов
+      // не заменяют: пустая ячейка держит свой столбец.
+      _breaks.add(node);
+    } else if (node is ParagraphBreak) {
       // Разрыв абзаца заменяет пустые строки перед собой, а в начале главы
       // ничего не даёт. Пустая строка `\b` перед ним остаётся пометкой:
       // `\b \p` — абзац после пустой строки.
@@ -1433,6 +1505,7 @@ final class _Parser {
       _dropPendingHeadings(carry: carry);
     }
     _breaks.clear();
+    _rowStart = false;
     _verse = null;
     _heading = null;
     _chapterHasVerse = false;

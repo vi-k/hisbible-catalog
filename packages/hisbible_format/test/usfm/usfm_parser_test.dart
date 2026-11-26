@@ -409,6 +409,108 @@ void main() {
     expect(book.verses[0].nodes, [const TextRun('One')]);
   });
 
+  test('a table row that starts a verse belongs to that verse', () {
+    // nya, Езд 2, как в архиве: пробелы в конце строк, в пустых ячейках —
+    // неразрывные.
+    final book = parseUsfm(
+      '\\id EZR\n\\c 2\n\\p\n\\v 2 Iwo anabwerera. \n\\b \n'
+      '\\mi Chiwerengero:  \n\\tr  \n\\tc1  \n'
+      '\\v 3 Zidzukulu za Parosi  \n\\tcr2 2,172  \n'
+      '\\tr  \n\\tc1 \u00A0\u00A0  \n'
+      '\\v 4 zidzukulu za Sefatiya  \n\\tcr2 372  \n'
+      '\\tr  \n\\tc1 \u00A0\u00A0  \n'
+      '\\v 5 zidzukulu za Ara  \n\\tcr2 775  \n'
+      '\\b \n\\p \n\\v 6 Text',
+    );
+    final verses = {for (final v in book.verses) v.verse: writeMarkup(v.nodes)};
+    expect(verses[2], 'Iwo anabwerera.<p m="1" b="1" i="1"/>Chiwerengero:');
+    expect(verses[3], '<tr/><td/>Zidzukulu za Parosi<td a="e"/>2,172');
+    expect(verses[4], '<tr/><td/>zidzukulu za Sefatiya<td a="e"/>372');
+    expect(verses[5], '<tr/><td/>zidzukulu za Ara<td a="e"/>775');
+    // `\b \p` кончает таблицу: стих 6 — как без неё.
+    expect(verses[6], '<p b="1"/>Text');
+    expect(book.unknownMarkers, isEmpty);
+  });
+
+  test('a table inside one verse with headings', () {
+    // spaonbv, Числ 1: пустая ячейка из неразрывного пробела.
+    final book = parseUsfm(
+      '\\id NUM\n\\c 1\n\\p\n\\v 5 Tribu y jefe:\n'
+      '\\tr \\th1 Tribu \\th2 Jefe\n'
+      '\\tr \\tc1 Rubén \\tc2 Elisur;\n'
+      '\\tr \\tc1 hijos de José: \\tc2 \u00A0 \n'
+      '\\tr \\tc1 Efraín \\tc2 Elisama;\n'
+      '\\b\n\\p\n\\v 16 Text',
+    );
+    expect(
+      writeMarkup(book.verses.first.nodes),
+      [
+        'Tribu y jefe:<tr/><td h="1"/>Tribu<td h="1"/>Jefe',
+        '<tr/><td/>Rubén<td/>Elisur;',
+        '<tr/><td/>hijos de José:<td/>',
+        '<tr/><td/>Efraín<td/>Elisama;',
+      ].join(),
+    );
+    expect(writeMarkup(book.verses[1].nodes), '<p b="1"/>Text');
+    expect(book.unknownMarkers, isEmpty);
+  });
+
+  test('right, centred and spanning cells', () {
+    final book = parseUsfm(
+      '\\id NUM\n\\c 1\n\\p\n\\v 1 \\tr \\thr1 A \\thc2 B\n'
+      r'\tr \tcr1 1 \tcc2 2 \tc3-4 3',
+    );
+    expect(
+      writeMarkup(book.verses.single.nodes),
+      [
+        '<tr/><td h="1" a="e"/>A<td h="1" a="c"/>B',
+        '<tr/><td a="e"/>1<td a="c"/>2<td/>3',
+      ].join(),
+    );
+    expect(book.unknownMarkers, isEmpty);
+  });
+
+  test('a row that skips the first column gets empty cells', () {
+    final book = parseUsfm('\\id NUM\n\\c 1\n\\p\n\\v 1 \\tr \\tc2 x \\tc3 y');
+    expect(writeMarkup(book.verses.single.nodes), '<tr/><td/><td/>x<td/>y');
+  });
+
+  test('a table ends at a heading and at the chapter', () {
+    final book = parseUsfm(
+      '\\id NUM\n\\c 1\n\\p\n\\v 6 One\n\\tr \\tc1 a \\tc2 b\n'
+      '\\s1 Head\n\\v 7 Seven\n\\tr \\tc1 c\n\\tr \\tc1 \u00A0\n'
+      '\\c 2\n\\p\n\\v 1 First',
+    );
+    expect(
+      [for (final v in book.verses) writeMarkup(v.nodes)],
+      ['One<tr/><td/>a<td/>b', 'Seven<tr/><td/>c', 'First'],
+    );
+    expect(book.headings.single.verse, 7);
+    expect(plainText(book.headings.single.nodes), 'Head');
+  });
+
+  test('a table after a mid-verse heading joins the verse as a table', () {
+    final book = parseUsfm(
+      '\\id NUM\n\\c 1\n\\p\n\\v 1 One\n\\s1 Head\n'
+      '\\tr \\tc1 a \\tc2 b\n\\v 2 Two',
+    );
+    expect(writeMarkup(book.verses.first.nodes), 'One<tr/><td/>a<td/>b');
+    expect(book.headings.single.verse, 2);
+  });
+
+  test('table markers outside chapters are paragraph breaks', () {
+    UsfmBook parse(String intro) =>
+        parseUsfm('\\id GEN\n\\ip Intro\n$intro\n\\c 1\n\\v 1 One');
+    final table = parse(r'\tr \tc1 a');
+    final paragraph = parse(r'\p a');
+    expect(
+      [for (final i in table.intros) writeMarkup(i.nodes)],
+      [for (final i in paragraph.intros) writeMarkup(i.nodes)],
+    );
+    expect(table.droppedFragments, paragraph.droppedFragments);
+    expect(table.unknownMarkers, isEmpty);
+  });
+
   test('notes number in the book and callers in the chapter', () {
     final calls = [for (var i = 0; i < 28; i++) '\\f + \\ft n$i\\f*'];
     final book = parseUsfm(
