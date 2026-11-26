@@ -36,7 +36,10 @@ import 'package:hisbible_format/hisbible_format.dart';
 /// `\tc#` с `r` и `c`; `\tc1-2` — по первой цифре). Строка, которая
 /// начинается не с первого столбца, получает пустые ячейки до него. Строка
 /// таблицы перед `\v` стоит в начале нового стиха, как `\p`; пустая ячейка
-/// из пробелов и неразрывных пробелов остаётся ячейкой. Вне глав таблица —
+/// из пробелов и неразрывных пробелов остаётся ячейкой. Так же после любого
+/// разрыва: текст из одних пробелов и неразрывных пробелов перед `\v`
+/// в стих не идёт. Заголовок и строка стихов (`\q#`, `\li#`) кончают
+/// таблицу: её ждущие строки и ячейки выбрасываются. Вне глав таблица —
 /// разрыв абзаца, в сноске — её простой текст.
 UsfmBook parseUsfm(String text) => _Parser(text).parse();
 
@@ -1070,9 +1073,10 @@ final class _Parser {
       if (!_blank.hasMatch(cleaned)) {
         _flushBreaks();
       } else if (_breaks.isNotEmpty) {
-        // Пробелы и неразрывные пробелы после разрыва (пустая ячейка таблицы)
-        // разрывы не сбрасывают и в стих не идут: иначе разрывы строки
-        // таблицы, которая начинает стих, ушли бы хвостом в прошлый.
+        // Пробелы и неразрывные пробелы после любого ждущего разрыва
+        // (пустая ячейка таблицы, U+00A0 перед `\v`) разрывы не сбрасывают
+        // и в стих не идут: иначе разрывы строки таблицы, которая начинает
+        // стих, ушли бы хвостом в прошлый.
         return;
       }
     }
@@ -1260,6 +1264,7 @@ final class _Parser {
       case _Paragraph.heading when !_inChapters:
         _setTarget(_Target.silent);
       case _Paragraph.heading:
+        _dropTableBreaks();
         final (headingKind, level) = switch (name) {
           'd' => (HeadingKind.title, 1),
           'sp' => (HeadingKind.section, 3),
@@ -1347,11 +1352,23 @@ final class _Parser {
           ),
         );
       }
-    } else if (_breaks.isNotEmpty && _breaks.last is LineBreak) {
-      _breaks.last = node;
     } else {
-      _breaks.add(node);
+      // Строка стихов кончает таблицу: её ждущие строки и ячейки
+      // в стих не переходят.
+      _dropTableBreaks();
+      if (_breaks.isNotEmpty && _breaks.last is LineBreak) {
+        _breaks.last = node;
+      } else {
+        _breaks.add(node);
+      }
     }
+  }
+
+  // Выбрасывает ждущие строки и ячейки таблицы: её кончили заголовок
+  // или строка стихов.
+  void _dropTableBreaks() {
+    _breaks.removeWhere((node) => node is TableRow || node is TableCell);
+    _rowStart = false;
   }
 
   void _flushBreaks() {

@@ -481,12 +481,62 @@ void main() {
       '\\s1 Head\n\\v 7 Seven\n\\tr \\tc1 c\n\\tr \\tc1 \u00A0\n'
       '\\c 2\n\\p\n\\v 1 First',
     );
+    final verses = [for (final v in book.verses) writeMarkup(v.nodes)];
+    expect(verses, ['One<tr/><td/>a<td/>b', 'Seven<tr/><td/>c', 'First']);
+    // Таблица перед заголовком в стих под ним не переходит, таблица в конце
+    // главы — в следующую главу.
+    expect(verses[1], startsWith('Seven'));
+    expect(verses[2], isNot(contains('<t')));
+    expect(book.headings.single.verse, 7);
+    expect(plainText(book.headings.single.nodes), 'Head');
+  });
+
+  test('a trailing empty cell goes to the next verse without a heading', () {
+    final book = parseUsfm(
+      '\\id NUM\n\\c 1\n\\p\n\\v 6 One \\tr \\tc1 a \\tc2 \u00A0 '
+      r'\v 7 Seven',
+    );
     expect(
       [for (final v in book.verses) writeMarkup(v.nodes)],
-      ['One<tr/><td/>a<td/>b', 'Seven<tr/><td/>c', 'First'],
+      ['One<tr/><td/>a', '<td/>Seven'],
+    );
+  });
+
+  test('a heading drops a pending empty cell', () {
+    final book = parseUsfm(
+      '\\id NUM\n\\c 1\n\\p\n\\v 6 One \\tr \\tc1 a \\tc2 \u00A0 '
+      r'\s1 Head \v 7 Seven',
+    );
+    expect(
+      [for (final v in book.verses) writeMarkup(v.nodes)],
+      ['One<tr/><td/>a', 'Seven'],
     );
     expect(book.headings.single.verse, 7);
     expect(plainText(book.headings.single.nodes), 'Head');
+  });
+
+  test('a poetry line drops a pending empty cell', () {
+    final book = parseUsfm(
+      '\\id NUM\n\\c 1\n\\p\n\\v 6 One \\tr \\tc1 a \\tc2 \u00A0 '
+      r'\q1 \v 7 Seven',
+    );
+    final verse = writeMarkup(book.verses[1].nodes);
+    expect(verse, isNot(contains('<t')));
+    expect(verse, '<l i="1"/>Seven');
+  });
+
+  test('a table marker inside a note stays plain note text', () {
+    final book = parseUsfm(
+      '\\id NUM\n\\c 1\n\\p\n\\v 1 One\\f + \\ft a \\tr \\tc1 b\\f* two',
+    );
+    expect(writeMarkup(book.verses.single.nodes), 'One<f id="1" c="a"/> two');
+    expect(plainText(book.notes.single.nodes), 'a b');
+    expect(book.unknownMarkers, isEmpty);
+  });
+
+  test('a cell past column 32 gets 31 empty cells before it', () {
+    final book = parseUsfm('\\id NUM\n\\c 1\n\\p\n\\v 1 \\tr \\tc40 x');
+    expect(writeMarkup(book.verses.single.nodes), '<tr/>${'<td/>' * 31}<td/>x');
   });
 
   test('a table after a mid-verse heading joins the verse as a table', () {
