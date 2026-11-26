@@ -965,4 +965,57 @@ void main() {
     expect(verses[1]!.label, isNull);
     expect(book.unknownMarkers, isEmpty);
   });
+
+  test('an acrostic letter is a heading above the next verse', () {
+    final book = parseUsfm(
+      '\\id PSA\n\\c 119\n\\qa Alefu\n\\q1\n\\v 1 Odala\n'
+      '\\q1\n\\v 8 Ndidzamvera\n\\qa Beti\n\\q1\n\\v 9 Kodi\n',
+    );
+    expect(
+      [
+        for (final h in book.headings)
+          (h.verse, h.kind, h.level, plainText(h.nodes)),
+      ],
+      [
+        (1, HeadingKind.acrostic, 1, 'Alefu'),
+        (9, HeadingKind.acrostic, 1, 'Beti'),
+      ],
+    );
+    expect(
+      plainText(book.verses.firstWhere((v) => v.verse == 8).nodes),
+      isNot(contains('Beti')),
+    );
+    expect(book.unknownMarkers, isNot(contains('qa')));
+  });
+
+  test('an acrostic letter keeps its footnote', () {
+    final book = parseUsfm(
+      '\\id PSA\n\\c 119\n'
+      '\\qa Aleph\\f + \\fr 119.0 \\ft Acróstico.\\f*\n\\q1\n\\v 1 Felices',
+    );
+    expect(book.headings.single.nodes.whereType<FootnoteRef>(), hasLength(1));
+    expect(plainText(book.notes.single.nodes), 'Acróstico.');
+  });
+
+  test('a section heading and an acrostic letter over one verse', () {
+    final book = parseUsfm(
+      '\\id PSA\n\\c 119\n\\s1 Law\n\\qa ਅਲਫ਼\n\\q1\n\\v 1 Text',
+    );
+    expect(
+      [for (final h in book.headings) (h.verse, h.kind)],
+      [(1, HeadingKind.section), (1, HeadingKind.acrostic)],
+    );
+  });
+
+  test('an acrostic line letter is bold', () {
+    final book = parseUsfm(
+      '\\id PSA\n\\c 37\n\\q1\n\\v 1 \\qac A\\qac*brtzlvz',
+    );
+    expect(book.verses.single.nodes, [
+      const LineBreak(indent: 1),
+      const StyledSpan(MarkupStyle.bold, [TextRun('A')]),
+      const TextRun('brtzlvz'),
+    ]);
+    expect(book.unknownMarkers, isNot(contains('qac')));
+  });
 }

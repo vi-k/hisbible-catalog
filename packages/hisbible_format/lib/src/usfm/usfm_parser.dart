@@ -141,6 +141,8 @@ const _styles = {
   'qt': MarkupStyle.quote,
   'bd': MarkupStyle.bold,
   'sc': MarkupStyle.smallCaps,
+  // Буква акростиха в начале строки.
+  'qac': MarkupStyle.bold,
 };
 
 // Жирный курсив: жирный участок, внутри него выделение.
@@ -237,7 +239,7 @@ const _maxTableColumn = 32;
       return (_Paragraph.continuation, null);
     case 'qr' || 'qc':
       return (_Paragraph.line, 0);
-    case 'd' || 'sp' || 'r' || 'mr' || 'sr':
+    case 'd' || 'sp' || 'r' || 'mr' || 'sr' || 'qa':
       return (_Paragraph.heading, null);
     case 'tr':
       return (_Paragraph.table, null);
@@ -1267,6 +1269,7 @@ final class _Parser {
         _dropTableBreaks();
         final (headingKind, level) = switch (name) {
           'd' => (HeadingKind.title, 1),
+          'qa' => (HeadingKind.acrostic, 1),
           'sp' => (HeadingKind.section, 3),
           // Места под большим разделом — первого уровня, под разделом —
           // второго.

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:hisbible_format/hisbible_format.dart';
+import 'package:sqlite3/sqlite3.dart';
 import 'package:test/test.dart';
 
 UsfmSource _file(String name, String text) =>
@@ -694,6 +695,39 @@ void main() {
       );
     } finally {
       module.close();
+    }
+  });
+
+  test('an acrostic letter is a heading of its own kind', () {
+    final books = readUsfmBooks([
+      _file(
+        'a.usfm',
+        '\\id PSA\n\\toc2 Пс\n\\c 119\n\\q1\n\\v 8 Ndidzamvera\n'
+            '\\qa Beti\n\\q1\n\\v 9 Kodi\n',
+      ),
+    ]);
+    final path = '${dir.path}/qa.hb';
+
+    writeUsfmModule(path, _meta('ny'), books);
+
+    final module = BibleModule.open(path);
+    try {
+      final psalms = BookCatalog.numberOfCode('PSA')!;
+      expect(
+        [
+          for (final h in module.headings(psalms, 119))
+            (h.verse, h.kind, h.level, h.text),
+        ],
+        [(9, HeadingKind.acrostic, 1, 'Beti')],
+      );
+    } finally {
+      module.close();
+    }
+    final db = sqlite3.open(path, mode: OpenMode.readOnly);
+    try {
+      expect(db.select('SELECT kind FROM headings').single['kind'], 'acrostic');
+    } finally {
+      db.close();
     }
   });
 
