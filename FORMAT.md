@@ -407,10 +407,11 @@ Readers are tolerant: an unknown tag is dropped and its text kept; an unclosed
 tag is closed at the end; an extra closing tag is skipped; `<f>` without a
 numeric `id` is dropped; `<x>` without a readable `r` keeps its text; an indent
 outside 0..4 is clamped; an unknown `a` is the start of the line, and a reader
-that does not align or indent paragraphs ignores `a` and `i` of `<p/>`; a reader to which `<tr/>` and `<td/>` are unknown drops them
-and runs the text of the cells together; a reader that knows the tags but does
-not draw tables shows each cell as a paragraph or puts a space between cells. A reader that does not use Strong numbers shows a
-`<w>` word as its text.
+that does not align or indent paragraphs ignores `a` and `i` of `<p/>`; a reader
+to which `<tr/>` and `<td/>` are unknown drops them and runs the text of the
+cells together; a reader that knows the tags but does not draw tables shows each
+cell as a paragraph or puts a space between cells. A reader that does not use
+Strong numbers shows a `<w>` word as its text.
 
 ## Links in commentaries
 
