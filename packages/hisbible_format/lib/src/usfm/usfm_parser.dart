@@ -611,7 +611,7 @@ List<MarkupNode> _renumber(
     switch (out[i]) {
       case FootnoteRef():
         continue;
-      case LineBreak() || ParagraphBreak():
+      case LineBreak() || ParagraphBreak() || TableRow() || TableCell():
         return (nodes: out, done: true);
       case TextRun(:final text):
         final trimmed = _trimRightSpaces(text);

@@ -118,6 +118,15 @@ class _Parser {
             align: _alignOf(attributes),
           ),
         );
+      case 'tr':
+        _add(const TableRow());
+      case 'td':
+        _add(
+          TableCell(
+            header: attributes['h'] == '1',
+            align: _alignOf(attributes),
+          ),
+        );
       case 'l':
         _add(
           LineBreak(indent: _indentOf(attributes), align: _alignOf(attributes)),

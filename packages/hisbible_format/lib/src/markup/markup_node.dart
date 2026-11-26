@@ -238,6 +238,50 @@ final class ParagraphBreak extends MarkupNode {
   }
 }
 
+/// Начало строки таблицы (`<tr/>`, USFM `\tr`).
+final class TableRow extends MarkupNode {
+  /// Создаёт начало строки таблицы.
+  const TableRow();
+
+  @override
+  bool operator ==(Object other) => other is TableRow;
+
+  @override
+  int get hashCode => (TableRow).hashCode;
+
+  @override
+  String toString() => 'TableRow()';
+}
+
+/// Начало ячейки таблицы (`<td/>`, `<td h="1"/>`, `<td a="c"/>`).
+final class TableCell extends MarkupNode {
+  /// Создаёт начало ячейки.
+  const TableCell({this.header = false, this.align = ParagraphAlign.start});
+
+  /// Ячейка — заголовок столбца: USFM `\th#`, `\thr#`.
+  final bool header;
+
+  /// Выравнивание ячейки: USFM `\tcc#` — по середине, `\tcr#`, `\thr#` —
+  /// по концу строки.
+  final ParagraphAlign align;
+
+  @override
+  bool operator ==(Object other) =>
+      other is TableCell && other.header == header && other.align == align;
+
+  @override
+  int get hashCode => Object.hash(TableCell, header, align);
+
+  @override
+  String toString() {
+    final flags = [
+      if (header) 'header',
+      if (align != ParagraphAlign.start) align.name,
+    ];
+    return 'TableCell(${flags.join(', ')})';
+  }
+}
+
 /// Выравнивание абзаца или строки стихов.
 enum ParagraphAlign {
   /// По началу строки: обычный абзац.

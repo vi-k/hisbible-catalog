@@ -60,6 +60,14 @@ void _write(List<MarkupNode> nodes, StringBuffer out) {
           ..write(_indent(indent))
           ..write(_align(align))
           ..write('/>');
+      case TableRow():
+        out.write('<tr/>');
+      case TableCell(:final header, :final align):
+        out
+          ..write('<td')
+          ..write(header ? ' h="1"' : '')
+          ..write(_align(align))
+          ..write('/>');
       case ParagraphBreak(
         :final continues,
         :final gap,

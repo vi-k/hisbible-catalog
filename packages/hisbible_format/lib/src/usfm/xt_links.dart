@@ -191,7 +191,12 @@ List<MarkupNode> _resolveNode(
       return [StyledSpan(style, walk(children))];
     case TaggedWord(:final children, :final strong, :final morph):
       return [TaggedWord(walk(children), strong: strong, morph: morph)];
-    case TextRun() || FootnoteRef() || LineBreak() || ParagraphBreak():
+    case TextRun() ||
+        FootnoteRef() ||
+        LineBreak() ||
+        ParagraphBreak() ||
+        TableRow() ||
+        TableCell():
       return [node];
   }
 }

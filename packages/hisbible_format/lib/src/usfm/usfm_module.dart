@@ -848,7 +848,11 @@ void _collectNotes(List<MarkupNode> nodes, Set<int> ids) {
           TaggedWord(:final children) ||
           CrossrefLink(:final children):
         _collectNotes(children, ids);
-      case TextRun() || LineBreak() || ParagraphBreak():
+      case TextRun() ||
+          LineBreak() ||
+          ParagraphBreak() ||
+          TableRow() ||
+          TableCell():
         break;
     }
   }
@@ -880,7 +884,11 @@ List<MarkupNode> _shiftNotes(List<MarkupNode> nodes, int offset) {
           strong: strong,
           morph: morph,
         ),
-        TextRun() || LineBreak() || ParagraphBreak() => node,
+        TextRun() ||
+        LineBreak() ||
+        ParagraphBreak() ||
+        TableRow() ||
+        TableCell() => node,
       },
   ];
 }

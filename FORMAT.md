@@ -54,7 +54,7 @@ CREATE TABLE headings (
   position INTEGER NOT NULL,     -- order above one piece, from 0
   kind TEXT NOT NULL,            -- major | section | title | parallel
   level INTEGER NOT NULL,        -- 1..3
-  text TEXT NOT NULL,            -- markup without <p/> and <l/>
+  text TEXT NOT NULL,            -- markup without <p/>, <l/>, <tr/> and <td/>
   PRIMARY KEY (book, chapter, verse, part, position)
 ) WITHOUT ROWID;
 CREATE TABLE intros (            -- optional, bible only
@@ -386,6 +386,8 @@ tags. Everything outside tags is text as is; whitespace is significant.
 | `<p a="c"/>`, `<p a="e"/>` | paragraph aligned to the centre (USFM `\pc`) or to the end of the line — right, or left in right-to-left text (USFM `\pr`, `\pmr`, `\cls`); written with `m="1"`, combines with `b="1"` and `i` |
 | `<l/>`, `<l i="1"/>` … `<l i="4"/>` | new poetry line with indent 0..4 |
 | `<l a="c"/>`, `<l a="e"/>` | poetry line aligned to the centre (USFM `\qc`) or to the end of the line (USFM `\qr`); combines with `i` |
+| `<tr/>` | start of a table row; rows in a row are one table, across verses; a table ends at `<p/>`, `<l/>`, a heading or the end of the chapter |
+| `<td/>`, `<td h="1"/>`, `<td a="c"/>`, `<td a="e"/>` | start of a table cell (USFM `\tc#`); `h="1"` — a column heading (`\th#`), `a` as at `<p/>` (`\tcc#`, `\tcr#`); the column is the order of `<td/>` in its row; text between `<tr/>` and the first `<td/>` is the first cell |
 | `<wj>…</wj>` | words of Christ |
 | `<add>…</add>` | words added by the translators |
 | `<em>…</em>` | emphasis |
@@ -405,7 +407,8 @@ Readers are tolerant: an unknown tag is dropped and its text kept; an unclosed
 tag is closed at the end; an extra closing tag is skipped; `<f>` without a
 numeric `id` is dropped; `<x>` without a readable `r` keeps its text; an indent
 outside 0..4 is clamped; an unknown `a` is the start of the line, and a reader
-that does not align or indent paragraphs ignores `a` and `i` of `<p/>`. A reader that does not use Strong numbers shows a
+that does not align or indent paragraphs ignores `a` and `i` of `<p/>`; a reader that does not show tables shows each
+cell as a paragraph or puts a space between cells. A reader that does not use Strong numbers shows a
 `<w>` word as its text.
 
 ## Links in commentaries

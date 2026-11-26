@@ -29,7 +29,7 @@ String plainText(List<MarkupNode> nodes) {
             TaggedWord(:final children) ||
             CrossrefLink(:final children):
           write(children);
-        case LineBreak() || ParagraphBreak():
+        case LineBreak() || ParagraphBreak() || TableRow() || TableCell():
           pendingBreak = true;
         case FootnoteRef():
           break;

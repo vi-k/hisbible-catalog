@@ -111,12 +111,59 @@ void main() {
     );
   });
 
+  test('a table row and its cells are read and written back', () {
+    const text =
+        '<tr/><td h="1"/>Tribu<td h="1" a="e"/>Jefe<tr/><td/>Rubén<td a="c"/>x';
+    final nodes = [
+      const TableRow(),
+      const TableCell(header: true),
+      const TextRun('Tribu'),
+      const TableCell(header: true, align: ParagraphAlign.end),
+      const TextRun('Jefe'),
+      const TableRow(),
+      const TableCell(),
+      const TextRun('Rubén'),
+      const TableCell(align: ParagraphAlign.center),
+      const TextRun('x'),
+    ];
+    expect(parseMarkup(text), nodes);
+    expect(writeMarkup(nodes), text);
+    expect(const TableRow().toString(), 'TableRow()');
+    expect(const TableCell().toString(), 'TableCell()');
+    expect(const TableCell(header: true).toString(), 'TableCell(header)');
+    expect(
+      const TableCell(align: ParagraphAlign.end).toString(),
+      'TableCell(end)',
+    );
+    expect(
+      const TableCell(header: true, align: ParagraphAlign.center).toString(),
+      'TableCell(header, center)',
+    );
+    expect(const TableCell(header: true), isNot(const TableCell()));
+  });
+
+  test('an unknown cell alignment is the start', () {
+    expect(parseMarkup('<td a="z"/>'), [const TableCell()]);
+  });
+
+  test('plain text puts a space between table cells', () {
+    expect(
+      plainText(
+        parseMarkup(
+          '<tr/><td/>Zidzukulu za Parosi<td a="e"/>2,172<tr/><td/>B<td/>3',
+        ),
+      ),
+      'Zidzukulu za Parosi 2,172 B 3',
+    );
+  });
+
   test('round trips every node', () {
     final nodes = <MarkupNode>[
       const ParagraphBreak(),
       const ParagraphBreak(continues: true),
       const ParagraphBreak(gap: true),
       const ParagraphBreak(continues: true, gap: true),
+      const TableRow(),
       for (final style in MarkupStyle.values)
         StyledSpan(style, [TextRun('t "$style" <&>')]),
       const StyledSpan(MarkupStyle.quote, [
@@ -128,6 +175,8 @@ void main() {
       for (final align in ParagraphAlign.values) ...[
         LineBreak(indent: 1, align: align),
         ParagraphBreak(indent: 2, align: align),
+        TableCell(header: true, align: align),
+        TableCell(align: align),
       ],
       const TaggedWord(
         [
