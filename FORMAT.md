@@ -173,9 +173,9 @@ Notes:
   `checkModuleFile`). A `verse_end` that is not an integer is read as NULL.
 - Heading kinds: `major` is a heading above several sections, `section` a
   section heading, `title` a title that is part of the text, such as a psalm
-  title, `parallel` a line of parallel places under a heading, such as `(Mk
-  1:1–8; Lk 3:1–9)`, with the places as `<x>` links (USFM `\r`, `\sr` at level 2
-  and `\mr` at level 1), `acrostic` the letter or name of a stanza of an
+  title, `parallel` a line of parallel places under a heading, such as
+  `(Mk 1:1–8; Lk 3:1–9)`, with the places as `<x>` links (USFM `\r`, `\sr` at
+  level 2 and `\mr` at level 1), `acrostic` the letter or name of a stanza of an
   acrostic, such as `Aleph` above Psalm 119:1 (USFM `\qa`); it is part of the
   text, and a reader shows it even where it hides other headings. A heading
   stands above the piece that starts at its `verse` and `part`; headings above
