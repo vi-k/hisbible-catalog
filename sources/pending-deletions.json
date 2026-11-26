@@ -1,484 +1,816 @@
 {
   "deletions": [
     {
-      "release": "build-2026-11-24-2",
-      "asset": "uro-2024-07-01.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "russyn-2026-11-25.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "urt-2017-12-22.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "crosswire-clarke-2021-10-19.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "urw-2022-06-21.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "crosswire-kd-2022-08-03.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "usa-2012-10-23.5.hb"
+      "release": "sources-2026-11-25",
+      "asset": "adz-2026-11-24_usfm.zip"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "uspNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "adz-2026-11-24.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "utr-2025-07-09.5.hb"
+      "release": "sources-2026-11-24",
+      "asset": "gvs-2026-11-24_usfm.zip"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "uvh-2022-02-07.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "gvs-2026-11-24.1.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "uvl-2022-11-09.5.hb"
+      "release": "sources-2026-11-15",
+      "asset": "jpnm-2026-11-14_usfm.zip"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "vaa-2025-07-09.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "jpnm-2026-11-14.4.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "vgr-2025-07-09.5.hb"
+      "release": "sources-2026-11-24",
+      "asset": "rmyArli-2026-11-24_usfm.zip"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "vid-2025-07-09.5.hb"
+      "release": "build-2026-11-25-2",
+      "asset": "rmyArli-2026-11-24.1.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "vie1934-2022-06-09.5.hb"
+      "release": "sources-2026-11-25",
+      "asset": "ronBayash-2026-11-24_usfm.zip"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "vieovcb-2025-06-25.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "ronBayash-2026-11-24.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "viv-2012-11-26.5.hb"
+      "release": "sources-2026-11-24",
+      "asset": "tdt-2026-11-24_usfm.zip"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "vmyNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25-2",
+      "asset": "tdt-2026-11-24.1.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "waj-2012-10-23.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "aai-2026-03-09.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wal-2022-03-11.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "aak-2012-10-03.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wapNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "aau-2013-01-03.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wat-2016-04-13.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "aaz-2022-03-11.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wbi-2020-11-10.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "abc-2025-04-25.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wbp-2026-02-24.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "abt-maprik-2013-01-04.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wbq-2025-07-09.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "abt-wosera-2013-01-07.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wed-2017-08-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "abx-2014-08-06.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wed-topura-2014-12-11.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "aby-2013-01-07.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wer-2012-10-23.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "acfNT-2014-04-30.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wim-2026-07-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "acr-acc-2013-01-05.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wiu-2012-11-26.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "acrNNT-2014-04-18.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wiv-2022-08-19.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "acrTNT-2014-04-21.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wja-2025-07-09.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "acuNT-2025-04-25.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wlg-2024-08-01.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "adt-2021-11-23.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wlo-2025-07-10.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "aeb-2025-04-26.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wmt-2019-05-14.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "aer-2019-05-14.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wmw-2016-06-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "aeu-2025-04-26.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wnc-2012-10-23.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "aey-1997-01-01.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wnu-2012-11-26.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "agd-2013-01-07.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wol2010-2020-07-09.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "agg-2013-01-07.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wolmbs-2025-04-18.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "agm-2012-11-17.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wos-2013-02-02.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "agn-2025-04-26.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wrk-2024-12-28.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "agr-2025-04-26.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wro-2019-05-16.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "agt-2025-04-26.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wrs-2020-04-23.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "aguBl-2014-04-21.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wsk-2016-11-07.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "ahr-2025-07-11.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "wuv-2012-11-26.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "aia-2017-11-09.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "xavNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "aii-2014-08-06.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "xbi-w-2013-08-21.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "akeNT-2014-04-21.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "xbi-y-2013-08-21.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "alpNT-2014-04-21.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "xed-2015-03-17.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "alqALGNT-2014-04-21.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "xla-2012-01-20.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "alw-2025-04-26.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "xnj-2023-04-14.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "aly-2023-11-10.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "xnn-2018-04-23.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "ameNT-2014-04-30.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "xon-2015-03-17.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "amf-2014-10-15.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "xsi-2013-02-09.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "amh-2014-09-09.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "xsn-2025-07-10.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "amk-2015-03-17.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "xtdNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "amm-2012-11-17.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "xtmNTpp-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "amn-amanab-2013-01-07.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "yaaNT-2018-11-16.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "amn-n-2012-01-19.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "yadNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "amo-2020-07-06.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "yaf-2025-07-10.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "amp-2011-07-22.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "yal-2025-07-10.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "amrNT-2024-02-11.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "yao-2023-04-18.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "amuNT-2024-02-11.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "yap-2017-12-21.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "amx-2020-07-24.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "yaqNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "anh-2024-02-11.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "yby-2012-01-20.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "anvNT-2024-02-11.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "ycn-2014-08-06.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "aoi-2022-05-27.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "ydd-2025-07-10.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "aoj-2013-07-19.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "yer-2025-07-10.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "aoj-filifita-2012-11-18.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "yij-2019-08-20.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "aom-2012-10-23.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "yka-2015-06-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "aon-2013-01-05.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "yle-2025-08-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "apb-2023-04-22.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "yml-2026-09-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "apeB-2015-03-17.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "ymp-2025-07-10.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "apec-2021-05-07.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "yns-2025-07-10.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "apnNT-2014-04-21.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "yom-2025-06-25.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "app-2024-04-27.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "yon-2012-10-23.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "apr-2025-03-20.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "yor-2025-06-25.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "apuNT-2014-04-21.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "yrb-2012-01-20.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "apwNT-2014-04-21.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "yreNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "apz-2011-12-15.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "yss-yamano-2014-01-09.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "aqk-2025-07-02.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "yss-yawu-2012-10-23.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "arb-vd-2020-08-03.7.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "yuj-2014-01-09.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "arbnav-2025-04-25.7.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "yut-2014-01-09.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "are-2019-05-14.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "yuw-2016-09-21.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "arlNT-2014-04-21.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "yvaNT-2025-07-10.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "arnNT-2014-04-30.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zaaNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "arp-2015-05-06.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zabNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "asg-2025-07-09.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zacNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "asj-2025-04-26.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zadNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "asmfb-2025-04-26.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zaiNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "aso-2014-06-24.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zaj-2025-05-20.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "ata-2013-01-05.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zajp-2025-05-20.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "atbNT-2014-04-30.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zak-2025-05-13.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "atdNT-2014-04-30.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zamNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "atgNT-2019-08-09.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zaoNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "att-2014-08-06.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zapNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "aucNT-2014-04-30.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zarNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "aui-2014-06-02.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zasNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "auy-2013-08-17.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zatNTps-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "avt-2014-12-03.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zavNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "awb-2013-12-11.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zawNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "awk-2020-03-03.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zbu-2025-07-10.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "awx-2025-04-26.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zcaNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "azb-2018-11-09.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zgam-2020-09-02.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "azgNT-2024-03-19.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zia-2022-06-21.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "azzNT-2014-04-30.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zin-2025-07-10.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "baoNT-2023-04-20.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "ziw-2018-02-06.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "bba-2014-09-10.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zlmKSZI-2014-04-01.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "bbb-2012-11-22.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zosNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "bbr-2012-11-22.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zpcNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "bbr2013-2020-11-11.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zplNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "bcf-2026-08-26.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zpmNT-2018-11-16.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "bch-2012-10-03.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zpoNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "bco-2025-03-12.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zpqNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "bdd-2015-01-02.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zpuNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "bdv-2023-04-06.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zpvNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "bea-2024-04-30.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zpzNTpp-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "bef-2012-09-26.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zsrNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "bel-2025-05-09.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "ztp-2025-07-10.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "beln-2021-05-20.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "ztqNT-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "benirv-2023-11-22.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "ztyNTps-2014-04-30.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "benobcv-2025-04-26.6.hb"
     },
     {
-      "release": "build-2026-11-24-2",
-      "asset": "zypNT-2014-04-22.5.hb"
+      "release": "build-2026-11-25",
+      "asset": "beo-2025-08-30.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "beu-2016-06-28.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bfz-2025-04-26.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bgc-2025-04-26.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bgg-2023-08-31.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bgs-2014-08-06.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bgt-2017-11-13.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bhd-2025-04-26.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bhg-2021-05-31.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bhi-2025-04-26.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bhl-2016-10-03.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bht-2025-04-26.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bhu-2025-04-26.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "big-2012-11-22.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "big2013-2025-04-26.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bjk-2023-05-04.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bjp-2023-03-15.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bjr-2013-08-10.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bjvNT-2021-11-01.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bjz-2023-04-30.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bkd-2014-08-06.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bki-2022-03-11.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bkqNT-2014-04-23.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bkw-2025-04-26.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bkx-2022-03-11.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bla-2025-08-30.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "blw-2014-08-06.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "blzNT-2014-04-22.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bmh-2012-01-13.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bmk-2014-06-02.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bmrNT-2014-04-30.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bmu-2012-11-22.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bnp-2014-12-03.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "boaNT-2014-04-22.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bodn-2025-04-29.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "boj-2001-01-01.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "boj2014-2025-08-26.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bon-2012-01-13.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bou-2025-07-08.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "boxNT-2014-04-22.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bpr-2014-08-06.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bps-2015-03-17.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bpx-2023-04-06.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bqcsim-2014-09-25.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bqp-2014-10-10.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "breBRG-2014-08-11.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bsj-2024-05-01.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bsnNT-2014-04-22.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bsp-2025-04-29.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bssNT-2014-04-21.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bswe-2025-04-30.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bswl-2025-04-30.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "buj-2025-07-12.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "buk-2012-01-13.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bus-2014-09-22.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bvd-2017-11-09.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bvr-2026-09-09.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bvw-2025-07-02.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bwc-2025-07-08.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bwd-2025-12-08.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bwo-2023-04-08.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bxh-2015-10-06.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "byr-2013-02-07.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "byr-w-2015-01-02.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "byx-2022-10-31.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bzdNTpo-2014-04-22.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bzh-2015-01-02.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "bzj-2022-12-21.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "caa-2023-08-23.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "cabNT-2014-04-25.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "cac-2016-06-08.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "cafNT-2014-04-22.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "cak-2014-12-03.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "cakCNT-2014-12-03.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "cakENT-2014-04-27.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "cakNT-2014-04-27.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "cakSNT-2014-04-27.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "cakWNT-2014-04-27.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "cakYNT-2014-12-03.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "caoNT-2014-04-22.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "capNT-2014-04-22.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "cavNT-2014-04-22.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "caxNT-2014-04-22.6.hb"
+    },
+    {
+      "release": "build-2026-11-25",
+      "asset": "cbcNT-2014-04-22.6.hb"
     }
   ]
 }

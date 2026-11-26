@@ -106,11 +106,11 @@
       "fetched": "2026-10-26"
     },
     "adz": {
-      "updateDate": "2026-11-24",
-      "sha256": "c55f93d6369ab1b96e41a9fd6e7498a39d00531bd68cbc9f8438a7ef6eb288ba",
-      "release": "sources-2026-11-25",
-      "asset": "adz-2026-11-24_usfm.zip",
-      "fetched": "2026-11-25"
+      "updateDate": "2026-11-25",
+      "sha256": "57bc7fbe39277a4bee03161e9fdbf780b8d0844208175f15012d67e28dc2d267",
+      "release": "sources-2026-11-26",
+      "asset": "adz-2026-11-25_usfm.zip",
+      "fetched": "2026-11-26"
     },
     "aeb": {
       "updateDate": "2025-04-26",
@@ -3130,11 +3130,11 @@
       "fetched": "2026-10-26"
     },
     "gvs": {
-      "updateDate": "2026-11-24",
-      "sha256": "33225760ae5c130b64a90c410857f2cb745b68b1ff956a9ff7e5f598f97c1432",
-      "release": "sources-2026-11-24",
-      "asset": "gvs-2026-11-24_usfm.zip",
-      "fetched": "2026-11-24"
+      "updateDate": "2026-11-26",
+      "sha256": "8fb61687846be3a9cdeecb8b20836fbec0146db28c932285d73bd3d5179ccc71",
+      "release": "sources-2026-11-26",
+      "asset": "gvs-2026-11-26_usfm.zip",
+      "fetched": "2026-11-26"
     },
     "gwiNT": {
       "updateDate": "2014-04-25",
@@ -3647,6 +3647,13 @@
       "asset": "ita1927-2019-12-17_usfm.zip",
       "fetched": "2026-10-26"
     },
+    "itafb": {
+      "updateDate": "2026-11-26",
+      "sha256": "891bb23adb17602fe996e6afde1feb88be987e267b043ea435c3081de81ffd8b",
+      "release": "sources-2026-11-26",
+      "asset": "itafb-2026-11-26_usfm.zip",
+      "fetched": "2026-11-26"
+    },
     "iws": {
       "updateDate": "2012-10-23",
       "sha256": "0e14e4309d5e6e512ef692212aa94cc2aaca285650ae2c0c6bb5bb2e42b107cd",
@@ -3753,11 +3760,11 @@
       "fetched": "2026-10-26"
     },
     "jpnm": {
-      "updateDate": "2026-11-14",
-      "sha256": "f93ec899f58bcbe564d27c0ce487b4f698ccef25533d40797c8a4d2b562db747",
-      "release": "sources-2026-11-15",
-      "asset": "jpnm-2026-11-14_usfm.zip",
-      "fetched": "2026-11-15"
+      "updateDate": "2026-11-25",
+      "sha256": "25d099bb16868eebb61eb9a9ab1985cdb7fff9475b89e5b40fdbb807ce5c2fce",
+      "release": "sources-2026-11-26",
+      "asset": "jpnm-2026-11-25_usfm.zip",
+      "fetched": "2026-11-26"
     },
     "jum": {
       "updateDate": "2025-05-06",
@@ -6581,11 +6588,11 @@
       "fetched": "2026-10-26"
     },
     "rmyArli": {
-      "updateDate": "2026-11-24",
-      "sha256": "dd4fb0eff828ebe277173450fac74d59d5ced937f97c235769be7ccdd7a88eff",
-      "release": "sources-2026-11-24",
-      "asset": "rmyArli-2026-11-24_usfm.zip",
-      "fetched": "2026-11-24"
+      "updateDate": "2026-11-25",
+      "sha256": "79ee15039592ea72f1d8fc93cf124047cdab35fb2c67e346872755e5ac75800f",
+      "release": "sources-2026-11-26",
+      "asset": "rmyArli-2026-11-25_usfm.zip",
+      "fetched": "2026-11-26"
     },
     "rmyChergash": {
       "updateDate": "2025-06-28",
@@ -6630,11 +6637,11 @@
       "fetched": "2026-10-26"
     },
     "ronBayash": {
-      "updateDate": "2026-11-24",
-      "sha256": "bf9779471c966fdc777568fcc29ab849050076bca707ce73d22f637ccc68f945",
-      "release": "sources-2026-11-25",
-      "asset": "ronBayash-2026-11-24_usfm.zip",
-      "fetched": "2026-11-25"
+      "updateDate": "2026-11-26",
+      "sha256": "82e21dd6f46224669e934a63d961746158f67e9b313f02d1a5f53a2bd29e6e09",
+      "release": "sources-2026-11-26",
+      "asset": "ronBayash-2026-11-26_usfm.zip",
+      "fetched": "2026-11-26"
     },
     "ronbl": {
       "updateDate": "2026-10-28",
@@ -7519,11 +7526,11 @@
       "fetched": "2026-11-24"
     },
     "tdt": {
-      "updateDate": "2026-11-24",
-      "sha256": "d0937a820f0ec106785c2cdf39a04f45eb50ba9e5a1b577f4311fee9e3337311",
-      "release": "sources-2026-11-24",
-      "asset": "tdt-2026-11-24_usfm.zip",
-      "fetched": "2026-11-24"
+      "updateDate": "2026-11-26",
+      "sha256": "f507344540d42c70b2d441bd43c5886b8ac55d16bf6418ad16ec24953d28baa1",
+      "release": "sources-2026-11-26",
+      "asset": "tdt-2026-11-26_usfm.zip",
+      "fetched": "2026-11-26"
     },
     "tdx": {
       "updateDate": "2024-12-05",
