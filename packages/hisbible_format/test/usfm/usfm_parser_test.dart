@@ -603,7 +603,7 @@ void main() {
       r'\w In|strong="H0430,H08804" x-morph="He,R"\w* '
       r'\w the|lemma="x"\w* \w be|strong="H1 G02"\w* '
       r'\em e\em* \it i\it* \qt q\qt* \bd b\bd* \sc s\sc* \bdit bi\bdit* '
-      r'\rq Mt 1\rq*\fig pic|src="a.jpg"\fig*x~y // z',
+      r'\fig pic|src="a.jpg"\fig*x~y // z',
     ).verses.single;
     expect(v.nodes, [
       const TaggedWord(
@@ -1017,5 +1017,22 @@ void main() {
       const TextRun('brtzlvz'),
     ]);
     expect(book.unknownMarkers, isNot(contains('qac')));
+  });
+
+  test('a quote source stays in the verse', () {
+    final book = parseUsfm(
+      '\\id MAT\n\\c 1\n\\p\n\\v 18 Text. \\rq Luk 1:27\\rq*\n\\p\n\\v 19 Next',
+    );
+    expect(book.verses[0].nodes, [
+      const TextRun('Text. '),
+      const StyledSpan(MarkupStyle.quoteSource, [
+        CrossrefLink(null, [TextRun('Luk 1:27')]),
+      ]),
+    ]);
+    expect(book.verses[1].nodes, [
+      const ParagraphBreak(),
+      const TextRun('Next'),
+    ]);
+    expect(book.unknownMarkers, isNot(contains('rq')));
   });
 }

@@ -265,4 +265,20 @@ void main() {
       'Мф',
     );
   });
+
+  test('a quote source holds places as links and reads as plain text', () {
+    const markup = '<rq><x r="LUK.1.27">Luk 1:27</x></rq>';
+    const nodes = [
+      StyledSpan(MarkupStyle.quoteSource, [
+        CrossrefLink(RefRange(VerseRef(490, 1, 27)), [TextRun('Luk 1:27')]),
+      ]),
+    ];
+
+    expect(parseMarkup(markup), nodes);
+    expect(writeMarkup(nodes), markup);
+    expect(
+      plainText(parseMarkup('rau.” <rq>Aisaia 7:14</rq>')),
+      'rau.” Aisaia 7:14',
+    );
+  });
 }

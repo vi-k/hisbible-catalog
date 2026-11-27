@@ -141,6 +141,8 @@ const _styles = {
   'qt': MarkupStyle.quote,
   'bd': MarkupStyle.bold,
   'sc': MarkupStyle.smallCaps,
+  // Источник цитаты: места в нём разбирает `resolveQuoteSources`.
+  'rq': MarkupStyle.quoteSource,
   // Буква акростиха в начале строки.
   'qac': MarkupStyle.bold,
 };
@@ -150,7 +152,7 @@ const _boldItalicMarker = 'bdit';
 
 const _plainMarkers = {'tl', 'bk', 'pn', 'k', 'qs', 'jmp', 'no'};
 
-const _droppedCharacterMarkers = {'rq', 'va', 'ca', 'fig'};
+const _droppedCharacterMarkers = {'va', 'ca', 'fig'};
 
 const _noteMarkers = {'f', 'fe', 'ef', 'x', 'ex'};
 
@@ -517,7 +519,18 @@ final class _Content {
         children.forEach(parent.add);
       case _FrameKind.style:
         if (children.isNotEmpty) {
-          parent.add(StyledSpan(frame.style!, children));
+          // Источник цитаты: места в тексте, как в строке `\r` заголовка,
+          // разберёт `resolveQuoteSources`.
+          final style = frame.style!;
+          parent.add(
+            StyledSpan(
+              style,
+              style == MarkupStyle.quoteSource &&
+                      children.every((child) => child is TextRun)
+                  ? [CrossrefLink(null, children)]
+                  : children,
+            ),
+          );
         }
       case _FrameKind.xref:
         // Место из `link-href` или `null`: тогда ссылку разберёт

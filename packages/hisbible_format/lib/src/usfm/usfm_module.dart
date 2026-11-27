@@ -695,7 +695,19 @@ void _writeText(
       number,
       verse.chapter,
       verse.verse,
-      writeMarkup(_shiftNotes(verse.nodes, offset)),
+      writeMarkup(
+        _shiftNotes(
+          resolveQuoteSources(
+            verse.nodes,
+            names,
+            book: number,
+            chapter: verse.chapter,
+            exists: exists,
+            stats: xt,
+          ),
+          offset,
+        ),
+      ),
       verseEnd: end?.verse,
       part: verse.part,
       partEnd: end?.part ?? '',

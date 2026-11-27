@@ -896,4 +896,35 @@ void main() {
       module.close();
     }
   });
+
+  test('a quote source in a verse links its places', () {
+    final books = readUsfmBooks([
+      _file(
+        '01-MAT.usfm',
+        '\\id MAT\n\\toc3 Mat\n\\c 1\n\\p\n'
+            '\\v 18 Text. \\rq Luk 1:27\\rq*\n'
+            '\\v 23 Word. \\rq Aisaia 7.14; 8.8,10\\rq*\n'
+            '\\v 24 Plain \\xt Luk 1:27\\xt* here.\n',
+      ),
+      _file(
+        '02-LUK.usfm',
+        '\\id LUK\n\\toc3 Luk\n\\c 1\n\\p\n\\v 27 A virgin.\n',
+      ),
+    ]);
+    final path = '${dir.path}/p.hb';
+
+    writeUsfmModule(path, _meta('en'), books);
+
+    final module = BibleModule.open(path);
+    try {
+      final verses = {
+        for (final verse in module.chapter(470, 1)) verse.verse: verse.text,
+      };
+      expect(verses[18], 'Text. <rq><x r="LUK.1.27">Luk 1:27</x></rq>');
+      expect(verses[23], 'Word. <rq>Aisaia 7.14; 8.8,10</rq>');
+      expect(verses[24], 'Plain Luk 1:27 here.');
+    } finally {
+      module.close();
+    }
+  });
 }

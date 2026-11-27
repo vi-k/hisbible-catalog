@@ -155,6 +155,46 @@ List<MarkupNode> resolveXtLinks(
   for (final node in nodes) ..._resolveNode(node, books, book, exists, stats),
 ];
 
+/// Места в источниках цитат стиха: [resolveXtLinks] только внутри
+/// `StyledSpan(MarkupStyle.quoteSource)`; прочие узлы, в том числе `\xt`
+/// без `link-href` в тексте стиха, остаются как есть.
+List<MarkupNode> resolveQuoteSources(
+  List<MarkupNode> nodes,
+  RefBooks books, {
+  required int book,
+  required int chapter,
+  bool Function(RefRange place)? exists,
+  XtStats? stats,
+}) => [
+  for (final node in nodes)
+    if (node case StyledSpan(style: MarkupStyle.quoteSource, :final children))
+      StyledSpan(
+        MarkupStyle.quoteSource,
+        resolveXtLinks(
+          children,
+          books,
+          book: book,
+          chapter: chapter,
+          exists: exists,
+          stats: stats,
+        ),
+      )
+    else if (node case StyledSpan(:final style, :final children))
+      StyledSpan(
+        style,
+        resolveQuoteSources(
+          children,
+          books,
+          book: book,
+          chapter: chapter,
+          exists: exists,
+          stats: stats,
+        ),
+      )
+    else
+      node,
+];
+
 List<MarkupNode> _resolveNode(
   MarkupNode node,
   RefBooks books,
