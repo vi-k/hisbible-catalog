@@ -316,4 +316,42 @@ void main() {
       '<x r="JHN.3.16">Ин 3:16</x>, <x r="JHN.4.2">4.2</x>',
     );
   });
+
+  group('a place after an unknown book name', () {
+    final names = RefBooks({'Matt': 470, 'Luk': 490, 'Sal': 230, 'Lev': 30});
+    String out(String text, int book) =>
+        writeMarkup(resolve(text, book: book, names: names));
+
+    test('an unknown name takes no link for the places after it', () {
+      expect(
+        out('Daniel 9:27; 11:31; 12:11', 470),
+        'Daniel 9:27; 11:31; 12:11',
+      );
+      expect(
+        out('Sal. 33.6. Giov. 1.1-3. Ebr. 1.10; 11.3', 500),
+        '<x r="PSA.33.6">Sal. 33.6</x>. Giov. 1.1-3. Ebr. 1.10; 11.3',
+      );
+      expect(
+        out('Matt 12:18; 17:5; Isa 42:1; 1:11', 470),
+        '<x r="MAT.12.18">Matt 12:18</x>; <x r="MAT.17.5">17:5</x>; '
+        'Isa 42:1; 1:11',
+      );
+    });
+
+    test('a multi-word, hyphened or caseless unknown name counts too', () {
+      expect(out('Pa je 65.8; 89.10', 470), 'Pa je 65.8; 89.10');
+      expect(out("E'sotas 20:12; 21:17", 470), "E'sotas 20:12; 21:17");
+      expect(out('Heti-heun 18:16; 20:21', 490), 'Heti-heun 18:16; 20:21');
+      expect(out('S.K. 2.1-3; 3.5-6', 230), 'S.K. 2.1-3; 3.5-6');
+      expect(out('उत्पत्ती 12:3; 18:18', 510), 'उत्पत्ती 12:3; 18:18');
+    });
+
+    test('a lowercase word before a number does not stop the link', () {
+      expect(
+        out('Lev. cap. 3; 22.18,21', 30),
+        'Lev. cap. 3; <x r="LEV.22.18">22.18</x>,<x r="LEV.22.21">21</x>',
+      );
+      expect(out('см. 3:16; 4:2', 500), 'см. 3:16; <x r="JHN.4.2">4:2</x>');
+    });
+  });
 }

@@ -213,6 +213,17 @@ final _chapterVerse = RegExp(
   '$_letterPart)?',
   unicode: true,
 );
+// Название, которого разбор не узнал, перед числом: слово с большой
+// буквы или письма без регистра, с частями через апостроф или дефис
+// и со словами за ним через пробел — «Daniel 9», «Pa je 65», «E'sotas 20».
+// Строчное слово само по себе («cap. 3», «см. 3») не в счёт.
+final _unknownName = RegExp(
+  r'(?<![\p{L}\p{M}\d])[\p{Lu}\p{Lt}\p{Lo}][\p{L}\p{M}]*'
+  r"(?:['’ʼ-][\p{L}\p{M}]+)*"
+  r"(?: [\p{L}\p{M}]+(?:['’ʼ-][\p{L}\p{M}]+)*)*"
+  r'\.?\s*\d',
+  unicode: true,
+);
 final _wordAfter = RegExp(r'\s+\p{Lu}', unicode: true);
 final _verseOnly = RegExp(
   r'(\d{1,4})(?![\d:]|\.\d)'
@@ -245,7 +256,14 @@ typedef _Place = ({RefRange range, int end, int book, int chapter});
   // Разобрать место с позиции [at]: сначала с названием книги или с
   // главой и стихом в книге [book], потом, если [verseToo], одним стихом
   // главы [chapter].
+  //
+  // Между последней взятой ссылкой и [at] стоит непознанное название
+  // книги — место без названия не берёт книгу сноски, нужно своё название.
   _Place? placeAt(int at, {required bool verseToo}) {
+    if (!verseToo && _unknownName.hasMatch(text.substring(cursor, at))) {
+      return _withBook(text, at, books, exists);
+    }
+
     return _withBook(text, at, books, exists) ??
         _withoutBook(text, at, book, exists) ??
         (verseToo ? _verseInChapter(text, at, book, chapter, exists) : null);
