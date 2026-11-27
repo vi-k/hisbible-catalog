@@ -346,6 +346,21 @@ void main() {
       expect(out('उत्पत्ती 12:3; 18:18', 510), 'उत्पत्ती 12:3; 18:18');
     });
 
+    test('an unknown name glued to its number counts too', () {
+      expect(out('1Sa 8.5, 19; 10.21', 510), '1Sa 8.5, 19; 10.21');
+      expect(out('2Klo 13:23–21:20; 26:1', 470), '2Klo 13:23–21:20; 26:1');
+      expect(out('1SA 23.19; 26.1', 230), '1SA 23.19; 26.1');
+      expect(out('2 Samuel 5.2; 7.1', 470), '2 Samuel 5.2; 7.1');
+    });
+
+    test('a known name glued to its number still links', () {
+      final glued = RefBooks({'Matt': 470, '1Ko': 530});
+      expect(
+        writeMarkup(resolve('1Ko 13:4; 14:1', book: 470, names: glued)),
+        '<x r="1CO.13.4">1Ko 13:4</x>; <x r="1CO.14.1">14:1</x>',
+      );
+    });
+
     test('a lowercase word before a number does not stop the link', () {
       expect(
         out('Lev. cap. 3; 22.18,21', 30),
